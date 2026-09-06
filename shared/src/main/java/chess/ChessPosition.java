@@ -12,6 +12,11 @@ public class ChessPosition {
     private final int row;
     private final int col;
 
+    /**
+     * this is where we instantiate the position on the board. You have to pass in row and column.
+     * @param row counts vertically starting at 1 from the bottom of the board.
+     * @param col counts horizontally left to right starting at 1.
+     */
     public ChessPosition(int row, int col) {
         this.row = row;
         this.col = col;
@@ -34,6 +39,10 @@ public class ChessPosition {
         return col;
     }
 
+    /**
+     * This is where I overide the tostring method to make things more readable when printing out the chess position.
+     * @return is just what it is printing. should look like this: {1, 2}
+     */
     @Override
     public String toString() {
         return "{" + row +
@@ -41,6 +50,12 @@ public class ChessPosition {
                 '}';
     }
 
+    /**
+     * This is where I override the equals method so that two chess positions can be equivalent if they are the
+     * same location, but not necessarily the same object.
+     * @param o   the reference object with which to compare.
+     * @return this returns true or false if the position the object represents is the same or different
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
