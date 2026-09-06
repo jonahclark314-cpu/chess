@@ -11,6 +11,7 @@ import java.util.Objects;
  */
 public class ChessBoard {
 
+    //Here is where I make the grid for the chessPieces to be.
     ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
         
@@ -42,6 +43,8 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
+
+        //create pieces for all the white pieces.
         ChessPiece wPawn1 = new ChessPiece(ChessGame.TeamColor.WHITE,ChessPiece.PieceType.PAWN);
         ChessPiece wPawn2 = new ChessPiece(ChessGame.TeamColor.WHITE,ChessPiece.PieceType.PAWN);
         ChessPiece wPawn3 = new ChessPiece(ChessGame.TeamColor.WHITE,ChessPiece.PieceType.PAWN);
@@ -59,6 +62,7 @@ public class ChessBoard {
         ChessPiece wKing = new ChessPiece(ChessGame.TeamColor.WHITE,ChessPiece.PieceType.KING);
         ChessPiece wQueen = new ChessPiece(ChessGame.TeamColor.WHITE,ChessPiece.PieceType.QUEEN);
 
+        //describe what positions those white peices should belong.
         ChessPosition wPawn1Pos = new ChessPosition(2,1);
         ChessPosition wPawn2Pos = new ChessPosition(2,2);
         ChessPosition wPawn3Pos = new ChessPosition(2,3);
@@ -76,6 +80,7 @@ public class ChessBoard {
         ChessPosition wKingPos = new ChessPosition(1,5);
         ChessPosition wQueenPos = new ChessPosition(1,4);
 
+        //add the pieces using a method from this Class. (addPiece shown above).
         addPiece(wPawn1Pos, wPawn1);
         addPiece(wPawn2Pos, wPawn2);
         addPiece(wPawn3Pos, wPawn3);
@@ -84,7 +89,6 @@ public class ChessBoard {
         addPiece(wPawn6Pos, wPawn6);
         addPiece(wPawn7Pos, wPawn7);
         addPiece(wPawn8Pos, wPawn8);
-
         addPiece(wRook1Pos, wRook1);
         addPiece(wRook2Pos, wRook2);
         addPiece(wKnight1Pos, wKnight1);
@@ -94,7 +98,7 @@ public class ChessBoard {
         addPiece(wKingPos, wKing);
         addPiece(wQueenPos, wQueen);
 
-
+        // Here is where I made the chess pieces for all the black pieces.
         ChessPiece bPawn1 = new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.PAWN);
         ChessPiece bPawn2 = new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.PAWN);
         ChessPiece bPawn3 = new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.PAWN);
@@ -112,6 +116,7 @@ public class ChessBoard {
         ChessPiece bKing = new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.KING);
         ChessPiece bQueen = new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.QUEEN);
 
+        //here I made chess positions for where all the black pieces should belong.
         ChessPosition bPawn1Pos = new ChessPosition(7,1);
         ChessPosition bPawn2Pos = new ChessPosition(7,2);
         ChessPosition bPawn3Pos = new ChessPosition(7,3);
@@ -129,7 +134,7 @@ public class ChessBoard {
         ChessPosition bKingPos = new ChessPosition(8,5);
         ChessPosition bQueenPos = new ChessPosition(8,4);
 
-
+        // Here I add all the black pieces to their correct positions using addPiece method of this class above
         addPiece(bPawn1Pos, bPawn1);
         addPiece(bPawn2Pos, bPawn2);
         addPiece(bPawn3Pos, bPawn3);
@@ -138,7 +143,6 @@ public class ChessBoard {
         addPiece(bPawn6Pos, bPawn6);
         addPiece(bPawn7Pos, bPawn7);
         addPiece(bPawn8Pos, bPawn8);
-
         addPiece(bRook1Pos, bRook1);
         addPiece(bRook2Pos, bRook2);
         addPiece(bKnight1Pos, bKnight1);
@@ -147,10 +151,14 @@ public class ChessBoard {
         addPiece(bBishop2Pos, bBishop2);
         addPiece(bKingPos, bKing);
         addPiece(bQueenPos, bQueen);
-
     }
 
 
+    /**
+     * This is where I make the overide equals method.
+     * @param o   the reference object with which to compare.
+     * @return
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
@@ -160,11 +168,19 @@ public class ChessBoard {
         return Objects.deepEquals(squares, that.squares);
     }
 
+    /**
+     * This is where I do the override hash code.
+     * @return
+     */
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(squares);
     }
 
+    /**
+     * this is where I override the to string method so that it becomes more readable.
+     * @return
+     */
     @Override
     public String toString() {
         return "ChessBoard{" +
