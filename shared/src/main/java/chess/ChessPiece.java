@@ -61,8 +61,20 @@ public class ChessPiece {
                 }
             }
             if (canGo) {
-                var possibleMove = new ChessMove(myPosition,possibleLoc,null);
-                ourList.add(possibleMove);
+                if (board.getPiece(myPosition).getPieceType() == PieceType.PAWN && ((myColor == ChessGame.TeamColor.WHITE && myPosition.getRow() == 7 && newRow == 8) || (myColor == ChessGame.TeamColor.BLACK && myPosition.getRow() == 2 && newRow == 1))){
+                    var possibleMove = new ChessMove(myPosition,possibleLoc,PieceType.BISHOP);
+                    ourList.add(possibleMove);
+                    possibleMove = new ChessMove(myPosition,possibleLoc,PieceType.QUEEN);
+                    ourList.add(possibleMove);
+                    possibleMove = new ChessMove(myPosition,possibleLoc,PieceType.ROOK);
+                    ourList.add(possibleMove);
+                    possibleMove = new ChessMove(myPosition,possibleLoc,PieceType.KNIGHT);
+                    ourList.add(possibleMove);
+                } else {
+                    var possibleMove = new ChessMove(myPosition,possibleLoc,null);
+                    ourList.add(possibleMove);
+                }
+
             }
 
             return noPeiceHere;
@@ -76,11 +88,7 @@ public class ChessPiece {
 
     private boolean checkIfSpotEmpty (ChessBoard board, int row, int col) {
         ChessPosition toCheck = new ChessPosition(row,col);
-        if (board.getPiece(toCheck) == null) {
-            return true;
-        } else {
-            return false;
-        }
+        return board.getPiece(toCheck) == null;
     }
 
     /**
@@ -198,6 +206,7 @@ public class ChessPiece {
                 if (currentRow == 7) {
                     boolean nooneInFront = checkIfSpotEmpty(board, currentRow-1, currentCol);
                     if (nooneInFront) {
+                        checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow-1,currentCol,myColor);
                         boolean nooneInFront2 = checkIfSpotEmpty(board, currentRow-2, currentCol);
                         if (nooneInFront2) {
                             checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow-2,currentCol,myColor);
@@ -213,7 +222,7 @@ public class ChessPiece {
                 if (myPosition.getColumn() != 1) {
                     ChessPosition leftDiagonalPos = new ChessPosition(myPosition.getRow()-1,myPosition.getColumn()-1);
                     ChessPiece leftDiagonalPiece = board.getPiece(leftDiagonalPos);
-                    if (leftDiagonalPiece != null && leftDiagonalPiece.getTeamColor()==ChessGame.TeamColor.BLACK) {
+                    if (leftDiagonalPiece != null && leftDiagonalPiece.getTeamColor()==ChessGame.TeamColor.WHITE) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol-1,myColor);
                     }
                 }
@@ -221,7 +230,7 @@ public class ChessPiece {
                 if (myPosition.getColumn() != 8) {
                     ChessPosition rightDiagonalPos = new ChessPosition(myPosition.getRow()-1,myPosition.getColumn()+1);
                     ChessPiece rightDiagonalPiece = board.getPiece(rightDiagonalPos);
-                    if (rightDiagonalPiece != null && rightDiagonalPiece.getTeamColor()==ChessGame.TeamColor.BLACK) {
+                    if (rightDiagonalPiece != null && rightDiagonalPiece.getTeamColor()==ChessGame.TeamColor.WHITE) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol+1,myColor);
                     }
 
