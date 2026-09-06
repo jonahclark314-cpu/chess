@@ -47,6 +47,32 @@ public class ChessPiece {
         return type;
     }
 
+    private boolean checkIfPeiceThereAndGo(ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, int newRow, int newCol, ChessGame.TeamColor myColor) {
+        if (newRow >= 1 && newRow <= 8 && newCol >= 1 && newCol <= 8){
+            boolean noPeiceHere = true;
+            boolean canGo = true;
+            var possibleLoc = new ChessPosition(newRow,newCol);
+            ChessPiece peiceThere = board.getPiece(possibleLoc);
+            if (peiceThere != null){
+                ChessGame.TeamColor colorThere = peiceThere.getTeamColor();
+                noPeiceHere=false;
+                if (myColor == colorThere) {
+                    canGo = false;
+                }
+            }
+            if (canGo) {
+                var possibleMove = new ChessMove(myPosition,possibleLoc,null);
+                ourList.add(possibleMove);
+            }
+
+            return noPeiceHere;
+        } else {
+            return false;
+        }
+
+
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -76,74 +102,109 @@ public class ChessPiece {
 
                 if (newLeftRow >= 1 && newLeftRow <=8) {
                     if (newUpCol >= 1 && newUpCol <=8 && UpLeft) {
-                        boolean canGo = true;
-                        var possibleLoc = new ChessPosition(newLeftRow,newUpCol);
-                        ChessPiece peiceThere = board.getPiece(possibleLoc);
-                        if (peiceThere != null){
-                            ChessGame.TeamColor colorThere = peiceThere.getTeamColor();
-                            UpLeft = false;
-                            if (myColor == colorThere) {
-                                canGo = false;
-                            }
-                        }
-                        if (canGo) {
-                            var possibleMove = new ChessMove(myPosition,possibleLoc,null);
-                            ourList.add(possibleMove);
-                        }
+                        UpLeft = checkIfPeiceThereAndGo(board,ourList,myPosition,newLeftRow,newUpCol,myColor);
                     }
+
                     if (newDownCol >= 1 && newDownCol <=8 && DownLeft) {
-                        boolean canGo = true;
-                        var possibleLoc = new ChessPosition(newLeftRow,newDownCol);
-                        ChessPiece peiceThere = board.getPiece(possibleLoc);
-                        if (peiceThere != null){
-                            ChessGame.TeamColor colorThere = peiceThere.getTeamColor();
-                            DownLeft = false;
-                            if (myColor == colorThere) {
-                                canGo = false;
-                            }
-                        }
-                        if (canGo) {
-                            var possibleMove = new ChessMove(myPosition,possibleLoc,null);
-                            ourList.add(possibleMove);
-                        }
+                        DownLeft = checkIfPeiceThereAndGo(board,ourList,myPosition,newLeftRow,newDownCol,myColor);
                     }
                 }
 
                 if (newRightRow >= 1 && newRightRow <=8) {
                     if (newUpCol >= 1 && newUpCol <=8 && UpRight) {
-                        boolean canGo = true;
-                        var possibleLoc = new ChessPosition(newRightRow,newUpCol);
-                        ChessPiece peiceThere = board.getPiece(possibleLoc);
-                        if (peiceThere != null){
-                            ChessGame.TeamColor colorThere = peiceThere.getTeamColor();
-                            UpRight = false;
-                            if (myColor == colorThere) {
-                                canGo = false;
-                            }
-                        }
-                        if (canGo) {
-                            var possibleMove = new ChessMove(myPosition,possibleLoc,null);
-                            ourList.add(possibleMove);
-                        }
+                        UpRight = checkIfPeiceThereAndGo(board,ourList,myPosition,newRightRow,newUpCol,myColor);
                     }
                     if (newDownCol >= 1 && newDownCol <=8 && DownRight) {
-                        boolean canGo = true;
-                        var possibleLoc = new ChessPosition(newRightRow,newDownCol);
-                        ChessPiece peiceThere = board.getPiece(possibleLoc);
-                        if (peiceThere != null){
-                            ChessGame.TeamColor colorThere = peiceThere.getTeamColor();
-                            DownRight = false;
-                            if (myColor == colorThere) {
-                                canGo = false;
-                            }
-                        }
-                        if (canGo) {
-                            var possibleMove = new ChessMove(myPosition,possibleLoc,null);
-                            ourList.add(possibleMove);
-                        }
+                        DownRight = checkIfPeiceThereAndGo(board,ourList,myPosition,newRightRow,newDownCol,myColor);
+
                     }
                 }
             }
+        }
+
+        if (piece.getPieceType() == PieceType.KING) {
+            for (int i=0; i<3; i++) {
+                for (int j=0; j<3; j++) {
+                    int newRow = myPosition.getRow() + i - 1;
+                    int newCol = myPosition.getColumn() + j - 1;
+                    if (newRow <=8 && newRow >=1 && newCol <=8 && newCol >=1 && !(i == 1 && j == 1)) {
+                        checkIfPeiceThereAndGo(board,ourList,myPosition,newRow,newCol,myColor);
+                    }
+                }
+            }
+        }
+
+        if (piece.getPieceType() == PieceType.KNIGHT) {
+            checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol+2,myColor);
+            checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol-2,myColor);
+            checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+2,currentCol+1,myColor);
+            checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+2,currentCol-1,myColor);
+            checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol+2,myColor);
+            checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol-2,myColor);
+            checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-2,currentCol+1,myColor);
+            checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-2,currentCol-1,myColor);
+        }
+
+        if (piece.getPieceType() == PieceType.PAWN) {
+            if (myColor == ChessGame.TeamColor.WHITE) {
+                if (currentRow == 2) {
+                    boolean nooneInFront;
+                    nooneInFront = checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+1,currentCol,myColor);
+                    if (nooneInFront) {
+                        checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+2,currentCol,myColor);
+                    }
+                } else {
+                    checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+1,currentCol,myColor);
+                }
+
+                if (myPosition.getColumn() != 1) {
+                    ChessPosition leftDiagonalPos = new ChessPosition(myPosition.getRow()-1,myPosition.getColumn()+1);
+                    ChessPiece leftDiagonalPiece = board.getPiece(leftDiagonalPos);
+                    if (leftDiagonalPiece != null && leftDiagonalPiece.getTeamColor()==ChessGame.TeamColor.BLACK) {
+                        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol+1,myColor);
+                    }
+                }
+
+                if (myPosition.getColumn() != 8) {
+                    ChessPosition rightDiagonalPos = new ChessPosition(myPosition.getRow()+1,myPosition.getColumn()+1);
+                    ChessPiece rightDiagonalPiece = board.getPiece(rightDiagonalPos);
+                    if (rightDiagonalPiece != null && rightDiagonalPiece.getTeamColor()==ChessGame.TeamColor.BLACK) {
+                        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol+1,myColor);
+                    }
+
+                }
+
+            } else { // team color is BLACK
+                if (currentRow == 2) {
+                    boolean nooneInFront;
+                    nooneInFront = checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+1,currentCol,myColor);
+                    if (nooneInFront) {
+                        checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+2,currentCol,myColor);
+                    }
+                } else {
+                    checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+1,currentCol,myColor);
+                }
+
+                if (myPosition.getColumn() != 1) {
+                    ChessPosition leftDiagonalPos = new ChessPosition(myPosition.getRow()-1,myPosition.getColumn()+1);
+                    ChessPiece leftDiagonalPiece = board.getPiece(leftDiagonalPos);
+                    if (leftDiagonalPiece != null && leftDiagonalPiece.getTeamColor()==ChessGame.TeamColor.BLACK) {
+                        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol+1,myColor);
+                    }
+                }
+
+                if (myPosition.getColumn() != 8) {
+                    ChessPosition rightDiagonalPos = new ChessPosition(myPosition.getRow()+1,myPosition.getColumn()+1);
+                    ChessPiece rightDiagonalPiece = board.getPiece(rightDiagonalPos);
+                    if (rightDiagonalPiece != null && rightDiagonalPiece.getTeamColor()==ChessGame.TeamColor.BLACK) {
+                        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol+1,myColor);
+                    }
+
+                }
+
+            }
+
+
         }
 
         return ourList;
