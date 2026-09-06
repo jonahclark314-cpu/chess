@@ -73,6 +73,16 @@ public class ChessPiece {
 
     }
 
+
+    private boolean checkIfSpotEmpty (ChessBoard board, int row, int col) {
+        ChessPosition toCheck = new ChessPosition(row,col);
+        if (board.getPiece(toCheck) == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -148,20 +158,26 @@ public class ChessPiece {
         if (piece.getPieceType() == PieceType.PAWN) {
             if (myColor == ChessGame.TeamColor.WHITE) {
                 if (currentRow == 2) {
-                    boolean nooneInFront;
-                    nooneInFront = checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+1,currentCol,myColor);
+                    boolean nooneInFront = checkIfSpotEmpty(board, currentRow+1, currentCol);
                     if (nooneInFront) {
-                        checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+2,currentCol,myColor);
+                        checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+1,currentCol,myColor);
+                        boolean nooneInFront2 = checkIfSpotEmpty(board, currentRow+2, currentCol);
+                        if (nooneInFront2) {
+                            checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+2,currentCol,myColor);
+                        }
                     }
                 } else {
-                    checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+1,currentCol,myColor);
+                    boolean nooneInFront = checkIfSpotEmpty(board, currentRow+1, currentCol);
+                    if (nooneInFront) {
+                        checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+1,currentCol,myColor);
+                    }
                 }
 
                 if (myPosition.getColumn() != 1) {
-                    ChessPosition leftDiagonalPos = new ChessPosition(myPosition.getRow()-1,myPosition.getColumn()+1);
+                    ChessPosition leftDiagonalPos = new ChessPosition(myPosition.getRow()+1,myPosition.getColumn()-1);
                     ChessPiece leftDiagonalPiece = board.getPiece(leftDiagonalPos);
                     if (leftDiagonalPiece != null && leftDiagonalPiece.getTeamColor()==ChessGame.TeamColor.BLACK) {
-                        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol+1,myColor);
+                        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol-1,myColor);
                     }
                 }
 
@@ -173,31 +189,40 @@ public class ChessPiece {
                     }
 
                 }
+
+
+
+
 
             } else { // team color is BLACK
-                if (currentRow == 2) {
-                    boolean nooneInFront;
-                    nooneInFront = checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+1,currentCol,myColor);
+                if (currentRow == 7) {
+                    boolean nooneInFront = checkIfSpotEmpty(board, currentRow-1, currentCol);
                     if (nooneInFront) {
-                        checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+2,currentCol,myColor);
+                        boolean nooneInFront2 = checkIfSpotEmpty(board, currentRow-2, currentCol);
+                        if (nooneInFront2) {
+                            checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow-2,currentCol,myColor);
+                        }
                     }
                 } else {
-                    checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+1,currentCol,myColor);
+                    boolean nooneInFront = checkIfSpotEmpty(board, currentRow-1, currentCol);
+                    if (nooneInFront) {
+                        checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow - 1, currentCol, myColor);
+                    }
                 }
 
                 if (myPosition.getColumn() != 1) {
-                    ChessPosition leftDiagonalPos = new ChessPosition(myPosition.getRow()-1,myPosition.getColumn()+1);
+                    ChessPosition leftDiagonalPos = new ChessPosition(myPosition.getRow()-1,myPosition.getColumn()-1);
                     ChessPiece leftDiagonalPiece = board.getPiece(leftDiagonalPos);
                     if (leftDiagonalPiece != null && leftDiagonalPiece.getTeamColor()==ChessGame.TeamColor.BLACK) {
-                        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol+1,myColor);
+                        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol-1,myColor);
                     }
                 }
 
                 if (myPosition.getColumn() != 8) {
-                    ChessPosition rightDiagonalPos = new ChessPosition(myPosition.getRow()+1,myPosition.getColumn()+1);
+                    ChessPosition rightDiagonalPos = new ChessPosition(myPosition.getRow()-1,myPosition.getColumn()+1);
                     ChessPiece rightDiagonalPiece = board.getPiece(rightDiagonalPos);
                     if (rightDiagonalPiece != null && rightDiagonalPiece.getTeamColor()==ChessGame.TeamColor.BLACK) {
-                        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol+1,myColor);
+                        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol+1,myColor);
                     }
 
                 }
