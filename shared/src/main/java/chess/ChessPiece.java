@@ -2,7 +2,6 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -106,7 +105,7 @@ public class ChessPiece {
         int currentCol = myPosition.getColumn();
 
 
-        if (piece.getPieceType() == PieceType.BISHOP) {
+        if (piece.getPieceType() == PieceType.BISHOP || piece.getPieceType() == PieceType.QUEEN) {
             boolean UpLeft = true;
             boolean UpRight = true;
             boolean DownLeft = true;
@@ -241,7 +240,7 @@ public class ChessPiece {
 
         }
 
-        if (piece.getPieceType() == PieceType.ROOK) {
+        if (piece.getPieceType() == PieceType.ROOK || piece.getPieceType() == PieceType.QUEEN) {
             boolean Up = true;
             boolean Right = true;
             boolean Left = true;
@@ -279,6 +278,21 @@ public class ChessPiece {
     @Override
     public String toString() {
         return "ChessPiece{" + type + '}';
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return type == that.type && pieceColor == that.pieceColor;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, pieceColor);
     }
 
 }
