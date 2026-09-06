@@ -241,6 +241,35 @@ public class ChessPiece {
 
         }
 
+        if (piece.getPieceType() == PieceType.ROOK) {
+            boolean Up = true;
+            boolean Right = true;
+            boolean Left = true;
+            boolean Down = true;
+
+            for (int i = 1; i < 8 ;i++) {
+                int newLeftRow = currentRow - i;
+                int newRightRow = currentRow + i;
+                int newUpCol = currentCol + i;
+                int newDownCol = currentCol - i;
+
+                if (newLeftRow >= 1 && newLeftRow <=8 && Left) {
+                    Left = checkIfPeiceThereAndGo(board,ourList,myPosition,newLeftRow,currentCol,myColor);
+                }
+                if (newRightRow >= 1 && newRightRow <=8 && Right) {
+                    Right = checkIfPeiceThereAndGo(board,ourList,myPosition,newRightRow,currentCol,myColor);
+                }
+                if (newUpCol >= 1 && newUpCol <=8 && Up) {
+                    Up = checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow,newUpCol,myColor);
+                }
+                if (newDownCol >= 1 && newDownCol <=8 && Down) {
+                    Down = checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow,newDownCol,myColor);
+                }
+
+            }
+        }
+
+
         return ourList;
     }
 
