@@ -16,11 +16,7 @@ public class ChessPiece {
     private final PieceType type;
     private final ChessGame.TeamColor pieceColor;
 
-    /**
-     * This is the instantiation of this class. Must provide the following parameters.
-     * @param pieceColor either black or white
-     * @param type Pawn, Rook, Knight, Bishop, Queen, or King.
-     */
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.type = type;
         this.pieceColor = pieceColor;

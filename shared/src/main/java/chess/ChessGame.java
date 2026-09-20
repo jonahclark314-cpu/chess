@@ -10,6 +10,8 @@ import java.util.Collection;
  */
 public class ChessGame {
 
+    ChessBoard board;
+
     public ChessGame() {
 
     }
@@ -66,7 +68,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return true;
     }
 
     /**
@@ -96,7 +98,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
