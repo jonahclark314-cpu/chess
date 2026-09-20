@@ -12,10 +12,13 @@ import java.util.Objects;
 public class ChessBoard {
 
     //Here is where I make the grid for the chessPieces to be.
-    ChessPiece[][] squares = new ChessPiece[8][8];
+    private ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
         
     }
+
+
+
 
     /**
      * Adds a chess piece to the chessboard
@@ -26,6 +29,11 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
         squares[position.getRow()-1][position.getColumn()-1] = piece;
     }
+
+    public void removePiece(ChessPosition position) {
+        squares[position.getRow()-1][position.getColumn()-1] = null;
+    }
+
 
     /**
      * Gets a chess piece on the chessboard
@@ -157,7 +165,7 @@ public class ChessBoard {
     /**
      * This is where I make the overide equals method.
      * @param o   the reference object with which to compare.
-     * @return
+     * @return returns true if they are equal
      */
     @Override
     public boolean equals(Object o) {
@@ -170,21 +178,40 @@ public class ChessBoard {
 
     /**
      * This is where I do the override hash code.
-     * @return
+     * @return returns integer
      */
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(squares);
     }
 
+
+    private String format(Object square) {
+        if (square == null) {
+            return " ";
+        } else {
+            return square.toString();
+        }
+    }
+
+
     /**
      * this is where I override the to string method so that it becomes more readable.
-     * @return
+     * @return returns string to print
      */
     @Override
     public String toString() {
-        return "ChessBoard{" +
-                "squares=" + Arrays.toString(squares) +
+        return "ChessBoard{" + "\n" +
+                "|" + format(squares[7][0]) + "|" + format(squares[7][1]) + "|" + format(squares[7][2]) +"|" + format(squares[7][3]) +"|" + format(squares[7][4]) +"|" + format(squares[7][5]) +"|" + format(squares[7][6]) +"|" + format(squares[7][7]) +"|" + "\n" +
+                "|" + format(squares[6][0]) + "|" + format(squares[6][1]) + "|" + format(squares[6][2]) +"|" + format(squares[6][3]) +"|" + format(squares[6][4]) +"|" + format(squares[6][5]) +"|" + format(squares[6][6]) +"|" + format(squares[6][7]) +"|" + "\n" +
+                "|" + format(squares[5][0]) + "|" + format(squares[5][1]) + "|" + format(squares[5][2]) +"|" + format(squares[5][3]) +"|" + format(squares[5][4]) +"|" + format(squares[5][5]) +"|" + format(squares[5][6]) +"|" + format(squares[5][7]) +"|" + "\n" +
+                "|" + format(squares[4][0]) + "|" + format(squares[4][1]) + "|" + format(squares[4][2]) +"|" + format(squares[4][3]) +"|" + format(squares[4][4]) +"|" + format(squares[4][5]) +"|" + format(squares[4][6]) +"|" + format(squares[4][7]) +"|" + "\n" +
+                "|" + format(squares[3][0]) + "|" + format(squares[3][1]) + "|" + format(squares[3][2]) +"|" + format(squares[3][3]) +"|" + format(squares[3][4]) +"|" + format(squares[3][5]) +"|" + format(squares[3][6]) +"|" + format(squares[3][7]) +"|" + "\n" +
+                "|" + format(squares[2][0]) + "|" + format(squares[2][1]) + "|" + format(squares[2][2]) +"|" + format(squares[2][3]) +"|" + format(squares[2][4]) +"|" + format(squares[2][5]) +"|" + format(squares[2][6]) +"|" + format(squares[2][7]) +"|" + "\n" +
+                "|" + format(squares[1][0]) + "|" + format(squares[1][1]) + "|" + format(squares[1][2]) +"|" + format(squares[1][3]) +"|" + format(squares[1][4]) +"|" + format(squares[1][5]) +"|" + format(squares[1][6]) +"|" + format(squares[1][7]) +"|" + "\n" +
+                "|" + format(squares[0][0]) + "|" + format(squares[0][1]) + "|" + format(squares[0][2]) +"|" + format(squares[0][3]) +"|" + format(squares[0][4]) +"|" + format(squares[0][5]) +"|" + format(squares[0][6]) +"|" + format(squares[0][7]) +"|" + "\n" +
+
                 '}';
     }
+
 }

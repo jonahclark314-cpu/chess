@@ -349,7 +349,41 @@ public class ChessPiece {
      */
     @Override
     public String toString() {
-        return "ChessPiece{" + type + '}';
+        if (getTeamColor()== ChessGame.TeamColor.BLACK) {
+            if (getPieceType() == PieceType.PAWN) {
+                return "p";
+            } else if (getPieceType() == PieceType.ROOK){
+                return "r";
+            }else if (getPieceType() == PieceType.KNIGHT) {
+                return "n";
+            }else if (getPieceType()==PieceType.BISHOP){
+                return"b";
+            }else if (getPieceType()==PieceType.QUEEN) {
+                return "q";
+            } else if (getPieceType() == PieceType.KING){
+                return "k";
+            } else {
+                return ".";
+            }
+        }
+        if (getTeamColor()== ChessGame.TeamColor.WHITE) {
+            if (getPieceType() == PieceType.PAWN) {
+                return "P";
+            } else if (getPieceType() == PieceType.ROOK){
+                return "R";
+            }else if (getPieceType() == PieceType.KNIGHT) {
+                return "N";
+            }else if (getPieceType()==PieceType.BISHOP){
+                return"B";
+            }else if (getPieceType()==PieceType.QUEEN) {
+                return "Q";
+            } else if (getPieceType() == PieceType.KING){
+                return "K";
+            } else {
+                return ".";
+            }
+        }
+        return ".";
     }
 
     /**
