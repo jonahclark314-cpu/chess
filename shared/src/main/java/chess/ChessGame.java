@@ -73,6 +73,9 @@ public class ChessGame {
                     break;
                 }
             }
+        } else {
+            System.out.println("THROW INVALID MOVE EXCEPTION");
+            throw new InvalidMoveException("This move was not valid!");
         }
 
         if (this.board.getPiece(move.getStartPosition()).getTeamColor() != getTeamTurn()){
@@ -84,7 +87,12 @@ public class ChessGame {
             throw new InvalidMoveException("This move was not valid!");
         }
         else {
+
             ChessPiece piece = this.board.getPiece(move.getStartPosition());
+            ChessPiece originalPiece = this.board.getPiece(move.getStartPosition());
+            if (move.getPromotionPiece() != null) {
+                piece = new ChessPiece(originalPiece.getTeamColor(),move.getPromotionPiece());
+            }
             ChessPiece oldPiece = this.board.getPiece(move.getEndPosition());
             this.board.removePiece(move.getStartPosition());
             this.board.removePiece(move.getEndPosition());
@@ -95,7 +103,7 @@ public class ChessGame {
                 System.out.println("THROW INVALID MOVE EXCEPTION");
                 this.board.removePiece(move.getStartPosition());
                 this.board.removePiece(move.getEndPosition());
-                this.board.addPiece(move.getStartPosition(), piece);
+                this.board.addPiece(move.getStartPosition(), originalPiece);
                 this.board.addPiece(move.getEndPosition(), oldPiece);
                 throw new InvalidMoveException("This move was not valid!");
             } else {
