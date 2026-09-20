@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -54,7 +55,15 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        return this.board.getPiece(startPosition).pieceMoves(this.board,startPosition);
+        Collection<ChessMove> possibleMoves = this.board.getPiece(startPosition).pieceMoves(this.board,startPosition);
+        Collection<ChessMove> actualPossibleMoves = new ArrayList<>();
+
+        for (ChessMove move : possibleMoves) {
+            if (notInCheckAfterMove(move, this.board.getPiece(startPosition).getTeamColor())) {
+                actualPossibleMoves.add(move);
+            }
+        }
+        return actualPossibleMoves;
     }
 
     /**
@@ -151,7 +160,7 @@ public class ChessGame {
                 for (int j = 1; j <= 8; j++) {
                     ChessPosition currentCheck = new ChessPosition(i,j);
                     if (board.getPiece(currentCheck) != null && board.getPiece(currentCheck).getTeamColor() == TeamColor.WHITE){
-                        Collection<ChessMove> ourList = validMoves(currentCheck);
+                        Collection<ChessMove> ourList = this.board.getPiece(currentCheck).pieceMoves(this.board,currentCheck);
                         for (ChessMove move : ourList) {
                             ChessPosition endPosition = move.getEndPosition();
                             if (kingLocation.equals(endPosition)) {
@@ -171,7 +180,7 @@ public class ChessGame {
                 for (int j = 1; j <= 8; j++) {
                     ChessPosition currentCheck = new ChessPosition(i,j);
                     if (board.getPiece(currentCheck) != null && board.getPiece(currentCheck).getTeamColor() == TeamColor.BLACK){
-                        Collection<ChessMove> ourList = validMoves(currentCheck);
+                        Collection<ChessMove> ourList = this.board.getPiece(currentCheck).pieceMoves(this.board,currentCheck);
                         for (ChessMove move : ourList) {
                             ChessPosition endPosition = move.getEndPosition();
                             if (kingLocation.equals(endPosition)) {
@@ -186,7 +195,7 @@ public class ChessGame {
 
     }
 
-    public boolean inCheckAfterMove(ChessMove move,TeamColor teamColor) {
+    public boolean notInCheckAfterMove(ChessMove move,TeamColor teamColor) {
         ChessPiece piece = this.board.getPiece(move.getStartPosition());
         ChessPiece oldPiece = this.board.getPiece(move.getEndPosition());
         this.board.removePiece(move.getStartPosition());
@@ -216,9 +225,9 @@ public class ChessGame {
                 for (int j = 1; j <= 8; j++) {
                     ChessPosition currentCheck = new ChessPosition(i, j);
                     if (board.getPiece(currentCheck) != null && board.getPiece(currentCheck).getTeamColor() == teamColor) {
-                        Collection<ChessMove> ourList = validMoves(currentCheck);
+                        Collection<ChessMove> ourList = this.board.getPiece(currentCheck).pieceMoves(this.board,currentCheck);
                         for (ChessMove move : ourList) {
-                            if (inCheckAfterMove(move, teamColor)) {
+                            if (notInCheckAfterMove(move, teamColor)) {
                                 return false;
                             }
                         }
@@ -245,9 +254,9 @@ public class ChessGame {
                 for (int j = 1; j <= 8; j++) {
                     ChessPosition currentCheck = new ChessPosition(i, j);
                     if (board.getPiece(currentCheck) != null && board.getPiece(currentCheck).getTeamColor() == teamColor) {
-                        Collection<ChessMove> ourList = validMoves(currentCheck);
+                        Collection<ChessMove> ourList = this.board.getPiece(currentCheck).pieceMoves(this.board,currentCheck);
                         for (ChessMove move : ourList) {
-                            if (inCheckAfterMove(move, teamColor)) {
+                            if (notInCheckAfterMove(move, teamColor)) {
                                 return false;
                             }
                         }
