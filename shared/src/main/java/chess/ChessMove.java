@@ -42,6 +42,65 @@ public class ChessMove {
         }
     }
 
+    public boolean looksLikeShouldBeEnPassant (ChessBoard board) {
+        int horizontalMovement = Math.abs(this.getStartPosition().getColumn() - this.getEndPosition().getColumn());
+        int verticalMovement = Math.abs(this.getStartPosition().getRow() - this.getEndPosition().getRow());
+        ChessPiece currentPiece = board.getPiece(this.getStartPosition());
+        ChessPiece pieceAtNewLocation = board.getPiece(this.getEndPosition());
+        ChessPosition enPassantPawnPosition = new ChessPosition(this.getStartPosition().getRow(),this.getEndPosition().getColumn());
+        ChessPiece enPassantPawn = board.getPiece(enPassantPawnPosition);
+        return pieceAtNewLocation == null && currentPiece.getPieceType() == ChessPiece.PieceType.PAWN && enPassantPawn != null && enPassantPawn.getPieceType() == ChessPiece.PieceType.PAWN && horizontalMovement == 1 && verticalMovement==1;
+    }
+
+    public boolean isAEnPassant (ChessBoard board, ChessMove lastMove) {
+        System.out.println(" ");
+        System.out.println("Testing En Passant");
+
+        if (lastMove == null) {
+            System.out.println("it was null!");
+            System.out.println(" ");
+            return false;
+        }
+        int newPawnColumnNumber = this.endPosition.getColumn();
+        int oldPawnColumnNumber = this.startPosition.getColumn();
+
+        int lastMoveDistance = lastMove.getStartPosition().getRow() - lastMove.getEndPosition().getRow();
+        int lastMoveColumnNumber = lastMove.getStartPosition().getColumn();
+        ChessPiece enPassantPawn = board.getPiece(lastMove.getEndPosition());
+
+        if (board.getPiece(this.startPosition).getPieceType() == ChessPiece.PieceType.PAWN && board.getPiece(this.endPosition) == null && enPassantPawn.getPieceType() == ChessPiece.PieceType.PAWN && Math.abs(lastMoveDistance) == 2 && newPawnColumnNumber == lastMoveColumnNumber && oldPawnColumnNumber != newPawnColumnNumber ) {
+
+            System.out.println("IS En Passant");
+//            System.out.print("lastMove: ");
+//            System.out.println(lastMove);
+//            System.out.print("Current move: ");
+//            System.out.println(this.toString());
+//            System.out.print("current mover: ");
+//            System.out.println(board.getPiece(this.startPosition));
+//            System.out.print("taking the piece: ");
+//            System.out.println(board.getPiece(lastMove.getEndPosition()));
+//
+//            System.out.println(" ");
+
+            return true;
+        }
+        else {
+
+            System.out.println("is NOT En Passant");
+//            System.out.print("lastMove: ");
+//            System.out.println(lastMove);
+//            System.out.print("Current move: ");
+//            System.out.println(this.toString());
+//            System.out.print("current mover: ");
+//            System.out.println(board.getPiece(this.startPosition));
+//            System.out.print("taking the piece: ");
+//            System.out.println(board.getPiece(lastMove.getEndPosition()));
+//            System.out.println(" ");
+//
+            return false;
+        }
+    }
+
     /**
      * @return ChessPosition of starting location
      */

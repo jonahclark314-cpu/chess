@@ -294,7 +294,7 @@ public class ChessPiece {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol+1,myColor);
                     }
 
-                    if (rightPiece != null && rightDiagonalPiece == null && rightPiece.getPieceType() == PieceType.PAWN && rightPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                    if (rightPiece != null && currentRow == 5 && rightDiagonalPiece == null && rightPiece.getPieceType() == PieceType.PAWN && rightPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol+1,myColor);
                     }
 
@@ -340,7 +340,7 @@ public class ChessPiece {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol-1,myColor);
                     }
 
-                    if (leftPiece != null && leftDiagonalPiece == null && leftPiece.getPieceType() == PieceType.PAWN && leftPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                    if (leftPiece != null && currentRow == 4 && leftDiagonalPiece == null && leftPiece.getPieceType() == PieceType.PAWN && leftPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol-1,myColor);
                     }
 

@@ -46,6 +46,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
+        System.out.println(this.board);
         currentTurn = team;
     }
 
@@ -69,6 +70,8 @@ public class ChessGame {
         Collection<ChessMove> actualPossibleMoves = new ArrayList<>();
 
         for (ChessMove move : possibleMoves) {
+            System.out.print("LAST MOVE: ");
+            System.out.println(getLastMove());
             if (move.isACastle(this.board)) {
                 if (!isInCheck(this.board.getPiece(startPosition).getTeamColor()) && notInCheckAfterMove(move, this.board.getPiece(startPosition).getTeamColor())) {
 
@@ -79,6 +82,17 @@ public class ChessGame {
                     }
 
                 }
+            }
+            else if (move.isAEnPassant(this.board, getLastMove())) {
+                System.out.println(getLastMove());
+                System.out.println("hello worlds");
+
+                if (notInCheckAfterMove(move, this.board.getPiece(startPosition).getTeamColor())) {
+                    actualPossibleMoves.add(move);
+                }
+            }
+            else if (move.looksLikeShouldBeEnPassant(this.board)) {
+                continue;
             }
             else if (notInCheckAfterMove(move, this.board.getPiece(startPosition).getTeamColor())) {
                 actualPossibleMoves.add(move);
@@ -141,6 +155,19 @@ public class ChessGame {
                     this.board.removePiece(rook);
                     this.board.addPiece(rookNewPosition,rookPiece);
                 }
+                if (piece.getTeamColor() == TeamColor.BLACK) {
+                    setTeamTurn(TeamColor.WHITE);
+                } else {
+                    setTeamTurn(TeamColor.BLACK);
+                }
+                piece.setHasMoved();
+                setLastMove(move);
+            }
+            else if (move.isAEnPassant(this.board,getLastMove())){
+                ChessPosition enPassantPawn = lastMove.getEndPosition();
+                this.board.removePiece(move.getStartPosition());
+                this.board.addPiece(move.getEndPosition(), piece);
+                this.board.removePiece(enPassantPawn);
                 if (piece.getTeamColor() == TeamColor.BLACK) {
                     setTeamTurn(TeamColor.WHITE);
                 } else {
