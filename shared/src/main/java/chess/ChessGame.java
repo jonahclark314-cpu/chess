@@ -111,23 +111,27 @@ public class ChessGame {
 
             ChessPiece piece = this.board.getPiece(move.getStartPosition());
             ChessPiece originalPiece = this.board.getPiece(move.getStartPosition());
-            if (move.getPromotionPiece() != null) {
-                piece = new ChessPiece(originalPiece.getTeamColor(),move.getPromotionPiece());
-            }
-            ChessPiece oldPiece = this.board.getPiece(move.getEndPosition());
-            this.board.removePiece(move.getStartPosition());
-            this.board.removePiece(move.getEndPosition());
-            this.board.addPiece(move.getEndPosition(), piece);
-            boolean resultsInCheck = isInCheck(piece.getTeamColor());
-
-            if (resultsInCheck) {
-                System.out.println("THROW INVALID MOVE EXCEPTION");
-                this.board.removePiece(move.getStartPosition());
-                this.board.removePiece(move.getEndPosition());
-                this.board.addPiece(move.getStartPosition(), originalPiece);
-                this.board.addPiece(move.getEndPosition(), oldPiece);
-                throw new InvalidMoveException("This move was not valid!");
-            } else {
+            if (move.isACastle(this.board)) {
+                if (move.getEndPosition().getColumn()==3) {
+                    ChessPosition rook = new ChessPosition(move.getStartPosition().getRow(),1);
+                    ChessPosition rookNewPosition = new ChessPosition(move.getStartPosition().getRow(),4);
+                    ChessPiece rookPiece = this.board.getPiece(rook);
+                    this.board.removePiece(move.getStartPosition());
+                    this.board.removePiece(move.getEndPosition());
+                    this.board.addPiece(move.getEndPosition(), piece);
+                    this.board.removePiece(rook);
+                    this.board.addPiece(rookNewPosition,rookPiece);
+                }
+                if (move.getEndPosition().getColumn() == 7) {
+                    ChessPosition rook = new ChessPosition(move.getStartPosition().getRow(),8);
+                    ChessPosition rookNewPosition = new ChessPosition(move.getStartPosition().getRow(),6);
+                    ChessPiece rookPiece = this.board.getPiece(rook);
+                    this.board.removePiece(move.getStartPosition());
+                    this.board.removePiece(move.getEndPosition());
+                    this.board.addPiece(move.getEndPosition(), piece);
+                    this.board.removePiece(rook);
+                    this.board.addPiece(rookNewPosition,rookPiece);
+                }
                 if (piece.getTeamColor() == TeamColor.BLACK) {
                     setTeamTurn(TeamColor.WHITE);
                 } else {
@@ -135,6 +139,33 @@ public class ChessGame {
                 }
                 piece.setHasMoved();
             }
+            else {
+                if (move.getPromotionPiece() != null) {
+                    piece = new ChessPiece(originalPiece.getTeamColor(),move.getPromotionPiece());
+                }
+                ChessPiece oldPiece = this.board.getPiece(move.getEndPosition());
+                this.board.removePiece(move.getStartPosition());
+                this.board.removePiece(move.getEndPosition());
+                this.board.addPiece(move.getEndPosition(), piece);
+                boolean resultsInCheck = isInCheck(piece.getTeamColor());
+
+                if (resultsInCheck) {
+                    System.out.println("THROW INVALID MOVE EXCEPTION");
+                    this.board.removePiece(move.getStartPosition());
+                    this.board.removePiece(move.getEndPosition());
+                    this.board.addPiece(move.getStartPosition(), originalPiece);
+                    this.board.addPiece(move.getEndPosition(), oldPiece);
+                    throw new InvalidMoveException("This move was not valid!");
+                } else {
+                    if (piece.getTeamColor() == TeamColor.BLACK) {
+                        setTeamTurn(TeamColor.WHITE);
+                    } else {
+                        setTeamTurn(TeamColor.BLACK);
+                    }
+                    piece.setHasMoved();
+                }
+            }
+
         }
     }
 
