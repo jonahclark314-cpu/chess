@@ -15,11 +15,13 @@ public class ChessGame {
     ChessBoard board;
 
     TeamColor currentTurn;
+    private ChessMove lastMove;
 
     public ChessGame() {
-        currentTurn = TeamColor.WHITE;
+        this.currentTurn = TeamColor.WHITE;
         this.board = new ChessBoard();
         this.board.resetBoard();
+        this.lastMove = null;
     }
 
     /**
@@ -29,6 +31,13 @@ public class ChessGame {
         return currentTurn;
     }
 
+    public ChessMove getLastMove() {
+        return this.lastMove;
+    }
+
+    public void setLastMove(ChessMove move) {
+        this.lastMove = move;
+    }
 
 
     /**
@@ -138,6 +147,7 @@ public class ChessGame {
                     setTeamTurn(TeamColor.BLACK);
                 }
                 piece.setHasMoved();
+                setLastMove(move);
             }
             else {
                 if (move.getPromotionPiece() != null) {
@@ -163,10 +173,12 @@ public class ChessGame {
                         setTeamTurn(TeamColor.BLACK);
                     }
                     piece.setHasMoved();
+                    setLastMove(move);
                 }
             }
 
         }
+
     }
 
 

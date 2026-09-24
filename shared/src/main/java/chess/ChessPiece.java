@@ -270,16 +270,31 @@ public class ChessPiece {
                 if (myPosition.getColumn() != 1) {
                     ChessPosition leftDiagonalPos = new ChessPosition(myPosition.getRow()+1,myPosition.getColumn()-1);
                     ChessPiece leftDiagonalPiece = board.getPiece(leftDiagonalPos);
+                    ChessPosition leftPos = new ChessPosition(myPosition.getRow(),myPosition.getColumn()-1);
+                    ChessPiece leftPiece = board.getPiece(leftPos);
+
                     if (leftDiagonalPiece != null && leftDiagonalPiece.getTeamColor()==ChessGame.TeamColor.BLACK) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol-1,myColor);
                     }
+
+                    if (leftPiece != null && leftDiagonalPiece == null && leftPiece.getPieceType() == PieceType.PAWN && leftPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol-1,myColor);
+                    }
+
                 }
 
                 // This allows you to attack diagonally forward and RIGHT if there is a Black piece there.
                 if (myPosition.getColumn() != 8) {
                     ChessPosition rightDiagonalPos = new ChessPosition(myPosition.getRow()+1,myPosition.getColumn()+1);
                     ChessPiece rightDiagonalPiece = board.getPiece(rightDiagonalPos);
+                    ChessPosition rightPos = new ChessPosition(myPosition.getRow(),myPosition.getColumn()+1);
+                    ChessPiece rightPiece = board.getPiece(rightPos);
+
                     if (rightDiagonalPiece != null && rightDiagonalPiece.getTeamColor()==ChessGame.TeamColor.BLACK) {
+                        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol+1,myColor);
+                    }
+
+                    if (rightPiece != null && rightDiagonalPiece == null && rightPiece.getPieceType() == PieceType.PAWN && rightPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol+1,myColor);
                     }
 
@@ -317,22 +332,36 @@ public class ChessPiece {
                 if (myPosition.getColumn() != 1) {
                     ChessPosition leftDiagonalPos = new ChessPosition(myPosition.getRow()-1,myPosition.getColumn()-1);
                     ChessPiece leftDiagonalPiece = board.getPiece(leftDiagonalPos);
+                    ChessPosition leftPos = new ChessPosition(myPosition.getRow(),myPosition.getColumn()-1);
+                    ChessPiece leftPiece = board.getPiece(leftPos);
 
                     //Check if there is an enemy in that diagonal square, if so, you can take it.
                     if (leftDiagonalPiece != null && leftDiagonalPiece.getTeamColor()==ChessGame.TeamColor.WHITE) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol-1,myColor);
                     }
+
+                    if (leftPiece != null && leftDiagonalPiece == null && leftPiece.getPieceType() == PieceType.PAWN && leftPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol-1,myColor);
+                    }
+
                 }
 
                 //Now we will impliment the other half, diagonals going down and LEFT.
                 if (myPosition.getColumn() != 8) {
                     ChessPosition rightDiagonalPos = new ChessPosition(myPosition.getRow()-1,myPosition.getColumn()+1);
                     ChessPiece rightDiagonalPiece = board.getPiece(rightDiagonalPos);
+                    ChessPosition rightPos = new ChessPosition(myPosition.getRow(),myPosition.getColumn()+1);
+                    ChessPiece rightPiece = board.getPiece(rightPos);
 
                     //Check if there is an enemy in that diagonal square, if so, you can take it.
                     if (rightDiagonalPiece != null && rightDiagonalPiece.getTeamColor()==ChessGame.TeamColor.WHITE) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol+1,myColor);
                     }
+
+                    if (rightPiece != null && rightDiagonalPiece == null && rightPiece.getPieceType() == PieceType.PAWN && rightPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol+1,myColor);
+                    }
+
 
                 }
 
