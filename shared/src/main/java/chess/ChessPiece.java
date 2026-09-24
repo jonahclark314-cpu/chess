@@ -15,11 +15,12 @@ public class ChessPiece {
     // Here is where I set up variables that will be used in this class. The Piece Type (Rook, Queen, etc.) and color (black or white).
     private final PieceType type;
     private final ChessGame.TeamColor pieceColor;
-
+    private boolean hasMoved;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.type = type;
         this.pieceColor = pieceColor;
+        this.hasMoved = false;
     }
 
     /**
@@ -118,6 +119,13 @@ public class ChessPiece {
         return board.getPiece(toCheck) == null;
     }
 
+    public void setHasMoved() {
+        this.hasMoved = true;
+    }
+
+    public boolean getHasMoved() {
+        return this.hasMoved;
+    }
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -188,6 +196,32 @@ public class ChessPiece {
                     }
                 }
             }
+
+            if (!this.hasMoved) {
+                if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                    ChessPosition rook1 = new ChessPosition(8,1);
+                    ChessPosition rook2 = new ChessPosition(8,8);
+                    if (board.getPiece(rook1) != null && board.getPiece(rook1).getPieceType() == PieceType.ROOK && !board.getPiece(rook1).getHasMoved() && board.getPiece(new ChessPosition(8,2)) == null && board.getPiece(new ChessPosition(8,3)) == null && board.getPiece(new ChessPosition(8,4)) == null) {
+                        checkIfPeiceThereAndGo(board,ourList,myPosition,8,3,myColor);
+                    }
+                    if (board.getPiece(rook2) != null && board.getPiece(rook2).getPieceType() == PieceType.ROOK && !board.getPiece(rook2).getHasMoved() && board.getPiece(new ChessPosition(8,7)) == null && board.getPiece(new ChessPosition(8,6)) == null) {
+                        checkIfPeiceThereAndGo(board,ourList,myPosition,8,7,myColor);
+                    }
+                } else {
+                    ChessPosition rook1 = new ChessPosition(1,1);
+                    ChessPosition rook2 = new ChessPosition(1,8);
+                    if (board.getPiece(rook1) != null && board.getPiece(rook1).getPieceType() == PieceType.ROOK && !board.getPiece(rook1).getHasMoved() && board.getPiece(new ChessPosition(1,2)) == null && board.getPiece(new ChessPosition(1,3)) == null && board.getPiece(new ChessPosition(1,4)) == null) {
+                        checkIfPeiceThereAndGo(board,ourList,myPosition,1,3,myColor);
+                    }
+                    if (board.getPiece(rook2) != null && board.getPiece(rook2).getPieceType() == PieceType.ROOK && !board.getPiece(rook2).getHasMoved() && board.getPiece(new ChessPosition(1,7)) == null && board.getPiece(new ChessPosition(1,6)) == null) {
+                        checkIfPeiceThereAndGo(board,ourList,myPosition,1,7,myColor);
+                    }
+
+                }
+            }
+
+
+
         }
 
         //Lets knights move in the L shape.

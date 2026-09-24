@@ -60,7 +60,18 @@ public class ChessGame {
         Collection<ChessMove> actualPossibleMoves = new ArrayList<>();
 
         for (ChessMove move : possibleMoves) {
-            if (notInCheckAfterMove(move, this.board.getPiece(startPosition).getTeamColor())) {
+            if (move.isACastle(this.board)) {
+                if (!isInCheck(this.board.getPiece(startPosition).getTeamColor()) && notInCheckAfterMove(move, this.board.getPiece(startPosition).getTeamColor())) {
+
+                    ChessPosition newEndPosition = new ChessPosition(startPosition.getRow(),(startPosition.getColumn() + move.getEndPosition().getColumn())/2);
+                    ChessMove middleMove = new ChessMove (startPosition, newEndPosition, null);
+                    if (notInCheckAfterMove(middleMove,this.board.getPiece(startPosition).getTeamColor())) {
+                        actualPossibleMoves.add(move);
+                    }
+
+                }
+            }
+            else if (notInCheckAfterMove(move, this.board.getPiece(startPosition).getTeamColor())) {
                 actualPossibleMoves.add(move);
             }
         }
@@ -122,6 +133,7 @@ public class ChessGame {
                 } else {
                     setTeamTurn(TeamColor.BLACK);
                 }
+                piece.setHasMoved();
             }
         }
     }

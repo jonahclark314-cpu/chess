@@ -28,7 +28,19 @@ public class ChessMove {
         this.PieceType = promotionPiece;
     }
 
-
+    public boolean isACastle (ChessBoard board) {
+        if (board.getPiece(this.startPosition).getPieceType() == ChessPiece.PieceType.KING) {
+            int oldColumn = startPosition.getColumn();
+            int newColumn = endPosition.getColumn();
+            if (((oldColumn - newColumn) == 2) || ((oldColumn - newColumn) == -2)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 
     /**
      * @return ChessPosition of starting location
