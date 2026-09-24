@@ -12,11 +12,12 @@ import java.util.Objects;
  */
 public class ChessPiece {
 
-    // Here is where I set up variables that will be used in this class. The Piece Type (Rook, Queen, etc.) and color (black or white).
+    // Here is where I set up variables that will be used in this class. The Piece Type (Rook, Queen, etc.), color (black or white), and if the piece has moved that game yet or not.
     private final PieceType type;
     private final ChessGame.TeamColor pieceColor;
     private boolean hasMoved;
 
+    // This is the ChessPiece constructor.
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.type = type;
         this.pieceColor = pieceColor;
@@ -46,7 +47,6 @@ public class ChessPiece {
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-
         return type;
     }
 
@@ -119,13 +119,21 @@ public class ChessPiece {
         return board.getPiece(toCheck) == null;
     }
 
+    /**
+     * This function is called when a piece is moved. It just helps make sure that you track when a piece has first moved (for castling and en Passant).
+     */
     public void setHasMoved() {
         this.hasMoved = true;
     }
 
+    /**
+     * This function just returns the private variable hasMoved.
+     * @return Simply returns true if the piece has already moved, and false if it has not yet.
+     */
     public boolean getHasMoved() {
         return this.hasMoved;
     }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -197,31 +205,40 @@ public class ChessPiece {
                 }
             }
 
+            // Here is where we implement the castling. First we check here if the king has moved yet.
             if (!this.hasMoved) {
-                if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) { // If the King is Black.
+                    // We are going to define where the Black rooks SHOULD be if they haven't moved yet.
                     ChessPosition rook1 = new ChessPosition(8,1);
                     ChessPosition rook2 = new ChessPosition(8,8);
+
+                    // If the rook on the LEFT side of the board has not moved yet AND all the spaces between the King and the Rook are empty, you can allow Castling on that side
                     if (board.getPiece(rook1) != null && board.getPiece(rook1).getPieceType() == PieceType.ROOK && !board.getPiece(rook1).getHasMoved() && board.getPiece(new ChessPosition(8,2)) == null && board.getPiece(new ChessPosition(8,3)) == null && board.getPiece(new ChessPosition(8,4)) == null) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,8,3,myColor);
                     }
+
+                    // If the rook on the LEFT side of the board has not moved yet AND all the spaces between the King and the Rook are empty, you can allow Castling on that side
                     if (board.getPiece(rook2) != null && board.getPiece(rook2).getPieceType() == PieceType.ROOK && !board.getPiece(rook2).getHasMoved() && board.getPiece(new ChessPosition(8,7)) == null && board.getPiece(new ChessPosition(8,6)) == null) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,8,7,myColor);
                     }
-                } else {
+
+                } else { // If the King is White.
+                    // We are going to define where the White rooks SHOULD be if they haven't moved yet.
                     ChessPosition rook1 = new ChessPosition(1,1);
                     ChessPosition rook2 = new ChessPosition(1,8);
+
+                    // If the rook on the LEFT side of the board has not moved yet AND all the spaces between the King and the Rook are empty, you can allow Castling on that side
                     if (board.getPiece(rook1) != null && board.getPiece(rook1).getPieceType() == PieceType.ROOK && !board.getPiece(rook1).getHasMoved() && board.getPiece(new ChessPosition(1,2)) == null && board.getPiece(new ChessPosition(1,3)) == null && board.getPiece(new ChessPosition(1,4)) == null) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,1,3,myColor);
                     }
+
+                    // If the rook on the LEFT side of the board has not moved yet AND all the spaces between the King and the Rook are empty, you can allow Castling on that side
                     if (board.getPiece(rook2) != null && board.getPiece(rook2).getPieceType() == PieceType.ROOK && !board.getPiece(rook2).getHasMoved() && board.getPiece(new ChessPosition(1,7)) == null && board.getPiece(new ChessPosition(1,6)) == null) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,1,7,myColor);
                     }
 
                 }
             }
-
-
-
         }
 
         //Lets knights move in the L shape.
@@ -242,16 +259,15 @@ public class ChessPiece {
 
             //Lets define the move rules if the pawn is white first. The pawn will only move UP (row getting bigger)
             if (myColor == ChessGame.TeamColor.WHITE) {
-                // If you haven't moved yet:
-                if (currentRow == 2) {
+                if (currentRow == 2) {  // If you haven't moved yet:
                     boolean nooneInFront = checkIfSpotEmpty(board, currentRow+1, currentCol); // Sees if anyone is infront of the pawn.
 
-                    //And no one is in front of you, you can move at least forward by one.
+                    //If you haven't moved yet AND no one is in front of you, you can move at least forward by one.
                     if (nooneInFront) {
                         checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+1,currentCol,myColor);
                         boolean nooneInFront2 = checkIfSpotEmpty(board, currentRow+2, currentCol); // Sees if there is anyone 2 spaces in front of the pawn.
 
-                        //If there is no one 2 squares of you TOO then you can move 2 forward as your first move with this piece.
+                        //If there is no one 2 squares of you AS WELL then you can move 2 forward as your first move with this piece.
                         if (nooneInFront2) {
                             checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+2,currentCol,myColor);
                         }
@@ -267,16 +283,22 @@ public class ChessPiece {
                 }
 
                 // This allows you to attack diagonally forward and LEFT if there is a Black piece there.
+                // This also allows for en Passant.
                 if (myPosition.getColumn() != 1) {
+                    // Check left diagonal position for normal piece capturing.
                     ChessPosition leftDiagonalPos = new ChessPosition(myPosition.getRow()+1,myPosition.getColumn()-1);
                     ChessPiece leftDiagonalPiece = board.getPiece(leftDiagonalPos);
-                    ChessPosition leftPos = new ChessPosition(myPosition.getRow(),myPosition.getColumn()-1);
-                    ChessPiece leftPiece = board.getPiece(leftPos);
 
+                    // if the piece diagonally is BLACK then lets mark this as a possible move.
                     if (leftDiagonalPiece != null && leftDiagonalPiece.getTeamColor()==ChessGame.TeamColor.BLACK) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol-1,myColor);
                     }
 
+                    // Check piece directly to the left for en passant capturing.
+                    ChessPosition leftPos = new ChessPosition(myPosition.getRow(),myPosition.getColumn()-1);
+                    ChessPiece leftPiece = board.getPiece(leftPos);
+
+                    // if the piece directly to the left is BLACK AND is a PAWN then lets mark this as a possible en passant move.
                     if (leftPiece != null && leftDiagonalPiece == null && leftPiece.getPieceType() == PieceType.PAWN && leftPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol-1,myColor);
                     }
@@ -284,31 +306,37 @@ public class ChessPiece {
                 }
 
                 // This allows you to attack diagonally forward and RIGHT if there is a Black piece there.
+                // This also allows for en Passant.
                 if (myPosition.getColumn() != 8) {
+                    // Check left diagonal position for normal piece capturing.
                     ChessPosition rightDiagonalPos = new ChessPosition(myPosition.getRow()+1,myPosition.getColumn()+1);
                     ChessPiece rightDiagonalPiece = board.getPiece(rightDiagonalPos);
-                    ChessPosition rightPos = new ChessPosition(myPosition.getRow(),myPosition.getColumn()+1);
-                    ChessPiece rightPiece = board.getPiece(rightPos);
 
+                    // if the piece diagonally is BLACK then lets mark this as a possible move.
                     if (rightDiagonalPiece != null && rightDiagonalPiece.getTeamColor()==ChessGame.TeamColor.BLACK) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol+1,myColor);
                     }
 
+                    // Check piece directly to the right for en passant capturing.
+                    ChessPosition rightPos = new ChessPosition(myPosition.getRow(),myPosition.getColumn()+1);
+                    ChessPiece rightPiece = board.getPiece(rightPos);
+
+                    // if the piece directly to the right is BLACK AND is a PAWN then lets mark this as a possible en passant move.
                     if (rightPiece != null && currentRow == 5 && rightDiagonalPiece == null && rightPiece.getPieceType() == PieceType.PAWN && rightPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol+1,myColor);
                     }
 
                 }
 
-            // Now lets add the functionality if team color is BLACK. These pieces will move down the board. (Row value decreasing)
-            } else {
+            // Now let's add the functionality if team color is BLACK. These pieces will move down the board. (Row value decreasing)
+            } else { //Piece is BLACK.
                 //If the pawn hasn't moved yet,
                 if (currentRow == 7) {
                     boolean nooneInFront = checkIfSpotEmpty(board, currentRow-1, currentCol);
 
-                    //AND there is nothing right in front of it
+                    //Check if there is anything right in front of it
                     if (nooneInFront) {
-                        //Then we can move there
+                        //If there is NOTHING in front of it, it can move there
                         checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow-1,currentCol,myColor);
                         boolean nooneInFront2 = checkIfSpotEmpty(board, currentRow-2, currentCol);
 
@@ -318,7 +346,7 @@ public class ChessPiece {
                         }
                     }
 
-                // If the pawn already has moved at least once, then lets do this:
+                // If the pawn already has moved at least once, then lets treat it differently:
                 } else {
                     boolean nooneInFront = checkIfSpotEmpty(board, currentRow-1, currentCol);
 
@@ -329,17 +357,22 @@ public class ChessPiece {
                 }
 
                 // Now we will cover the diagonal attacks. Starting with attacking diagonally down and to the right.
+                // This also allows for en Passant.
                 if (myPosition.getColumn() != 1) {
+                    // Check left diagonal position for normal piece capturing.
                     ChessPosition leftDiagonalPos = new ChessPosition(myPosition.getRow()-1,myPosition.getColumn()-1);
                     ChessPiece leftDiagonalPiece = board.getPiece(leftDiagonalPos);
-                    ChessPosition leftPos = new ChessPosition(myPosition.getRow(),myPosition.getColumn()-1);
-                    ChessPiece leftPiece = board.getPiece(leftPos);
 
                     //Check if there is an enemy in that diagonal square, if so, you can take it.
                     if (leftDiagonalPiece != null && leftDiagonalPiece.getTeamColor()==ChessGame.TeamColor.WHITE) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol-1,myColor);
                     }
 
+                    // Check piece directly to the left for en passant capturing.
+                    ChessPosition leftPos = new ChessPosition(myPosition.getRow(),myPosition.getColumn()-1);
+                    ChessPiece leftPiece = board.getPiece(leftPos);
+
+                    // if the piece directly to the left is WHITE AND is a PAWN then lets mark this as a possible en passant move.
                     if (leftPiece != null && currentRow == 4 && leftDiagonalPiece == null && leftPiece.getPieceType() == PieceType.PAWN && leftPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol-1,myColor);
                     }
@@ -347,17 +380,22 @@ public class ChessPiece {
                 }
 
                 //Now we will impliment the other half, diagonals going down and LEFT.
+                // This also allows for en Passant.
                 if (myPosition.getColumn() != 8) {
+                    // Check left diagonal position for normal piece capturing.
                     ChessPosition rightDiagonalPos = new ChessPosition(myPosition.getRow()-1,myPosition.getColumn()+1);
                     ChessPiece rightDiagonalPiece = board.getPiece(rightDiagonalPos);
-                    ChessPosition rightPos = new ChessPosition(myPosition.getRow(),myPosition.getColumn()+1);
-                    ChessPiece rightPiece = board.getPiece(rightPos);
 
                     //Check if there is an enemy in that diagonal square, if so, you can take it.
                     if (rightDiagonalPiece != null && rightDiagonalPiece.getTeamColor()==ChessGame.TeamColor.WHITE) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol+1,myColor);
                     }
 
+                    // Check piece directly to the right for en passant capturing.
+                    ChessPosition rightPos = new ChessPosition(myPosition.getRow(),myPosition.getColumn()+1);
+                    ChessPiece rightPiece = board.getPiece(rightPos);
+
+                    // if the piece directly to the right is WHITE AND is a PAWN then lets mark this as a possible en passant move.
                     if (rightPiece != null && rightDiagonalPiece == null && rightPiece.getPieceType() == PieceType.PAWN && rightPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
                         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol+1,myColor);
                     }
