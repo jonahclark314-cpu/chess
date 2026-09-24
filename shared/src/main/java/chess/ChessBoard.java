@@ -17,9 +17,6 @@ public class ChessBoard {
         
     }
 
-
-
-
     /**
      * Adds a chess piece to the chessboard
      *
@@ -30,10 +27,13 @@ public class ChessBoard {
         squares[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
+    /**
+     * Removes piece from a given locaiton on the board.
+     * @param position The given position in which we need to remove a piece. It is allowed to be null.
+     */
     public void removePiece(ChessPosition position) {
         squares[position.getRow()-1][position.getColumn()-1] = null;
     }
-
 
     /**
      * Gets a chess piece on the chessboard
@@ -201,17 +201,18 @@ public class ChessBoard {
      */
     @Override
     public String toString() {
-        return "ChessBoard{" + "\n" +
-                "|" + format(squares[7][0]) + "|" + format(squares[7][1]) + "|" + format(squares[7][2]) +"|" + format(squares[7][3]) +"|" + format(squares[7][4]) +"|" + format(squares[7][5]) +"|" + format(squares[7][6]) +"|" + format(squares[7][7]) +"|" + "\n" +
-                "|" + format(squares[6][0]) + "|" + format(squares[6][1]) + "|" + format(squares[6][2]) +"|" + format(squares[6][3]) +"|" + format(squares[6][4]) +"|" + format(squares[6][5]) +"|" + format(squares[6][6]) +"|" + format(squares[6][7]) +"|" + "\n" +
-                "|" + format(squares[5][0]) + "|" + format(squares[5][1]) + "|" + format(squares[5][2]) +"|" + format(squares[5][3]) +"|" + format(squares[5][4]) +"|" + format(squares[5][5]) +"|" + format(squares[5][6]) +"|" + format(squares[5][7]) +"|" + "\n" +
-                "|" + format(squares[4][0]) + "|" + format(squares[4][1]) + "|" + format(squares[4][2]) +"|" + format(squares[4][3]) +"|" + format(squares[4][4]) +"|" + format(squares[4][5]) +"|" + format(squares[4][6]) +"|" + format(squares[4][7]) +"|" + "\n" +
-                "|" + format(squares[3][0]) + "|" + format(squares[3][1]) + "|" + format(squares[3][2]) +"|" + format(squares[3][3]) +"|" + format(squares[3][4]) +"|" + format(squares[3][5]) +"|" + format(squares[3][6]) +"|" + format(squares[3][7]) +"|" + "\n" +
-                "|" + format(squares[2][0]) + "|" + format(squares[2][1]) + "|" + format(squares[2][2]) +"|" + format(squares[2][3]) +"|" + format(squares[2][4]) +"|" + format(squares[2][5]) +"|" + format(squares[2][6]) +"|" + format(squares[2][7]) +"|" + "\n" +
-                "|" + format(squares[1][0]) + "|" + format(squares[1][1]) + "|" + format(squares[1][2]) +"|" + format(squares[1][3]) +"|" + format(squares[1][4]) +"|" + format(squares[1][5]) +"|" + format(squares[1][6]) +"|" + format(squares[1][7]) +"|" + "\n" +
-                "|" + format(squares[0][0]) + "|" + format(squares[0][1]) + "|" + format(squares[0][2]) +"|" + format(squares[0][3]) +"|" + format(squares[0][4]) +"|" + format(squares[0][5]) +"|" + format(squares[0][6]) +"|" + format(squares[0][7]) +"|" + "\n" +
-
-                '}';
+        String totalString = "ChessBoard{\n";
+        //Loop through all of the squares starting at the top left and working left to right and top to bottom.
+        for (int i=7; i>=0;i--) {
+            for (int j=0; j<=7; j++) {
+                totalString += "|";
+                totalString += format(squares[i][j]);
+            }
+            totalString += "|";
+            totalString += "\n";
+        }
+        totalString += "}";
+        return totalString;
     }
 
 }
