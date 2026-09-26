@@ -9,6 +9,8 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessPosition {
+
+    // These are the two variables that will be stored in each instantiation of this class.
     private final int row;
     private final int col;
 
