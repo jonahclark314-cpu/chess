@@ -41,6 +41,16 @@ public class ChessPosition {
     }
 
     /**
+     * this is used if you want to edit
+     * @param row
+     * @param col
+     * @return
+     */
+    public ChessPosition setANewChessPosition (int row, int col){
+        return new ChessPosition(row, col);
+    }
+
+    /**
      * This is where I overide the tostring method to make things more readable when printing out the chess position.
      * @return is just what it is printing. should look like this: {1, 2}
      */

@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -13,7 +14,7 @@ public class ChessMove {
     // Here is where I will create variables for each of the things that need to be tracked for each Chess Move
     private final ChessPosition startPosition;
     private final ChessPosition endPosition;
-    private final ChessPiece.PieceType PieceType;
+    private final ChessPiece.PieceType pieceType;
 
     /**
      * This is the instantiation of this class.
@@ -25,13 +26,13 @@ public class ChessMove {
                      ChessPiece.PieceType promotionPiece) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
-        this.PieceType = promotionPiece;
+        this.pieceType = promotionPiece;
     }
 
     /**
      * This checks if the proposed move is a castle move. It does so by seeing if the King moves 2 spaces.
-     * @param board
-     * @return
+     * @param board the current state of the board
+     * @return returns true if the move is a castling move
      */
     public boolean isACastle (ChessBoard board) {
         // Make sure the piece moving is a king.
@@ -123,8 +124,44 @@ public class ChessMove {
      * @return Type of piece to promote a pawn to, or null if no promotion
      */
     public ChessPiece.PieceType getPromotionPiece() {
-        return PieceType;
+        return pieceType;
     }
+
+
+    public boolean isMoveSilly  (ChessBoard board, ChessGame.TeamColor teamTurn){
+
+        // If there is a piece at the start position, lets check if it is in the valid moves Collection.
+        boolean moveIsValid = false;
+        if (board.getPiece(this.getStartPosition()) != null) {
+            Collection<ChessMove> moves = board.getPiece(this.getStartPosition()).pieceMoves(board,this.getStartPosition());
+
+            // This just checks if the given move is somewhere in the valid moves Collection.
+            for (ChessMove possibleMove : moves) {
+                if (this.equals(possibleMove)) {
+                    moveIsValid = true;
+                    break;
+                }
+            }
+
+        } else { // This is if there is NO PIECE at the start location.
+            return true;
+        }
+
+        // If the move is out of turn, don't allow move.
+        if (board.getPiece(this.getStartPosition()).getTeamColor() != teamTurn){
+            moveIsValid = false;
+        }
+
+        // If the move is not valid, throw an exception.
+        if (!moveIsValid) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+
 
     /**
      * This is the override of the to string method so that when printing chess moves it is more readable.
@@ -148,7 +185,7 @@ public class ChessMove {
             return false;
         }
         ChessMove chessMove = (ChessMove) o;
-        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && PieceType == chessMove.PieceType;
+        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && pieceType == chessMove.pieceType;
     }
 
     /**
@@ -157,6 +194,6 @@ public class ChessMove {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(startPosition, endPosition, PieceType);
+        return Objects.hash(startPosition, endPosition, pieceType);
     }
 }
