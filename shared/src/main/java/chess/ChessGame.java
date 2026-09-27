@@ -237,6 +237,28 @@ public class ChessGame {
 
 
     /**
+     * This is a helper function for isInCheck. It confirms if a specific piece can attack the king.
+     * @param currentCheck - the piece that might be able to check the king.
+     * @param kingLocation - where the king is.
+     * @param teamColor - what color the king is.
+     * @return returns true if the specified piece CAN attack the king. returns false otherwise.
+     */
+    private boolean aPieceCanAttackKing(ChessPosition currentCheck, ChessPosition kingLocation, TeamColor teamColor) {
+        if (board.getPiece(currentCheck) != null && board.getPiece(currentCheck).getTeamColor() == getOtherTeamColor(teamColor)){
+            Collection<ChessMove> ourList = this.board.getPiece(currentCheck).pieceMoves(this.board,currentCheck);
+
+            // loop through all the moves there and check if any of them can directly attack the king.
+            for (ChessMove move : ourList) {
+                ChessPosition endPosition = move.getEndPosition();
+                if (kingLocation.equals(endPosition)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Determines if the given team is in check
      *
      * @param teamColor which team to check for check
@@ -249,14 +271,8 @@ public class ChessGame {
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition currentCheck = new ChessPosition(i,j);
-                if (board.getPiece(currentCheck) != null && board.getPiece(currentCheck).getTeamColor() == getOtherTeamColor(teamColor)){
-                    Collection<ChessMove> ourList = this.board.getPiece(currentCheck).pieceMoves(this.board,currentCheck);
-                    for (ChessMove move : ourList) {
-                        ChessPosition endPosition = move.getEndPosition();
-                        if (kingLocation.equals(endPosition)) {
-                            return true;
-                        }
-                    }
+                if (aPieceCanAttackKing(currentCheck, kingLocation, teamColor)) {
+                    return true;
                 }
             }
         }
@@ -314,6 +330,30 @@ public class ChessGame {
         }
     }
 
+
+    /**
+     * This checks all of the moves a piece can make and sees if any of them result in check.
+     * @param currentCheck - current piece you are checking
+     * @param teamColor - color of that piece
+     * @return returns true if the piece has a valid move.
+     */
+    private boolean doesMoveLeadToCheck(ChessPosition currentCheck,TeamColor teamColor) {
+        if (board.getPiece(currentCheck) != null && board.getPiece(currentCheck).getTeamColor() == teamColor) {
+
+            // Loop through all of the moves of the given piece.
+            Collection<ChessMove> ourList = this.board.getPiece(currentCheck).pieceMoves(this.board,currentCheck);
+            for (ChessMove move : ourList) {
+
+                // If it can move literally anywhere, it is NOT stalemate.
+                if (notInCheckAfterMove(move, teamColor)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
     /**
      * this is a helper function for checkmate and stalemate checkers. It sees if there
      * is any possible move that the given color can make that does not result in check.
@@ -325,17 +365,8 @@ public class ChessGame {
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition currentCheck = new ChessPosition(i, j);
-                if (board.getPiece(currentCheck) != null && board.getPiece(currentCheck).getTeamColor() == teamColor) {
-
-                    // Loop through all of the moves of the given piece.
-                    Collection<ChessMove> ourList = this.board.getPiece(currentCheck).pieceMoves(this.board,currentCheck);
-                    for (ChessMove move : ourList) {
-
-                        // If it can move literally anywhere, it is NOT stalemate.
-                        if (notInCheckAfterMove(move, teamColor)) {
-                            return true;
-                        }
-                    }
+                if (doesMoveLeadToCheck(currentCheck,teamColor)){
+                    return true;
                 }
             }
         }

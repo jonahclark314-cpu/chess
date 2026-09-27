@@ -62,7 +62,7 @@ public class ChessPiece {
      * @param myColor the color of your piece. This helps compare against the color of the piece that is in the space you might go.
      * @return returns TRUE if there are no pieces in that place. returns FALSE if there is a piece there (black or white). This helps pieceMmoves track if a rook/bishop/queen can continue going past a piece.
      */
-    private boolean checkIfPeiceThereAndGo(ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, int newRow, int newCol, ChessGame.TeamColor myColor) {
+    public boolean checkIfPeiceThereAndGo(ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, int newRow, int newCol, ChessGame.TeamColor myColor) {
         // Start by making sure where you want to go is a valid place to go.
         if (newRow >= 1 && newRow <= 8 && newCol >= 1 && newCol <= 8){
 
@@ -114,7 +114,7 @@ public class ChessPiece {
      * @param col the Column you are inquiring about.
      * @return true if there IS a piece in the space. false if there ISN'T a piece there.
      */
-    private boolean checkIfSpotEmpty (ChessBoard board, int row, int col) {
+    public boolean checkIfSpotEmpty (ChessBoard board, int row, int col) {
         ChessPosition toCheck = new ChessPosition(row,col);
         return board.getPiece(toCheck) == null;
     }
@@ -134,341 +134,6 @@ public class ChessPiece {
         return this.hasMoved;
     }
 
-
-    /**
-     * This is the helper function to get all of the possible bishop moves.
-     * @param currentRow - integer, row of the piece in question.
-     * @param currentCol - integer, column of the piece in question.
-     * @param board - current board setup
-     * @param ourList - the list to add to
-     * @param myPosition - my current position
-     * @param myColor - the color of the piece.
-     */
-    private void bishopMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, ChessGame.TeamColor myColor) {
-        // These boolean variables help us track if we have run into a piece in this direction yet.
-        boolean upLeft = true;
-        boolean upRight = true;
-        boolean downLeft = true;
-        boolean downRight = true;
-
-        //Loop 8 times, try to move the piece that many squares diagonally in each direction.
-        for (int i = 1; i < 8 ;i++) {
-            // Calculate the new row and column positions in each direction.
-            int newLeftRow = currentRow - i;
-            int newRightRow = currentRow + i;
-            int newUpCol = currentCol + i;
-            int newDownCol = currentCol - i;
-
-            // If you are still on the board, AND you haven't run into another piece yet, Add the new position to the list using the method checkIfPeiceThereAndGo.
-            if (newLeftRow >= 1 && newLeftRow <=8) {
-                if (newUpCol >= 1 && newUpCol <=8 && upLeft) {
-                    upLeft = checkIfPeiceThereAndGo(board,ourList,myPosition,newLeftRow,newUpCol,myColor);
-                }
-
-                if (newDownCol >= 1 && newDownCol <=8 && downLeft) {
-                    downLeft = checkIfPeiceThereAndGo(board,ourList,myPosition,newLeftRow,newDownCol,myColor);
-                }
-            }
-
-            // If you are still on the board, AND you haven't run into another piece yet, Add the new position to the list using the method checkIfPeiceThereAndGo.
-            if (newRightRow >= 1 && newRightRow <=8) {
-                if (newUpCol >= 1 && newUpCol <=8 && upRight) {
-                    upRight = checkIfPeiceThereAndGo(board,ourList,myPosition,newRightRow,newUpCol,myColor);
-                }
-                if (newDownCol >= 1 && newDownCol <=8 && downRight) {
-                    downRight = checkIfPeiceThereAndGo(board,ourList,myPosition,newRightRow,newDownCol,myColor);
-
-                }
-            }
-        }
-    }
-
-
-    /**
-     * This is the helper function to get all of the possible king moves.
-     * @param board - current board setup
-     * @param ourList - the list to add to
-     * @param myPosition - my current position
-     * @param myColor - the color of the piece.
-     */
-    private void kingMoves (ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, ChessGame.TeamColor myColor) {
-        //Let it move by one square in every direction
-        for (int i=0; i<3; i++) {
-            for (int j=0; j<3; j++) {
-                int newRow = myPosition.getRow() + i - 1;
-                int newCol = myPosition.getColumn() + j - 1;
-                if (newRow <=8 && newRow >=1 && newCol <=8 && newCol >=1 && !(i == 1 && j == 1)) { //Make sure that it DID move and that it is still on the board.
-                    checkIfPeiceThereAndGo(board,ourList,myPosition,newRow,newCol,myColor);
-                }
-            }
-        }
-
-        ChessPiece piece = board.getPiece(myPosition);
-        // Here is where we implement the castling. First we check here if the king has moved yet.
-        if (!this.hasMoved) {
-            if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) { // If the King is Black.
-                // We are going to define where the Black rooks SHOULD be if they haven't moved yet.
-                ChessPosition rook1 = new ChessPosition(8,1);
-                ChessPosition rook2 = new ChessPosition(8,8);
-
-                // If the rook on the LEFT side of the board has not moved yet AND all the spaces between the King and the Rook are empty, you can allow Castling on that side
-                if (board.getPiece(rook1) != null && board.getPiece(rook1).getPieceType() == PieceType.ROOK && !board.getPiece(rook1).getHasMoved() && board.getPiece(new ChessPosition(8,2)) == null && board.getPiece(new ChessPosition(8,3)) == null && board.getPiece(new ChessPosition(8,4)) == null) {
-                    checkIfPeiceThereAndGo(board,ourList,myPosition,8,3,myColor);
-                }
-
-                // If the rook on the LEFT side of the board has not moved yet AND all the spaces between the King and the Rook are empty, you can allow Castling on that side
-                if (board.getPiece(rook2) != null && board.getPiece(rook2).getPieceType() == PieceType.ROOK && !board.getPiece(rook2).getHasMoved() && board.getPiece(new ChessPosition(8,7)) == null && board.getPiece(new ChessPosition(8,6)) == null) {
-                    checkIfPeiceThereAndGo(board,ourList,myPosition,8,7,myColor);
-                }
-
-            } else { // If the King is White.
-                // We are going to define where the White rooks SHOULD be if they haven't moved yet.
-                ChessPosition rook1 = new ChessPosition(1,1);
-                ChessPosition rook2 = new ChessPosition(1,8);
-
-                // If the rook on the LEFT side of the board has not moved yet AND all the spaces between the King and the Rook are empty, you can allow Castling on that side
-                if (board.getPiece(rook1) != null && board.getPiece(rook1).getPieceType() == PieceType.ROOK && !board.getPiece(rook1).getHasMoved() && board.getPiece(new ChessPosition(1,2)) == null && board.getPiece(new ChessPosition(1,3)) == null && board.getPiece(new ChessPosition(1,4)) == null) {
-                    checkIfPeiceThereAndGo(board,ourList,myPosition,1,3,myColor);
-                }
-
-                // If the rook on the LEFT side of the board has not moved yet AND all the spaces between the King and the Rook are empty, you can allow Castling on that side
-                if (board.getPiece(rook2) != null && board.getPiece(rook2).getPieceType() == PieceType.ROOK && !board.getPiece(rook2).getHasMoved() && board.getPiece(new ChessPosition(1,7)) == null && board.getPiece(new ChessPosition(1,6)) == null) {
-                    checkIfPeiceThereAndGo(board,ourList,myPosition,1,7,myColor);
-                }
-
-            }
-        }
-
-    }
-
-    /**
-     * This is the helper function to get all of the possible knight moves.
-     * @param currentRow - integer, row of the piece in question.
-     * @param currentCol - integer, column of the piece in question.
-     * @param board - current board setup
-     * @param ourList - the list to add to
-     * @param myPosition - my current position
-     * @param myColor - the color of the piece.
-     */
-    private void knightMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, ChessGame.TeamColor myColor) {
-        //Check all 8 possible move directions one at a time.
-        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol+2,myColor);
-        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol-2,myColor);
-        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+2,currentCol+1,myColor);
-        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+2,currentCol-1,myColor);
-        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol+2,myColor);
-        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol-2,myColor);
-        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-2,currentCol+1,myColor);
-        checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-2,currentCol-1,myColor);
-
-    }
-
-    /**
-     * This is the helper function to get all of the possible rook moves.
-     * @param currentRow - integer, row of the piece in question.
-     * @param currentCol - integer, column of the piece in question.
-     * @param board - current board setup
-     * @param ourList - the list to add to
-     * @param myPosition - my current position
-     * @param myColor - the color of the piece.
-     */
-    private void rookMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, ChessGame.TeamColor myColor) {
-        // Set up these variables to track when it runs into a piece and cannot go past it. These become false when it runs into a piece.
-        boolean up = true;
-        boolean right = true;
-        boolean left = true;
-        boolean down = true;
-
-        // count 1-7 and let's move the rook in each direction that many spaces until it runs into something.
-        for (int i = 1; i < 8 ;i++) {
-            int newLeftRow = currentRow - i;
-            int newRightRow = currentRow + i;
-            int newUpCol = currentCol + i;
-            int newDownCol = currentCol - i;
-
-            //In each of these if statements we are checking if the new location is on the board. If so, we will try to move there.
-            if (newLeftRow >= 1 && newLeftRow <=8 && left) {
-                left = checkIfPeiceThereAndGo(board,ourList,myPosition,newLeftRow,currentCol,myColor);
-            }
-            if (newRightRow >= 1 && newRightRow <=8 && right) {
-                right = checkIfPeiceThereAndGo(board,ourList,myPosition,newRightRow,currentCol,myColor);
-            }
-            if (newUpCol >= 1 && newUpCol <=8 && up) {
-                up = checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow,newUpCol,myColor);
-            }
-            if (newDownCol >= 1 && newDownCol <=8 && down) {
-                down = checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow,newDownCol,myColor);
-            }
-        }
-
-    }
-
-    /**
-     * This is the helper function to get all of the possible white pawn moves.
-     * @param currentRow - integer, row of the piece in question.
-     * @param currentCol - integer, column of the piece in question.
-     * @param board - current board setup
-     * @param ourList - the list to add to
-     * @param myPosition - my current position
-     * @param myColor - the color of the piece.
-     */
-    private void whitePawnMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, ChessGame.TeamColor myColor) {
-        if (currentRow == 2) {  // If you haven't moved yet:
-            boolean nooneInFront = checkIfSpotEmpty(board, currentRow+1, currentCol); // Sees if anyone is infront of the pawn.
-
-            //If you haven't moved yet AND no one is in front of you, you can move at least forward by one.
-            if (nooneInFront) {
-                checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+1,currentCol,myColor);
-                boolean nooneInFront2 = checkIfSpotEmpty(board, currentRow+2, currentCol); // Sees if there is anyone 2 spaces in front of the pawn.
-
-                //If there is no one 2 squares of you AS WELL then you can move 2 forward as your first move with this piece.
-                if (nooneInFront2) {
-                    checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+2,currentCol,myColor);
-                }
-            }
-            // If this is NOT The pawns first move, then lets treat it differently.
-        } else {
-            boolean nooneInFront = checkIfSpotEmpty(board, currentRow+1, currentCol);
-
-            //Check if anyone is directly in front of the pawn. if not, you can move there.
-            if (nooneInFront) {
-                checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+1,currentCol,myColor);
-            }
-        }
-
-        // This allows you to attack diagonally forward and LEFT if there is a Black piece there.
-        // This also allows for en Passant.
-        if (myPosition.getColumn() != 1) {
-            // Check left diagonal position for normal piece capturing.
-            ChessPosition leftDiagonalPos = new ChessPosition(myPosition.getRow()+1,myPosition.getColumn()-1);
-            ChessPiece leftDiagonalPiece = board.getPiece(leftDiagonalPos);
-
-            // if the piece diagonally is BLACK then lets mark this as a possible move.
-            if (leftDiagonalPiece != null && leftDiagonalPiece.getTeamColor()==ChessGame.TeamColor.BLACK) {
-                checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol-1,myColor);
-            }
-
-            // Check piece directly to the left for en passant capturing.
-            ChessPosition leftPos = new ChessPosition(myPosition.getRow(),myPosition.getColumn()-1);
-            ChessPiece leftPiece = board.getPiece(leftPos);
-
-            // if the piece directly to the left is BLACK AND is a PAWN then lets mark this as a possible en passant move.
-            if (leftPiece != null && leftDiagonalPiece == null && leftPiece.getPieceType() == PieceType.PAWN && leftPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
-                checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol-1,myColor);
-            }
-
-        }
-
-        // This allows you to attack diagonally forward and RIGHT if there is a Black piece there.
-        // This also allows for en Passant.
-        if (myPosition.getColumn() != 8) {
-            // Check left diagonal position for normal piece capturing.
-            ChessPosition rightDiagonalPos = new ChessPosition(myPosition.getRow()+1,myPosition.getColumn()+1);
-            ChessPiece rightDiagonalPiece = board.getPiece(rightDiagonalPos);
-
-            // if the piece diagonally is BLACK then lets mark this as a possible move.
-            if (rightDiagonalPiece != null && rightDiagonalPiece.getTeamColor()==ChessGame.TeamColor.BLACK) {
-                checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol+1,myColor);
-            }
-
-            // Check piece directly to the right for en passant capturing.
-            ChessPosition rightPos = new ChessPosition(myPosition.getRow(),myPosition.getColumn()+1);
-            ChessPiece rightPiece = board.getPiece(rightPos);
-
-            // if the piece directly to the right is BLACK AND is a PAWN then lets mark this as a possible en passant move.
-            if (rightPiece != null && currentRow == 5 && rightDiagonalPiece == null && rightPiece.getPieceType() == PieceType.PAWN && rightPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
-                checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol+1,myColor);
-            }
-
-        }
-
-
-    }
-
-    /**
-     * This is the helper function to get all of the possible white pawn moves.
-     * @param currentRow - integer, row of the piece in question.
-     * @param currentCol - integer, column of the piece in question.
-     * @param board - current board setup
-     * @param ourList - the list to add to
-     * @param myPosition - my current position
-     * @param myColor - the color of the piece.
-     */
-    private void blackPawnMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, ChessGame.TeamColor myColor) {
-        //If the pawn hasn't moved yet,
-        if (currentRow == 7) {
-            boolean nooneInFront = checkIfSpotEmpty(board, currentRow-1, currentCol);
-
-            //Check if there is anything right in front of it
-            if (nooneInFront) {
-                //If there is NOTHING in front of it, it can move there
-                checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow-1,currentCol,myColor);
-                boolean nooneInFront2 = checkIfSpotEmpty(board, currentRow-2, currentCol);
-
-                //Additionally, if there is nothing 2 spaces in front of it, then you can move 2 squares forward on your first move.
-                if (nooneInFront2) {
-                    checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow-2,currentCol,myColor);
-                }
-            }
-
-            // If the pawn already has moved at least once, then lets treat it differently:
-        } else {
-            boolean nooneInFront = checkIfSpotEmpty(board, currentRow-1, currentCol);
-
-            //See if anything is directly ahead of it. If not, it can move there.
-            if (nooneInFront) {
-                checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow - 1, currentCol, myColor);
-            }
-        }
-
-        // Now we will cover the diagonal attacks. Starting with attacking diagonally down and to the right.
-        // This also allows for en Passant.
-        if (myPosition.getColumn() != 1) {
-            // Check left diagonal position for normal piece capturing.
-            ChessPosition leftDiagonalPos = new ChessPosition(myPosition.getRow()-1,myPosition.getColumn()-1);
-            ChessPiece leftDiagonalPiece = board.getPiece(leftDiagonalPos);
-
-            //Check if there is an enemy in that diagonal square, if so, you can take it.
-            if (leftDiagonalPiece != null && leftDiagonalPiece.getTeamColor()==ChessGame.TeamColor.WHITE) {
-                checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol-1,myColor);
-            }
-
-            // Check piece directly to the left for en passant capturing.
-            ChessPosition leftPos = new ChessPosition(myPosition.getRow(),myPosition.getColumn()-1);
-            ChessPiece leftPiece = board.getPiece(leftPos);
-
-            // if the piece directly to the left is WHITE AND is a PAWN then lets mark this as a possible en passant move.
-            if (leftPiece != null && currentRow == 4 && leftDiagonalPiece == null && leftPiece.getPieceType() == PieceType.PAWN && leftPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol-1,myColor);
-            }
-
-        }
-
-        //Now we will impliment the other half, diagonals going down and LEFT.
-        // This also allows for en Passant.
-        if (myPosition.getColumn() != 8) {
-            // Check left diagonal position for normal piece capturing.
-            ChessPosition rightDiagonalPos = new ChessPosition(myPosition.getRow()-1,myPosition.getColumn()+1);
-            ChessPiece rightDiagonalPiece = board.getPiece(rightDiagonalPos);
-
-            //Check if there is an enemy in that diagonal square, if so, you can take it.
-            if (rightDiagonalPiece != null && rightDiagonalPiece.getTeamColor()==ChessGame.TeamColor.WHITE) {
-                checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol+1,myColor);
-            }
-
-            // Check piece directly to the right for en passant capturing.
-            ChessPosition rightPos = new ChessPosition(myPosition.getRow(),myPosition.getColumn()+1);
-            ChessPiece rightPiece = board.getPiece(rightPos);
-
-            // if the piece directly to the right is WHITE AND is a PAWN then lets mark this as a possible en passant move.
-            if (rightPiece != null && rightDiagonalPiece == null && rightPiece.getPieceType() == PieceType.PAWN && rightPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol+1,myColor);
-            }
-
-
-        }
-
-    }
 
 
 
@@ -491,37 +156,47 @@ public class ChessPiece {
         int currentCol = myPosition.getColumn();
 
         //If the piece is a Bishop or a Queen, this allows it to move diagonally until it hits something.
-        if (piece.getPieceType() == PieceType.BISHOP || piece.getPieceType() == PieceType.QUEEN) {
-            bishopMoves(currentRow,currentCol,board,ourList,myPosition,myColor);
+        if (piece.getPieceType() == PieceType.BISHOP) {
+            BishopPiece newBishop = new BishopPiece(myColor);
+            newBishop.bishopMoves(currentRow,currentCol,board,ourList,myPosition,myColor);
         }
 
         //Lets Kings move in any direction by 1 square.
         if (piece.getPieceType() == PieceType.KING) {
-            kingMoves(board,ourList,myPosition,myColor);
+            KingPiece newKing = new KingPiece(myColor);
+            if (this.getHasMoved()){
+                newKing.setHasMoved();
+            }
+            newKing.kingMoves(board,ourList,myPosition,myColor);
         }
 
         //Lets knights move in the L shape.
         if (piece.getPieceType() == PieceType.KNIGHT) {
-            knightMoves(currentRow,currentCol,board,ourList,myPosition,myColor);
+            KnightPiece newKnight = new KnightPiece(myColor);
+            newKnight.knightMoves(currentRow,currentCol,board,ourList,myPosition,myColor);
         }
 
         //This part gives all functionality to pawns.
         if (piece.getPieceType() == PieceType.PAWN) {
-
-            //Lets define the move rules if the pawn is white first. The pawn will only move UP (row getting bigger)
-            if (myColor == ChessGame.TeamColor.WHITE) {
-                whitePawnMoves(currentRow,currentCol,board,ourList,myPosition,myColor);
-            // Now let's add the functionality if team color is BLACK. These pieces will move down the board. (Row value decreasing)
-            } else { //Piece is BLACK.
-                blackPawnMoves(currentRow,currentCol,board,ourList,myPosition,myColor);
-            }
-
+            PawnPiece newPawn = new PawnPiece(myColor);
+            //Let's define the move rules if the pawn is white first. The pawn will only move UP (row getting bigger)
+            newPawn.pawnMoves(currentRow,currentCol,board,ourList,myPosition,myColor);
 
         }
 
         //If the piece is a Rook or a Queen, this allows it to move straight until it hits something.
-        if (piece.getPieceType() == PieceType.ROOK || piece.getPieceType() == PieceType.QUEEN) {
-            rookMoves(currentRow,currentCol,board,ourList,myPosition,myColor);
+        if (piece.getPieceType() == PieceType.ROOK) {
+            RookPiece newRook = new RookPiece(myColor);
+            if (this.getHasMoved()){
+                newRook.setHasMoved();
+            }
+            newRook.rookMoves(currentRow,currentCol,board,ourList,myPosition,myColor);
+        }
+
+        if (piece.getPieceType() == PieceType.QUEEN) {
+            QueenPiece newQueen = new QueenPiece(myColor);
+            newQueen.queenMoves(currentRow,currentCol,board,ourList,myPosition,myColor);
+
         }
 
         // We will return Collection of valid moves of that piece.
