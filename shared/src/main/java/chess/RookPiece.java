@@ -17,7 +17,8 @@ public class RookPiece extends ChessPiece{
      * @param myPosition - my current position
      * @param myColor - the color of the piece.
      */
-    public void rookMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, ChessGame.TeamColor myColor) {
+    public void rookMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition,
+                           ChessGame.TeamColor myColor) {
         // Set up these variables to track when it runs into a piece and cannot go past it. These become false when it runs into a piece.
         boolean up = true;
         boolean right = true;

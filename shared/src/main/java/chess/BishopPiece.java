@@ -17,7 +17,8 @@ public class BishopPiece extends ChessPiece {
      * @param myPosition - my current position
      * @param myColor - the color of the piece.
      */
-    public void bishopMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, ChessGame.TeamColor myColor) {
+    public void bishopMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList,
+                             ChessPosition myPosition, ChessGame.TeamColor myColor) {
         // These boolean variables help us track if we have run into a piece in this direction yet.
         boolean upLeft = true;
         boolean upRight = true;
@@ -32,7 +33,8 @@ public class BishopPiece extends ChessPiece {
             int newUpCol = currentCol + i;
             int newDownCol = currentCol - i;
 
-            // If you are still on the board, AND you haven't run into another piece yet, Add the new position to the list using the method checkIfPeiceThereAndGo.
+            // If you are still on the board, AND you haven't run into another piece yet, Add the new position to the
+            // list using the method checkIfPeiceThereAndGo.
             if (newLeftRow >= 1 && newLeftRow <=8) {
                 if (newUpCol >= 1 && newUpCol <=8 && upLeft) {
                     upLeft = checkIfPeiceThereAndGo(board,ourList,myPosition,newLeftRow,newUpCol,myColor);
@@ -43,7 +45,8 @@ public class BishopPiece extends ChessPiece {
                 }
             }
 
-            // If you are still on the board, AND you haven't run into another piece yet, Add the new position to the list using the method checkIfPeiceThereAndGo.
+            // If you are still on the board, AND you haven't run into another piece yet, Add the new position to the
+            // list using the method checkIfPeiceThereAndGo.
             if (newRightRow >= 1 && newRightRow <=8) {
                 if (newUpCol >= 1 && newUpCol <=8 && upRight) {
                     upRight = checkIfPeiceThereAndGo(board,ourList,myPosition,newRightRow,newUpCol,myColor);

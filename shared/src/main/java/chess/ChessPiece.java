@@ -12,7 +12,8 @@ import java.util.Objects;
  */
 public class ChessPiece {
 
-    // Here is where I set up variables that will be used in this class. The Piece Type (Rook, Queen, etc.), color (black or white), and if the piece has moved that game yet or not.
+    // Here is where I set up variables that will be used in this class. The Piece Type (Rook, Queen, etc.),
+    // color (black or white), and if the piece has moved that game yet or not.
     private final PieceType type;
     private final ChessGame.TeamColor pieceColor;
     private boolean hasMoved;
@@ -52,7 +53,8 @@ public class ChessPiece {
 
     /**
      * This is the helper function for pieceMoves. What this does is checks if there is a piece where you are trying to go, if there IS, then
-     * check if it is black or white. If it is your same color you cannot go there, if it is different color than you, you can go there (by capturing the piece)
+     * check if it is black or white. If it is your same color you cannot go there, if it is different color than you, you
+     * can go there (by capturing the piece)
      * It will create the move and add it to the growing list that will be returned in pieceMoves
      * @param board this is the current state of the board. it allows us to know if there is a piece where you want to go
      * @param ourList this is the list that pieceMoves is creating. This function will add to it
@@ -60,9 +62,11 @@ public class ChessPiece {
      * @param newRow The row you want to go to.
      * @param newCol The column you want to go to.
      * @param myColor the color of your piece. This helps compare against the color of the piece that is in the space you might go.
-     * @return returns TRUE if there are no pieces in that place. returns FALSE if there is a piece there (black or white). This helps pieceMmoves track if a rook/bishop/queen can continue going past a piece.
+     * @return returns TRUE if there are no pieces in that place. returns FALSE if there is a piece there (black or white).
+     * This helps pieceMmoves track if a rook/bishop/queen can continue going past a piece.
      */
-    public boolean checkIfPeiceThereAndGo(ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, int newRow, int newCol, ChessGame.TeamColor myColor) {
+    public boolean checkIfPeiceThereAndGo(ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, int newRow,
+                                          int newCol, ChessGame.TeamColor myColor) {
         // Start by making sure where you want to go is a valid place to go.
         if (newRow >= 1 && newRow <= 8 && newCol >= 1 && newCol <= 8){
 
@@ -82,8 +86,11 @@ public class ChessPiece {
             }
 
             if (canGo) {
-                //If you are a pawn that is promoting to the end of the board, make sure that you say you can become a Bishop, Queen, Rook, or Knight.
-                if (board.getPiece(myPosition).getPieceType() == PieceType.PAWN && ((myColor == ChessGame.TeamColor.WHITE && myPosition.getRow() == 7 && newRow == 8) || (myColor == ChessGame.TeamColor.BLACK && myPosition.getRow() == 2 && newRow == 1))){
+                //If you are a pawn that is promoting to the end of the board,
+                // make sure that you say you can become a Bishop, Queen, Rook, or Knight.
+                if (board.getPiece(myPosition).getPieceType() == PieceType.PAWN && ((myColor == ChessGame.TeamColor.WHITE &&
+                        myPosition.getRow() == 7 && newRow == 8) || (myColor == ChessGame.TeamColor.BLACK &&
+                        myPosition.getRow() == 2 && newRow == 1))){
                     var possibleMove = new ChessMove(myPosition,possibleLoc,PieceType.BISHOP);
                     ourList.add(possibleMove);
                     possibleMove = new ChessMove(myPosition,possibleLoc,PieceType.QUEEN);
@@ -120,7 +127,8 @@ public class ChessPiece {
     }
 
     /**
-     * This function is called when a piece is moved. It just helps make sure that you track when a piece has first moved (for castling and en Passant).
+     * This function is called when a piece is moved. It just helps make sure that you track when a
+     * piece has first moved (for castling and en Passant).
      */
     public void setHasMoved() {
         this.hasMoved = true;

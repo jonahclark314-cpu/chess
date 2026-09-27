@@ -91,11 +91,14 @@ public class ChessGame {
 
         // Loop through all of the possible moves
         for (ChessMove move : possibleMoves) {
-            // If the move is a Castle move, treat is specially. We need to check if the king is in check in any of the positons along the way.
+            // If the move is a Castle move, treat is specially. We need to check if the king is in check in any
+            // of the positons along the way.
             if (move.isACastle(this.board)) {
-                if (!isInCheck(this.board.getPiece(startPosition).getTeamColor()) && notInCheckAfterMove(move, this.board.getPiece(startPosition).getTeamColor())) {
+                if (!isInCheck(this.board.getPiece(startPosition).getTeamColor()) &&
+                        notInCheckAfterMove(move, this.board.getPiece(startPosition).getTeamColor())) {
 
-                    ChessPosition newEndPosition = new ChessPosition(startPosition.getRow(),(startPosition.getColumn() + move.getEndPosition().getColumn())/2);
+                    ChessPosition newEndPosition = new ChessPosition(startPosition.getRow(),(startPosition.getColumn() +
+                            move.getEndPosition().getColumn())/2);
                     ChessMove middleMove = new ChessMove (startPosition, newEndPosition, null);
                     if (notInCheckAfterMove(middleMove,this.board.getPiece(startPosition).getTeamColor())) {
                         actualPossibleMoves.add(move);
@@ -225,7 +228,8 @@ public class ChessGame {
                 ChessPosition currentCheck = new ChessPosition(i,j);
 
                 // If it is the correct king color, then this is the correct location.
-                if (board.getPiece(currentCheck) != null && board.getPiece(currentCheck).getTeamColor() == teamColor && board.getPiece(currentCheck).getPieceType() == ChessPiece.PieceType.KING) {
+                if (board.getPiece(currentCheck) != null && board.getPiece(currentCheck).getTeamColor() == teamColor &&
+                        board.getPiece(currentCheck).getPieceType() == ChessPiece.PieceType.KING) {
                     return currentCheck;
                 }
             }
@@ -267,7 +271,8 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingLocation = findOurKing(teamColor);
 
-        // Loop through all of the pieces on the board. If it is the opposite color, AND if it can move to take the king, then it is in check
+        // Loop through all of the pieces on the board. If it is the opposite color, AND if it can move to take the
+        // king, then it is in check
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition currentCheck = new ChessPosition(i,j);

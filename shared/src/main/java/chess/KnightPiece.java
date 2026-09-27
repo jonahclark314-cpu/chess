@@ -17,7 +17,8 @@ public class KnightPiece extends ChessPiece{
      * @param myPosition - my current position
      * @param myColor - the color of the piece.
      */
-    public void knightMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, ChessGame.TeamColor myColor) {
+    public void knightMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList,
+                             ChessPosition myPosition, ChessGame.TeamColor myColor) {
         //Check all 8 possible move directions one at a time.
         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol+2,myColor);
         checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol-2,myColor);

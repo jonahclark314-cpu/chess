@@ -19,7 +19,8 @@ public class PawnPiece extends ChessPiece {
      * @param myPosition - the position of the pawn.
      * @param myColor - the color of the pawn
      */
-    public void pawnMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, ChessGame.TeamColor myColor) {
+    public void pawnMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition,
+                           ChessGame.TeamColor myColor) {
         if (myColor == ChessGame.TeamColor.BLACK) {
             blackPawnMoves(currentRow,currentCol,board,ourList,myPosition,myColor);
         } else {
@@ -36,14 +37,16 @@ public class PawnPiece extends ChessPiece {
      * @param myPosition - my current position
      * @param myColor - the color of the piece.
      */
-    private void whitePawnMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, ChessGame.TeamColor myColor) {
+    private void whitePawnMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition,
+                                 ChessGame.TeamColor myColor) {
         if (currentRow == 2) {  // If you haven't moved yet:
             boolean nooneInFront = checkIfSpotEmpty(board, currentRow+1, currentCol); // Sees if anyone is infront of the pawn.
 
             //If you haven't moved yet AND no one is in front of you, you can move at least forward by one.
             if (nooneInFront) {
                 checkIfPeiceThereAndGo(board, ourList, myPosition, currentRow+1,currentCol,myColor);
-                boolean nooneInFront2 = checkIfSpotEmpty(board, currentRow+2, currentCol); // Sees if there is anyone 2 spaces in front of the pawn.
+                // Sees if there is anyone 2 spaces in front of the pawn.
+                boolean nooneInFront2 = checkIfSpotEmpty(board, currentRow+2, currentCol);
 
                 //If there is no one 2 squares of you AS WELL then you can move 2 forward as your first move with this piece.
                 if (nooneInFront2) {
@@ -77,7 +80,8 @@ public class PawnPiece extends ChessPiece {
             ChessPiece leftPiece = board.getPiece(leftPos);
 
             // if the piece directly to the left is BLACK AND is a PAWN then lets mark this as a possible en passant move.
-            if (leftPiece != null && leftDiagonalPiece == null && leftPiece.getPieceType() == PieceType.PAWN && leftPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+            if (leftPiece != null && leftDiagonalPiece == null && leftPiece.getPieceType() == PieceType.PAWN &&
+                    leftPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
                 checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol-1,myColor);
             }
 
@@ -100,7 +104,8 @@ public class PawnPiece extends ChessPiece {
             ChessPiece rightPiece = board.getPiece(rightPos);
 
             // if the piece directly to the right is BLACK AND is a PAWN then lets mark this as a possible en passant move.
-            if (rightPiece != null && currentRow == 5 && rightDiagonalPiece == null && rightPiece.getPieceType() == PieceType.PAWN && rightPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+            if (rightPiece != null && currentRow == 5 && rightDiagonalPiece == null && rightPiece.getPieceType() == PieceType.PAWN &&
+                    rightPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
                 checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow+1,currentCol+1,myColor);
             }
 
@@ -119,7 +124,8 @@ public class PawnPiece extends ChessPiece {
      * @param myPosition - my current position
      * @param myColor - the color of the piece.
      */
-    private void blackPawnMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, ChessGame.TeamColor myColor) {
+    private void blackPawnMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList,
+                                 ChessPosition myPosition, ChessGame.TeamColor myColor) {
         //If the pawn hasn't moved yet,
         if (currentRow == 7) {
             boolean nooneInFront = checkIfSpotEmpty(board, currentRow-1, currentCol);
@@ -163,7 +169,8 @@ public class PawnPiece extends ChessPiece {
             ChessPiece leftPiece = board.getPiece(leftPos);
 
             // if the piece directly to the left is WHITE AND is a PAWN then lets mark this as a possible en passant move.
-            if (leftPiece != null && currentRow == 4 && leftDiagonalPiece == null && leftPiece.getPieceType() == PieceType.PAWN && leftPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+            if (leftPiece != null && currentRow == 4 && leftDiagonalPiece == null && leftPiece.getPieceType() == PieceType.PAWN &&
+                    leftPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
                 checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol-1,myColor);
             }
 
@@ -186,7 +193,8 @@ public class PawnPiece extends ChessPiece {
             ChessPiece rightPiece = board.getPiece(rightPos);
 
             // if the piece directly to the right is WHITE AND is a PAWN then lets mark this as a possible en passant move.
-            if (rightPiece != null && rightDiagonalPiece == null && rightPiece.getPieceType() == PieceType.PAWN && rightPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+            if (rightPiece != null && rightDiagonalPiece == null && rightPiece.getPieceType() == PieceType.PAWN &&
+                    rightPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
                 checkIfPeiceThereAndGo(board,ourList,myPosition,currentRow-1,currentCol+1,myColor);
             }
 

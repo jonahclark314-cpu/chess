@@ -20,7 +20,9 @@ public class ChessMove {
      * This is the instantiation of this class.
      * @param startPosition where the piece is coming from
      * @param endPosition where the class is going to
-     * @param promotionPiece if it is a pawn, and it has progressed accross the board and reaches the other side, it can be promoted to a Queen, Rook, Knight, or Bishop. This variable is null unless it is a pawn in this situation.
+     * @param promotionPiece if it is a pawn, and it has progressed accross the board and reaches the other side,
+     *                       it can be promoted to a Queen, Rook, Knight, or Bishop. This variable is null unless
+     *                       it is a pawn in this situation.
      */
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
@@ -36,7 +38,8 @@ public class ChessMove {
      */
     public boolean isACastle (ChessBoard board) {
         // Make sure the piece moving is a king.
-        if (board.getPiece(this.startPosition) != null && board.getPiece(this.startPosition).getPieceType() == ChessPiece.PieceType.KING) {
+        if (board.getPiece(this.startPosition) != null &&
+                board.getPiece(this.startPosition).getPieceType() == ChessPiece.PieceType.KING) {
             int oldColumn = startPosition.getColumn();
             int newColumn = endPosition.getColumn();
 
@@ -71,7 +74,15 @@ public class ChessMove {
         ChessPiece enPassantPawn = board.getPiece(enPassantPawnPosition);
 
         // All of the logic of the comments above is contained in this return statement.
-        return pieceAtNewLocation == null && currentPiece.getPieceType() == ChessPiece.PieceType.PAWN && enPassantPawn != null && enPassantPawn.getPieceType() == ChessPiece.PieceType.PAWN && horizontalMovement == 1 && verticalMovement==1;
+
+        if (pieceAtNewLocation == null && currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            if (enPassantPawn != null && enPassantPawn.getPieceType() == ChessPiece.PieceType.PAWN && horizontalMovement == 1) {
+                if (verticalMovement==1) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -98,7 +109,16 @@ public class ChessMove {
         ChessPiece enPassantPawn = board.getPiece(lastMove.getEndPosition());
 
         // The return implements all of the logic stated above.
-        return board.getPiece(this.startPosition).getPieceType() == ChessPiece.PieceType.PAWN && board.getPiece(this.endPosition) == null && enPassantPawn.getPieceType() == ChessPiece.PieceType.PAWN && Math.abs(lastMoveDistance) == 2 && newPawnColumnNumber == lastMoveColumnNumber && oldPawnColumnNumber != newPawnColumnNumber;
+        if (board.getPiece(this.startPosition).getPieceType() == ChessPiece.PieceType.PAWN) {
+            if (board.getPiece(this.endPosition) == null && enPassantPawn.getPieceType() == ChessPiece.PieceType.PAWN) {
+                if (Math.abs(lastMoveDistance) == 2 && newPawnColumnNumber == lastMoveColumnNumber &&
+                        oldPawnColumnNumber != newPawnColumnNumber) {
+                    //return true.
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -175,7 +195,8 @@ public class ChessMove {
     }
 
     /**
-     * This is the override method of equals. It makes it so that you can compare moves and decide that they are equivalent even if they are different objects.
+     * This is the override method of equals. It makes it so that you can compare moves
+     * and decide that they are equivalent even if they are different objects.
      * @param o   the reference object with which to compare.
      * @return it will return true or false. True if each component of the move is the same, false otherwise.
      */
@@ -185,7 +206,13 @@ public class ChessMove {
             return false;
         }
         ChessMove chessMove = (ChessMove) o;
-        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && pieceType == chessMove.pieceType;
+
+        if (Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition)) {
+            if (pieceType == chessMove.pieceType) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

@@ -9,7 +9,8 @@ public class QueenPiece extends ChessPiece{
     }
 
 
-    public void queenMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, ChessGame.TeamColor myColor) {
+    public void queenMoves (int currentRow, int currentCol, ChessBoard board, Collection<ChessMove> ourList,
+                            ChessPosition myPosition, ChessGame.TeamColor myColor) {
         RookPiece newRook = new RookPiece(myColor);
         BishopPiece newBishop = new BishopPiece(myColor);
         newRook.rookMoves(currentRow,currentCol,board,ourList,myPosition,myColor);
