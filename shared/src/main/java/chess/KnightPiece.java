@@ -32,3 +32,4 @@ public class KnightPiece extends ChessPiece{
     }
 
 }
+

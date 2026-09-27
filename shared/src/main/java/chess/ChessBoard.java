@@ -12,7 +12,7 @@ import java.util.Objects;
 public class ChessBoard {
 
     //Here is where I make the grid for the chessPieces to be.
-    private ChessPiece[][] squares = new ChessPiece[8][8];
+    private final ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
         
     }
@@ -129,18 +129,18 @@ public class ChessBoard {
      */
     @Override
     public String toString() {
-        String totalString = "ChessBoard{\n";
+        StringBuilder totalString = new StringBuilder("ChessBoard{\n");
         //Loop through all of the squares starting at the top left and working left to right and top to bottom.
         for (int i=7; i>=0;i--) {
             for (int j=0; j<=7; j++) {
-                totalString += "|";
-                totalString += format(squares[i][j]);
+                totalString.append("|");
+                totalString.append(format(squares[i][j]));
             }
-            totalString += "|";
-            totalString += "\n";
+            totalString.append("|");
+            totalString.append("\n");
         }
-        totalString += "}";
-        return totalString;
+        totalString.append("}");
+        return totalString.toString();
     }
 
 }

@@ -44,11 +44,7 @@ public class ChessMove {
             int newColumn = endPosition.getColumn();
 
             // Check it moves 2 squares to the left or to the right.
-            if (((oldColumn - newColumn) == 2) || ((oldColumn - newColumn) == -2)) {
-                return true;
-            } else {
-                return false;
-            }
+            return ((oldColumn - newColumn) == 2) || ((oldColumn - newColumn) == -2);
         } else { // if the piece is NOT a king.
             return false;
         }
@@ -77,9 +73,7 @@ public class ChessMove {
 
         if (pieceAtNewLocation == null && currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
             if (enPassantPawn != null && enPassantPawn.getPieceType() == ChessPiece.PieceType.PAWN && horizontalMovement == 1) {
-                if (verticalMovement==1) {
-                    return true;
-                }
+                return verticalMovement == 1;
             }
         }
         return false;
@@ -111,11 +105,8 @@ public class ChessMove {
         // The return implements all of the logic stated above.
         if (board.getPiece(this.startPosition).getPieceType() == ChessPiece.PieceType.PAWN) {
             if (board.getPiece(this.endPosition) == null && enPassantPawn.getPieceType() == ChessPiece.PieceType.PAWN) {
-                if (Math.abs(lastMoveDistance) == 2 && newPawnColumnNumber == lastMoveColumnNumber &&
-                        oldPawnColumnNumber != newPawnColumnNumber) {
-                    //return true.
-                    return true;
-                }
+                return Math.abs(lastMoveDistance) == 2 && newPawnColumnNumber == lastMoveColumnNumber &&
+                        oldPawnColumnNumber != newPawnColumnNumber;
             }
         }
         return false;
@@ -173,11 +164,7 @@ public class ChessMove {
         }
 
         // If the move is not valid, throw an exception.
-        if (!moveIsValid) {
-            return true;
-        }
-
-        return false;
+        return !moveIsValid;
     }
 
 
@@ -208,9 +195,7 @@ public class ChessMove {
         ChessMove chessMove = (ChessMove) o;
 
         if (Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition)) {
-            if (pieceType == chessMove.pieceType) {
-                return true;
-            }
+            return pieceType == chessMove.pieceType;
         }
         return false;
     }

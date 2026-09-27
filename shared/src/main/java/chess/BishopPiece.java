@@ -60,3 +60,4 @@ public class BishopPiece extends ChessPiece {
     }
 
 }
+

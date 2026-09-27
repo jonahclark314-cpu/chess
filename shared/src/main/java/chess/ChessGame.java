@@ -112,12 +112,9 @@ public class ChessGame {
                     actualPossibleMoves.add(move);
                 }
             }
-            // If the move LOOKS like it is trying to be en passant but breaks some rule, do nothign.
-            else if (move.looksLikeShouldBeEnPassant(this.board)) {
-                continue;
-            }
+            // If the move LOOKS like it is trying to be en passant but breaks some rule, do nothing.
             // If it is any other move, simply check if the move results in a check, if not, add it to the list.
-            else if (notInCheckAfterMove(move, this.board.getPiece(startPosition).getTeamColor())) {
+            else if (!move.looksLikeShouldBeEnPassant(this.board) && notInCheckAfterMove(move, this.board.getPiece(startPosition).getTeamColor())) {
                 actualPossibleMoves.add(move);
             }
         }
@@ -131,7 +128,6 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        boolean actuallyMadeMove = false;
 
         // Check if move is silly or not. Moves are silly when they are out of turn,
         // completely break rules, or if you are moving a piece that doesn't exist.
@@ -443,3 +439,4 @@ public class ChessGame {
         return Objects.hash(board, currentTurn);
     }
 }
+
