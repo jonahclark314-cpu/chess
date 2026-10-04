@@ -1,13 +1,18 @@
 package server;
 import dataaccess.AlreadyTakenException;
 import dataaccess.BadRequestException;
+import dataaccess.GameDAO;
 import dataaccess.UnauthorizedException;
+import model.GameData;
 import service.*;
 import io.javalin.*;
 import com.google.gson.Gson;
 
 
 import io.javalin.http.Context;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Server {
 
@@ -28,12 +33,31 @@ public class Server {
                 .delete("/db", this::clearDb)
                 .post("/user",this::register)
                 .post("/session",this::logIn)
-                .delete("/session",this::logOut);
+                .delete("/session",this::logOut)
+                .get("/game",this::getGames);
 
 
         // Register your endpoints and exception handlers here.
 
     }
+
+
+    private void getGames (Context ctx) {
+        try {
+            this.authService.verifyLoggedIn(ctx.header("authorization"));
+            ArrayList<GameData> games = this.gameService.listGames();
+            ctx.status(200);
+            ListGamesResult gamesResult = new ListGamesResult(games);
+            ctx.result(serializer.toJson(gamesResult));
+        } catch (UnauthorizedException e) {
+            ctx.status(401);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        }
+    }
+
 
     private void logOut (Context ctx) {
         try {

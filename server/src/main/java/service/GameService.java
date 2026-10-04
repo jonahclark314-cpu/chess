@@ -1,6 +1,8 @@
 package service;
 import dataaccess.*;
-import io.javalin.http.Context;
+import model.GameData;
+
+import java.util.ArrayList;
 
 public class GameService {
     GameDAO gameDAO;
@@ -11,5 +13,9 @@ public class GameService {
 
     public void clear() {
         this.gameDAO.clear();
+    }
+
+    public ArrayList<GameData> listGames () {
+        return this.gameDAO.listGames();
     }
 }
