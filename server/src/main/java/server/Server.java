@@ -27,13 +27,27 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .delete("/db", this::clearDb)
                 .post("/user",this::register)
-                .post("/session",this::logIn);
+                .post("/session",this::logIn)
+                .delete("/session",this::logOut);
 
 
         // Register your endpoints and exception handlers here.
 
     }
 
+    private void logOut (Context ctx) {
+        try {
+            this.authService.logOut(ctx.header("authorization"));
+            ctx.status(200);
+            ctx.result("{}");
+        } catch (UnauthorizedException e) {
+            ctx.status(401);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        }
+    }
 
     private void logIn(Context ctx) {
         try {

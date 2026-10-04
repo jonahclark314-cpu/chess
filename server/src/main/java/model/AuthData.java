@@ -3,8 +3,8 @@ package model;
 import java.util.UUID;
 
 public class AuthData {
-    String authToken;
-    String username;
+    private final String authToken;
+    private final String username;
 
     public AuthData (String username) {
         this.username = username;
@@ -13,6 +13,10 @@ public class AuthData {
 
     public String getAuthToken() {
         return this.authToken;
+    }
+
+    public String getUsername() {
+        return this.username;
     }
 
     public static String generateToken() {

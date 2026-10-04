@@ -1,6 +1,5 @@
 package service;
 import dataaccess.*;
-import io.javalin.http.Context;
 
 
 public class AuthService {
@@ -17,6 +16,20 @@ public class AuthService {
     public LoginResult createAuth(String username) {
         String authToken = this.authDAO.createAuth(username);
         return new LoginResult(username,authToken);
+    }
+
+
+    public void logOut(String authToken) throws UnauthorizedException {
+        verifyLoggedIn(authToken);
+        this.authDAO.deleteAuth(authToken);
+    }
+
+    public void verifyLoggedIn (String authToken) throws UnauthorizedException {
+        String username = this.authDAO.getAuth(authToken);
+
+        if (username.isEmpty()) {
+            throw new UnauthorizedException("Error: unauthorized");
+        }
     }
 }
 

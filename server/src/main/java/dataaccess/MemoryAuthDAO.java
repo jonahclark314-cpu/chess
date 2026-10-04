@@ -1,6 +1,5 @@
 package dataaccess;
 
-import java.sql.Array;
 import java.util.ArrayList;
 
 import model.*;
@@ -23,7 +22,21 @@ public class MemoryAuthDAO implements AuthDAO{
     public String createAuth(String username) {
         AuthData auth = new AuthData(username);
         this.listOfAuthData.add(auth);
-        String authString = auth.getAuthToken();
-        return authString;
+        return auth.getAuthToken();
+    }
+
+    @Override
+    public String getAuth(String authToken) {
+        for (AuthData user : this.listOfAuthData) {
+            if (user.getAuthToken().equals(authToken)) {
+                return user.getUsername();
+            }
+        }
+        return "";
+    }
+
+    @Override
+    public void deleteAuth(String authToken) {
+        this.listOfAuthData.removeIf(user -> user.getAuthToken().equals(authToken));
     }
 }
