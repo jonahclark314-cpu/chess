@@ -25,6 +25,18 @@ public class UserService {
         }
     }
 
+    public void verifyUser(LoginRequest login) throws UnauthorizedException, BadRequestException {
+        if (login.getUsername() == null || login.getPassword() == null) {
+            throw new BadRequestException("Error: bad request");
+        }
+        UserData user = this.userDAO.getUser(login.getUsername());
+        if (user == null){
+            throw new UnauthorizedException("Error: unauthorized. Username is incorrect");
+        }
+        if (!user.getPassword().equals(login.getPassword())) {
+            throw new UnauthorizedException("Error: unauthorized");
+        }
+    }
 
     public void clear() {
         this.userDAO.clear();

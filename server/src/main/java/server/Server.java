@@ -1,6 +1,7 @@
 package server;
 import dataaccess.AlreadyTakenException;
 import dataaccess.BadRequestException;
+import dataaccess.UnauthorizedException;
 import service.*;
 import io.javalin.*;
 import com.google.gson.Gson;
@@ -25,7 +26,8 @@ public class Server {
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .delete("/db", this::clearDb)
-                .post("/user",this::register);
+                .post("/user",this::register)
+                .post("/session",this::logIn);
 
 
         // Register your endpoints and exception handlers here.
@@ -33,11 +35,28 @@ public class Server {
     }
 
 
+    private void logIn(Context ctx) {
+        try {
+            LoginRequest request = serializer.fromJson(ctx.body (), LoginRequest.class);
+            this.userService.verifyUser(request);
+            LoginResult auth = this.authService.createAuth(request.getUsername());
+            ctx.status(200);
+            ctx.result(serializer.toJson(auth));
+        } catch (UnauthorizedException e){
+            ctx.status(401);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        } catch (BadRequestException e) {
+            ctx.status(400);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        }
+    }
 
     private void register (Context ctx) {
-
-        RegisterRequest request = serializer.fromJson(ctx.body(),RegisterRequest.class);
         try {
+            RegisterRequest request = serializer.fromJson(ctx.body(),RegisterRequest.class);
             this.userService.createUser(request);
             LoginResult auth = this.authService.createAuth(request.getUsername());
             ctx.status(200);
@@ -49,6 +68,9 @@ public class Server {
         } catch (BadRequestException e) {
             ctx.status(400);
             ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        } catch (Exception e){
+            ctx.status(500);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
         }
 
     }
@@ -56,11 +78,16 @@ public class Server {
 
 
     private void clearDb(Context ctx) {
-        this.authService.clear();
-        this.gameService.clear();
-        this.userService.clear();
-        ctx.status(200);
-        ctx.result("{}");
+        try {
+            this.authService.clear();
+            this.gameService.clear();
+            this.userService.clear();
+            ctx.status(200);
+            ctx.result("{}");
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        }
     }
 
 
