@@ -37,7 +37,17 @@ public class GameService {
         }
         gameDAO.createGame(name, random);
         return random;
+
+    }
+
+
+    public GameData getGame (int gameID) throws BadRequestException {
+        GameData game = gameDAO.getGame(gameID);
+        if (game == null) {
+            throw new BadRequestException("Error: bad request");
         }
+        return game;
+    }
 
 
     public static int getPossibleGameID() {

@@ -9,6 +9,7 @@ public class SetColorGameRequest {
     public SetColorGameRequest (int gameID, String playerColor, String username) {
         this.playerColor = playerColor;
         this.gameID = gameID;
+        this.username = username;
     }
 
     public int getGameID() {
