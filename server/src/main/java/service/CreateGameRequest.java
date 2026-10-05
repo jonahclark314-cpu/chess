@@ -1,9 +1,5 @@
 package service;
 
-import model.GameData;
-
-import java.util.ArrayList;
-
 public class CreateGameRequest {
     String gameName;
 

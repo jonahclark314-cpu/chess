@@ -1,0 +1,211 @@
+package passoff.server;
+
+import chess.ChessGame;
+import org.junit.jupiter.api.*;
+import passoff.model.*;
+import server.Server;
+import service.RegisterRequest;
+import service.*;
+import server.*;
+import model.*;
+import dataaccess.*;
+import java.net.HttpURLConnection;
+import java.util.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
+
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class JonahAuthServiceTests {
+
+    private static TestUser existingUser;
+    private static TestUser newUser;
+    private static TestCreateRequest createRequest;
+    private static TestServerFacade serverFacade;
+    private static Server server;
+    private String existingAuth;
+    private static AuthService authService;
+    private static UserService userService;
+    // ### TESTING SETUP/CLEANUP ###
+
+    @AfterAll
+    static void stopServer() {
+        server.stop();
+    }
+
+    @BeforeAll
+    public static void init() {
+        userService = new UserService();
+
+        authService = new AuthService();
+        server = new Server();
+        var port = server.run(0);
+        System.out.println("Started test HTTP server on " + port);
+
+        serverFacade = new TestServerFacade("localhost", Integer.toString(port));
+        existingUser = new TestUser("ExistingUser", "existingUserPassword", "eu@mail.com");
+        newUser = new TestUser("NewUser", "newUserPassword", "nu@mail.com");
+        createRequest = new TestCreateRequest("testGame");
+    }
+
+    @BeforeEach
+    public void setup() {
+        serverFacade.clear();
+        userService.clear();
+        authService.clear();
+        //one user already logged in
+        TestAuthResult regResult = serverFacade.register(existingUser);
+        existingAuth = regResult.getAuthToken();
+    }
+
+    @Test
+    @Order(1)
+    @DisplayName("can get username from auth token")
+    public void getUsernameFromAuthToken() {
+        String targetUsername = "jonahClark";
+
+        RegisterRequest registerRequest = new RegisterRequest(targetUsername, "password", "email1@mail.com");
+        userService.createUser(registerRequest);
+
+        LoginResult authData = authService.createAuth(targetUsername);
+        String authToken = authData.getAuthToken();
+
+        String username = authService.getUserUsername(authToken);
+        Assertions.assertEquals(targetUsername, username);
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("Get Username fails if authToken is wrong")
+    public void getUsernameFromWrongAuthToken() {
+        String targetUsername = "jonahClark";
+
+        RegisterRequest registerRequest = new RegisterRequest(targetUsername, "password", "email1@mail.com");
+        userService.createUser(registerRequest);
+
+        authService.createAuth(targetUsername);
+
+        Assertions.assertThrows(BadRequestException.class, () -> {authService.getUserUsername("authToken");});
+    }
+
+
+    @Test
+    @Order(3)
+    @DisplayName("Get Username fails if authToken is empty")
+    public void getUsernameFromEmptyAuthToken() {
+        String targetUsername = "jonahClark";
+
+        RegisterRequest registerRequest = new RegisterRequest(targetUsername, "password", "email1@mail.com");
+        userService.createUser(registerRequest);
+
+        authService.createAuth(targetUsername);
+
+        Assertions.assertThrows(BadRequestException.class, () -> {authService.getUserUsername("");});
+    }
+
+
+    @Test
+    @Order(4)
+    @DisplayName("Verify Logged In")
+    public void verifyLoggedIn() {
+        String targetUsername = "jonahClark";
+
+        RegisterRequest registerRequest = new RegisterRequest(targetUsername, "password", "email1@mail.com");
+        userService.createUser(registerRequest);
+
+        String authToken = authService.createAuth(targetUsername).getAuthToken();
+
+        Assertions.assertDoesNotThrow(() -> {
+            authService.verifyLoggedIn(authToken);
+        }, "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("Verify Logged In: Error if no authToken")
+    public void verifyLoggedIn_NoAuthToken() {
+        Assertions.assertThrows(UnauthorizedException.class, () -> {authService.verifyLoggedIn("");});
+
+        String targetUsername = "jonahClark";
+
+        RegisterRequest registerRequest = new RegisterRequest(targetUsername, "password", "email1@mail.com");
+        userService.createUser(registerRequest);
+
+        authService.createAuth(targetUsername).getAuthToken();
+        Assertions.assertThrows(UnauthorizedException.class, () -> {authService.verifyLoggedIn("notTheRightAuthToken");});
+
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("Verify Logged Out")
+    public void verifyLoggedOut() {
+        String targetUsername = "jonahClark";
+
+        RegisterRequest registerRequest = new RegisterRequest(targetUsername, "password", "email1@mail.com");
+        userService.createUser(registerRequest);
+
+        String authToken = authService.createAuth(targetUsername).getAuthToken();
+
+        Assertions.assertDoesNotThrow(() -> {
+            authService.verifyLoggedIn(authToken);
+        }, "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
+
+        Assertions.assertDoesNotThrow(() -> {
+            authService.logOut(authToken);
+        }, "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
+
+
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("Verify Logged Out: Error if not logged in")
+    public void verifyLoggedOut_Error() {
+        String targetUsername = "jonahClark";
+
+
+        RegisterRequest registerRequest = new RegisterRequest(targetUsername, "password", "email1@mail.com");
+        userService.createUser(registerRequest);
+
+        String authToken = authService.createAuth(targetUsername).getAuthToken();
+
+        Assertions.assertDoesNotThrow(() -> {
+            authService.verifyLoggedIn(authToken);
+        }, "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
+
+        Assertions.assertDoesNotThrow(() -> {
+            authService.logOut(authToken);
+        }, "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
+
+        Assertions.assertThrows(UnauthorizedException.class, () -> {authService.verifyLoggedIn(authToken);});
+
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("can Create Auth from a username")
+    public void verifyCreateAuth() {
+        String targetUsername = "jonahClark";
+
+        RegisterRequest registerRequest = new RegisterRequest(targetUsername, "password", "email1@mail.com");
+        userService.createUser(registerRequest);
+
+        Assertions.assertInstanceOf(LoginResult.class,authService.createAuth(targetUsername));
+
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("Error Create Auth empty username")
+    public void verifyCreateAuth_Error() {
+        String targetUsername = "jonahClark";
+
+        RegisterRequest registerRequest = new RegisterRequest(targetUsername, "password", "email1@mail.com");
+        userService.createUser(registerRequest);
+
+        Assertions.assertThrows(BadRequestException.class, () -> {authService.createAuth("");});
+    }
+
+
+
+}

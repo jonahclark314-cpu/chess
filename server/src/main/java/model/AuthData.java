@@ -6,9 +6,9 @@ public class AuthData {
     private final String authToken;
     private final String username;
 
-    public AuthData (String username) {
+    public AuthData (String username, String authToken) {
         this.username = username;
-        this.authToken = generateToken();
+        this.authToken = authToken;
     }
 
     public String getAuthToken() {
@@ -18,9 +18,4 @@ public class AuthData {
     public String getUsername() {
         return this.username;
     }
-
-    public static String generateToken() {
-        return UUID.randomUUID().toString();
-    }
-
 }

@@ -63,17 +63,22 @@ public class GameService {
         }
         if (color.equals("WHITE")) {
             if (game.getWhiteUsername() == null) {
-                this.gameDAO.setWhiteColor(username, gameID);
+                game.setWhiteUsername((username));
+                this.gameDAO.updateGame(game);
             } else {
                 throw new AlreadyTakenException("Error: already taken");
             }
         }
-        if (color.equals("BLACK")) {
+        else if (color.equals("BLACK")) {
             if (game.getBlackUsername() == null) {
-                this.gameDAO.setBlackColor(username, gameID);
+                game.setBlackUsername(username);
+                this.gameDAO.updateGame(game);
             } else {
                 throw new AlreadyTakenException("Error: already taken");
             }
+        }
+        else {
+            throw new BadRequestException("Error: bad request");
         }
     }
 

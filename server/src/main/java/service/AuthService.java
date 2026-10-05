@@ -1,6 +1,8 @@
 package service;
 import dataaccess.*;
 
+import java.util.UUID;
+
 
 public class AuthService {
     AuthDAO authDAO;
@@ -14,7 +16,10 @@ public class AuthService {
     }
 
     public LoginResult createAuth(String username) {
-        String authToken = this.authDAO.createAuth(username);
+        if (username == null || username.isEmpty()) {
+            throw new BadRequestException("Error: bad request");
+        }
+        String authToken = this.authDAO.createAuth(username,generateAuthToken());
         return new LoginResult(username,authToken);
     }
 
@@ -32,8 +37,23 @@ public class AuthService {
         }
     }
 
-    public String getUserUsername (String authToken) {
-        return this.authDAO.getAuth(authToken);
+    public String getUserUsername (String authToken) throws BadRequestException {
+        if (authToken == null || authToken.isEmpty()) {
+            throw new BadRequestException("Error: bad request");
+        }
+        String username = this.authDAO.getAuth(authToken);
+        if (username.isEmpty()) {
+            throw new BadRequestException("Error: bad request");
+        }
+        return username;
     }
+
+
+    private static String generateAuthToken() {
+        return UUID.randomUUID().toString();
+    }
+
+
+
 }
 

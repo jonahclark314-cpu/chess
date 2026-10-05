@@ -8,7 +8,7 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     @Override
-    public String createAuth(String username) {
+    public String createAuth(String username, String authToken) {
         return "";
     }
 

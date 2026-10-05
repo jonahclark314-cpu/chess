@@ -35,142 +35,93 @@ public class Server {
                 .post("/game",this::createGame)
                 .put("/game",this::joinGame);
 
+        javalin.exception(BadRequestException.class, (e, ctx) -> {
+            ctx.status(400);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        });
 
-        // Register your endpoints and exception handlers here.
+        javalin.exception(UnauthorizedException.class, (e, ctx) -> {
+            ctx.status(401);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        });
 
+        javalin.exception(AlreadyTakenException.class, (e, ctx) -> {
+            ctx.status(403);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        });
+
+        javalin.exception(Exception.class, (e, ctx) -> {
+            ctx.status(500);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        });
     }
 
 
     private void joinGame (Context ctx) {
-        try {
-            this.authService.verifyLoggedIn(ctx.header("authorization"));
-            String username = this.authService.getUserUsername(ctx.header("authorization"));
-            SetColorGameRequest request = serializer.fromJson(ctx.body(), SetColorGameRequest.class);
-            request.setUsername(username);
-            this.gameService.setColorForGame(request);
-            ctx.status(200);
-            ctx.result("{}");
-        } catch (BadRequestException e) {
-            ctx.status(400);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
-        } catch (UnauthorizedException e) {
-            ctx.status(401);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
-        } catch (AlreadyTakenException e) {
-            ctx.status(403);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
-        } catch (Exception e) {
-            ctx.status(500);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
-        }
+        this.authService.verifyLoggedIn(ctx.header("authorization"));
+        String username = this.authService.getUserUsername(ctx.header("authorization"));
+        SetColorGameRequest request = serializer.fromJson(ctx.body(), SetColorGameRequest.class);
+        request.setUsername(username);
+        this.gameService.setColorForGame(request);
+        ctx.status(200);
+        ctx.result("{}");
+
     }
 
     private void createGame (Context ctx) {
-        try {
-            this.authService.verifyLoggedIn(ctx.header("authorization"));
-            CreateGameRequest request = serializer.fromJson(ctx.body(), CreateGameRequest.class);
-            int GameId = this.gameService.createGame(request);
-            ctx.status(200);
-            ctx.result(serializer.toJson(new GameResponse(GameId)));
-        } catch (BadRequestException e) {
-            ctx.status(400);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
-        } catch (UnauthorizedException e) {
-            ctx.status(401);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
-        } catch (Exception e) {
-            ctx.status(500);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
-        }
+        this.authService.verifyLoggedIn(ctx.header("authorization"));
+        CreateGameRequest request = serializer.fromJson(ctx.body(), CreateGameRequest.class);
+        int GameId = this.gameService.createGame(request);
+        ctx.status(200);
+        ctx.result(serializer.toJson(new GameResponse(GameId)));
     }
 
 
 
 
         private void getGames (Context ctx) {
-        try {
             this.authService.verifyLoggedIn(ctx.header("authorization"));
             ArrayList<GameData> games = this.gameService.listGames();
             ctx.status(200);
             ListGamesResult gamesResult = new ListGamesResult(games);
             ctx.result(serializer.toJson(gamesResult));
-        } catch (UnauthorizedException e) {
-            ctx.status(401);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
-        } catch (Exception e) {
-            ctx.status(500);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+
         }
-    }
 
 
     private void logOut (Context ctx) {
-        try {
-            this.authService.logOut(ctx.header("authorization"));
-            ctx.status(200);
-            ctx.result("{}");
-        } catch (UnauthorizedException e) {
-            ctx.status(401);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
-        } catch (Exception e) {
-            ctx.status(500);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
-        }
+        this.authService.logOut(ctx.header("authorization"));
+        ctx.status(200);
+        ctx.result("{}");
+
     }
 
     private void logIn(Context ctx) {
-        try {
-            LoginRequest request = serializer.fromJson(ctx.body (), LoginRequest.class);
-            this.userService.verifyUser(request);
-            LoginResult auth = this.authService.createAuth(request.getUsername());
-            ctx.status(200);
-            ctx.result(serializer.toJson(auth));
-        } catch (UnauthorizedException e){
-            ctx.status(401);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
-        } catch (BadRequestException e) {
-            ctx.status(400);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
-        } catch (Exception e) {
-            ctx.status(500);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
-        }
+        LoginRequest request = serializer.fromJson(ctx.body (), LoginRequest.class);
+        this.userService.verifyUser(request);
+        LoginResult auth = this.authService.createAuth(request.getUsername());
+        ctx.status(200);
+        ctx.result(serializer.toJson(auth));
+
     }
 
     private void register (Context ctx) {
-        try {
-            RegisterRequest request = serializer.fromJson(ctx.body(),RegisterRequest.class);
-            this.userService.createUser(request);
-            LoginResult auth = this.authService.createAuth(request.getUsername());
-            ctx.status(200);
-            ctx.result(serializer.toJson(auth));
-
-        } catch (AlreadyTakenException e){
-            ctx.status(403);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
-        } catch (BadRequestException e) {
-            ctx.status(400);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
-        } catch (Exception e){
-            ctx.status(500);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
-        }
-
+        RegisterRequest request = serializer.fromJson(ctx.body(),RegisterRequest.class);
+        this.userService.createUser(request);
+        LoginResult auth = this.authService.createAuth(request.getUsername());
+        ctx.status(200);
+        ctx.result(serializer.toJson(auth));
     }
 
 
 
     private void clearDb(Context ctx) {
-        try {
-            this.authService.clear();
-            this.gameService.clear();
-            this.userService.clear();
-            ctx.status(200);
-            ctx.result("{}");
-        } catch (Exception e) {
-            ctx.status(500);
-            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
-        }
+        this.authService.clear();
+        this.gameService.clear();
+        this.userService.clear();
+        ctx.status(200);
+        ctx.result("{}");
+
     }
 
 

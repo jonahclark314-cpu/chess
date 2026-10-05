@@ -35,4 +35,9 @@ public class MemoryUserDAO implements UserDAO{
         listOfUserData.add(newUser);
     }
 
+    @Override
+    public int getLenUsers() {
+        return listOfUserData.size();
+    }
+
 }

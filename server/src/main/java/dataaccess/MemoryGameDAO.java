@@ -50,20 +50,14 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public void setWhiteColor(String username, int gameID) {
-        for (GameData game : this.listOfGameData) {
-            if (game.getGameID() == gameID) {
-                game.setWhiteUsername(username);
+    public void updateGame(GameData game) {
+        for (GameData currentGame : this.listOfGameData) {
+            if (currentGame.getGameID() == game.getGameID()) {
+                listOfGameData.remove(currentGame);
+                listOfGameData.add(game);
             }
         }
     }
-    @Override
-    public void setBlackColor(String username, int gameID) {
-        for (GameData game : this.listOfGameData) {
-            if (game.getGameID() == gameID) {
-                game.setBlackUsername(username);
-            }
-        }
-    }
+
 
 }

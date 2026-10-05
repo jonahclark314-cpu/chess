@@ -12,7 +12,7 @@ public class UserService {
 
 
     public void createUser (RegisterRequest registerRequest) throws AlreadyTakenException, BadRequestException {
-        if (registerRequest.getEmail().isEmpty() || registerRequest.getPassword().isEmpty() || registerRequest.getUsername().isEmpty() || registerRequest.getPassword() == null || registerRequest.getEmail() == null || registerRequest.getUsername() == null) {
+        if (registerRequest.getPassword() == null || registerRequest.getEmail() == null || registerRequest.getUsername() == null || registerRequest.getEmail().isEmpty() || registerRequest.getPassword().isEmpty() || registerRequest.getUsername().isEmpty()) {
             throw new BadRequestException("Error: bad request");
         }
 
@@ -26,7 +26,7 @@ public class UserService {
     }
 
     public void verifyUser(LoginRequest login) throws UnauthorizedException, BadRequestException {
-        if (login.getUsername().isEmpty() || login.getPassword().isEmpty() || login.getPassword() == null || login.getUsername() == null) {
+        if (login.getPassword() == null || login.getUsername() == null || login.getUsername().isEmpty() || login.getPassword().isEmpty()) {
             throw new BadRequestException("Error: bad request");
         }
         UserData user = this.userDAO.getUser(login.getUsername());
@@ -41,4 +41,9 @@ public class UserService {
     public void clear() {
         this.userDAO.clear();
     }
+
+    public int getLenUsers() {
+        return userDAO.getLenUsers();
+    }
+
 }

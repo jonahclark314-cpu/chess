@@ -18,4 +18,9 @@ public class SQLUserDAO implements UserDAO{
     public void createUser(RegisterRequest userInfo) {
 
     }
+
+    @Override
+    public int getLenUsers() {
+        return 0;
+    }
 }

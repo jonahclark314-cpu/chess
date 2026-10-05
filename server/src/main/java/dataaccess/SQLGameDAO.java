@@ -31,12 +31,8 @@ public class SQLGameDAO implements GameDAO{
     }
 
     @Override
-    public void setWhiteColor(String username, int gameID) {
+    public void updateGame(GameData game) {
 
     }
 
-    @Override
-    public void setBlackColor(String username, int gameID) {
-
-    }
 }
