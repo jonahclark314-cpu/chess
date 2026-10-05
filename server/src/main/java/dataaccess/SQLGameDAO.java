@@ -14,4 +14,29 @@ public class SQLGameDAO implements GameDAO{
     public ArrayList<GameData> listGames() {
         return null;
     }
+
+    @Override
+    public GameData getGame(int gameID) {
+        return null;
+    }
+
+    @Override
+    public boolean cantUseGameID(int gameID) {
+        return false;
+    }
+
+    @Override
+    public void createGame(String gameName, int gameID) {
+
+    }
+
+    @Override
+    public void setWhiteColor(String username, int gameID) {
+
+    }
+
+    @Override
+    public void setBlackColor(String username, int gameID) {
+
+    }
 }

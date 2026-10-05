@@ -1,8 +1,5 @@
 package server;
-import dataaccess.AlreadyTakenException;
-import dataaccess.BadRequestException;
-import dataaccess.GameDAO;
-import dataaccess.UnauthorizedException;
+import dataaccess.*;
 import model.GameData;
 import service.*;
 import io.javalin.*;
@@ -34,7 +31,9 @@ public class Server {
                 .post("/user",this::register)
                 .post("/session",this::logIn)
                 .delete("/session",this::logOut)
-                .get("/game",this::getGames);
+                .get("/game",this::getGames)
+                .post("/game",this::createGame)
+                .put("/game",this::joinGame);
 
 
         // Register your endpoints and exception handlers here.
@@ -42,7 +41,53 @@ public class Server {
     }
 
 
-    private void getGames (Context ctx) {
+    private void joinGame (Context ctx) {
+        try {
+            this.authService.verifyLoggedIn(ctx.header("authorization"));
+            String username = this.authService.getUserUsername(ctx.header("authorization"));
+            SetColorGameRequest request = serializer.fromJson(ctx.body(), SetColorGameRequest.class);
+            request.setUsername(username);
+            this.gameService.setColorForGame(request);
+            ctx.status(200);
+            ctx.result("{}");
+        } catch (BadRequestException e) {
+            ctx.status(400);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        } catch (UnauthorizedException e) {
+            ctx.status(401);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        } catch (AlreadyTakenException e) {
+            ctx.status(403);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        }
+    }
+
+    private void createGame (Context ctx) {
+        try {
+            this.authService.verifyLoggedIn(ctx.header("authorization"));
+            CreateGameRequest request = serializer.fromJson(ctx.body(), CreateGameRequest.class);
+            int GameId = this.gameService.createGame(request);
+            ctx.status(200);
+            ctx.result(serializer.toJson(new GameResponse(GameId)));
+        } catch (BadRequestException e) {
+            ctx.status(400);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        } catch (UnauthorizedException e) {
+            ctx.status(401);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result(serializer.toJson(new ErrorResult(e.getMessage())));
+        }
+    }
+
+
+
+
+        private void getGames (Context ctx) {
         try {
             this.authService.verifyLoggedIn(ctx.header("authorization"));
             ArrayList<GameData> games = this.gameService.listGames();

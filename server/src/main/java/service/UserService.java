@@ -11,7 +11,7 @@ public class UserService {
     }
 
 
-    public void createUser (RegisterRequest registerRequest) throws AlreadyTakenException {
+    public void createUser (RegisterRequest registerRequest) throws AlreadyTakenException, BadRequestException {
         if (registerRequest.getEmail().isEmpty() || registerRequest.getPassword().isEmpty() || registerRequest.getUsername().isEmpty() || registerRequest.getPassword() == null || registerRequest.getEmail() == null || registerRequest.getUsername() == null) {
             throw new BadRequestException("Error: bad request");
         }

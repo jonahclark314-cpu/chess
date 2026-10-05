@@ -31,5 +31,9 @@ public class AuthService {
             throw new UnauthorizedException("Error: unauthorized");
         }
     }
+
+    public String getUserUsername (String authToken) {
+        return this.authDAO.getAuth(authToken);
+    }
 }
 
