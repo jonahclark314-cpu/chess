@@ -21,7 +21,7 @@ public class GameService {
     }
 
     public int createGame(CreateGameRequest request) throws BadRequestException {
-        String name = request.gameName();
+        String name = request.getGameName();
         if (name.isEmpty()) {
             throw new BadRequestException("Error: bad request");
         }
@@ -52,20 +52,24 @@ public class GameService {
         String color = request.getPlayerColor();
         String username = request.getUsername();
 
+        if (username.isEmpty() || color == null) {
+            throw new BadRequestException("Error: bad request");
+        }
+
         GameData game = this.gameDAO.getGame(gameID);
 
         if (game == null) {
             throw new BadRequestException("Error: bad request");
         }
         if (color.equals("WHITE")) {
-            if (game.getWhiteUsername().isEmpty()) {
+            if (game.getWhiteUsername() == null) {
                 this.gameDAO.setWhiteColor(username, gameID);
             } else {
                 throw new AlreadyTakenException("Error: already taken");
             }
         }
         if (color.equals("BLACK")) {
-            if (game.getBlackUsername().isEmpty()) {
+            if (game.getBlackUsername() == null) {
                 this.gameDAO.setBlackColor(username, gameID);
             } else {
                 throw new AlreadyTakenException("Error: already taken");

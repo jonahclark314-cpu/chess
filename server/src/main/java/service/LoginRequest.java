@@ -10,10 +10,16 @@ public class LoginRequest {
 
 
     public String getUsername () {
+        if (this.username == null) {
+            return "";
+        }
         return username;
     }
 
     public String getPassword () {
+        if (this.password == null) {
+            return "";
+        }
         return password;
     }
 

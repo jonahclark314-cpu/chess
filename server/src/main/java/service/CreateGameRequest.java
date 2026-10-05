@@ -4,4 +4,17 @@ import model.GameData;
 
 import java.util.ArrayList;
 
-public record CreateGameRequest(String gameName) {}
+public class CreateGameRequest {
+    String gameName;
+
+    public CreateGameRequest (String gameName) {
+        this.gameName = gameName;
+    }
+
+    public String getGameName() {
+        if (this.gameName == null) {
+            return "";
+        }
+        return gameName;
+    }
+}
