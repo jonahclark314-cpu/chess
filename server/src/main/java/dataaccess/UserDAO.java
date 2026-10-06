@@ -4,8 +4,8 @@ import service.RegisterRequest;
 
 public interface UserDAO {
 
-    public void clear();
-    public UserData getUser(String username);
-    public void createUser(RegisterRequest userInfo);
-    public int getLenUsers();
+    void clear();
+    UserData getUser(String username);
+    void createUser(RegisterRequest userInfo);
+    int getLenUsers();
 }

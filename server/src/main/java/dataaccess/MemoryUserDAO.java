@@ -1,10 +1,8 @@
 package dataaccess;
 import model.*;
-import org.eclipse.jetty.server.Authentication;
 import service.RegisterRequest;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 
 public class MemoryUserDAO implements UserDAO{
@@ -22,7 +20,7 @@ public class MemoryUserDAO implements UserDAO{
     @Override
     public UserData getUser(String username) {
         for (UserData person : this.listOfUserData) {
-            if (username.equals(person.getUsername())) {
+            if (username.equals(person.username())) {
                 return person;
             }
         }
@@ -31,7 +29,7 @@ public class MemoryUserDAO implements UserDAO{
 
     @Override
     public void createUser(RegisterRequest userInfo) {
-        UserData newUser = new UserData(userInfo.getUsername(), userInfo.getPassword(), userInfo.getEmail());
+        UserData newUser = new UserData(userInfo.username(), userInfo.password(), userInfo.email());
         listOfUserData.add(newUser);
     }
 

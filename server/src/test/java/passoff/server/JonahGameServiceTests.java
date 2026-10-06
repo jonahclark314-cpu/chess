@@ -1,6 +1,5 @@
 package passoff.server;
 
-import chess.ChessGame;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 import server.Server;
@@ -9,20 +8,13 @@ import service.*;
 import server.*;
 import model.*;
 import dataaccess.*;
-import java.net.HttpURLConnection;
 import java.util.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class JonahGameServiceTests {
 
-    private static TestUser existingUser;
-    private static TestUser newUser;
-    private static TestCreateRequest createRequest;
     private static TestServerFacade serverFacade;
     private static Server server;
-    private String existingAuth;
     private static AuthService authService;
     private static UserService userService;
     private static GameService gameService;
@@ -40,12 +32,8 @@ public class JonahGameServiceTests {
         authService = new AuthService();
         server = new Server();
         var port = server.run(0);
-        System.out.println("Started test HTTP server on " + port);
 
         serverFacade = new TestServerFacade("localhost", Integer.toString(port));
-        existingUser = new TestUser("ExistingUser", "existingUserPassword", "eu@mail.com");
-        newUser = new TestUser("NewUser", "newUserPassword", "nu@mail.com");
-        createRequest = new TestCreateRequest("testGame");
     }
 
     @BeforeEach
@@ -55,8 +43,6 @@ public class JonahGameServiceTests {
         authService.clear();
         gameService.clear();
         //one user already logged in
-        TestAuthResult regResult = serverFacade.register(existingUser);
-        existingAuth = regResult.getAuthToken();
     }
 
     @Test
@@ -65,19 +51,19 @@ public class JonahGameServiceTests {
     public void setColorCorrect() {
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
         userService.createUser(request1);
-        LoginResult loggedIn = authService.createAuth("User");
+        authService.createAuth("User");
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
         int gameID = gameService.createGame(gameRequest);
 
         SetColorGameRequest setColorRequest = new SetColorGameRequest(gameID,"WHITE","User");
-        Assertions.assertDoesNotThrow(()->{gameService.setColorForGame(setColorRequest);});
+        Assertions.assertDoesNotThrow(()-> gameService.setColorForGame(setColorRequest));
 
         GameData game = gameService.getGame(gameID);
         Assertions.assertEquals("User", game.getWhiteUsername());
 
 
         SetColorGameRequest setColorRequest2 = new SetColorGameRequest(gameID,"BLACK","User");
-        Assertions.assertDoesNotThrow(()->{gameService.setColorForGame(setColorRequest2);});
+        Assertions.assertDoesNotThrow(()-> gameService.setColorForGame(setColorRequest2));
 
         GameData game2 = gameService.getGame(gameID);
         Assertions.assertEquals("User", game2.getBlackUsername());
@@ -90,32 +76,32 @@ public class JonahGameServiceTests {
     public void setColorCorrect_Errors() {
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
         userService.createUser(request1);
-        LoginResult loggedIn = authService.createAuth("User");
+        authService.createAuth("User");
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
         int gameID = gameService.createGame(gameRequest);
 
-        Assertions.assertThrows(BadRequestException.class, ()->{gameService.setColorForGame(null);});
+        Assertions.assertThrows(BadRequestException.class, ()-> gameService.setColorForGame(null));
 
         SetColorGameRequest setColorRequest = new SetColorGameRequest(gameID,"","User");
-        Assertions.assertThrows(BadRequestException.class, ()->{gameService.setColorForGame(setColorRequest);});
+        Assertions.assertThrows(BadRequestException.class, ()-> gameService.setColorForGame(setColorRequest));
 
         SetColorGameRequest setColorRequest2 = new SetColorGameRequest(0,"WHITE","User");
-        Assertions.assertThrows(BadRequestException.class, ()->{gameService.setColorForGame(setColorRequest2);});
+        Assertions.assertThrows(BadRequestException.class, ()-> gameService.setColorForGame(setColorRequest2));
 
         SetColorGameRequest setColorRequest3 = new SetColorGameRequest(gameID,"BLUE","User");
-        Assertions.assertThrows(BadRequestException.class, ()->{gameService.setColorForGame(setColorRequest3);});
+        Assertions.assertThrows(BadRequestException.class, ()-> gameService.setColorForGame(setColorRequest3));
 
         SetColorGameRequest setColorRequestCorrect = new SetColorGameRequest(gameID,"BLACK","User");
-        Assertions.assertDoesNotThrow(()->{gameService.setColorForGame(setColorRequestCorrect);});
+        Assertions.assertDoesNotThrow(()-> gameService.setColorForGame(setColorRequestCorrect));
 
         SetColorGameRequest setColorRequestCorrect2 = new SetColorGameRequest(gameID,"BLACK","User");
-        Assertions.assertThrows(AlreadyTakenException.class, ()->{gameService.setColorForGame(setColorRequestCorrect2);});
+        Assertions.assertThrows(AlreadyTakenException.class, ()-> gameService.setColorForGame(setColorRequestCorrect2));
 
         SetColorGameRequest setColorRequestCorrect3 = new SetColorGameRequest(gameID,"WHITE","User");
-        Assertions.assertDoesNotThrow(()->{gameService.setColorForGame(setColorRequestCorrect3);});
+        Assertions.assertDoesNotThrow(()-> gameService.setColorForGame(setColorRequestCorrect3));
 
         SetColorGameRequest setColorRequestCorrect4 = new SetColorGameRequest(gameID,"WHITE","User");
-        Assertions.assertThrows(AlreadyTakenException.class, ()->{gameService.setColorForGame(setColorRequestCorrect4);});
+        Assertions.assertThrows(AlreadyTakenException.class, ()-> gameService.setColorForGame(setColorRequestCorrect4));
     }
 
     @Test
@@ -124,7 +110,7 @@ public class JonahGameServiceTests {
     public void canGetGame() {
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
         userService.createUser(request1);
-        LoginResult loggedIn = authService.createAuth("User");
+        authService.createAuth("User");
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
         int gameID = gameService.createGame(gameRequest);
 
@@ -133,15 +119,15 @@ public class JonahGameServiceTests {
 
     @Test
     @Order(4)
-    @DisplayName("Error when tries to get nonexistant Game")
+    @DisplayName("Error when tries to get nonexistent Game")
     public void canGetGame_Error() {
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
         userService.createUser(request1);
-        LoginResult loggedIn = authService.createAuth("User");
+        authService.createAuth("User");
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
-        int gameID = gameService.createGame(gameRequest);
+        gameService.createGame(gameRequest);
 
-        Assertions.assertThrows(BadRequestException.class, () -> {gameService.getGame(123);});
+        Assertions.assertThrows(BadRequestException.class, () -> gameService.getGame(123));
     }
 
     @Test
@@ -150,7 +136,7 @@ public class JonahGameServiceTests {
     public void canCreateGame() {
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
         userService.createUser(request1);
-        LoginResult loggedIn = authService.createAuth("User");
+        authService.createAuth("User");
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
 
         int length = gameService.listGames().size();
@@ -169,9 +155,9 @@ public class JonahGameServiceTests {
     public void canCreateGame_Error() {
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
         userService.createUser(request1);
-        LoginResult loggedIn = authService.createAuth("User");
+        authService.createAuth("User");
         CreateGameRequest gameRequest = new CreateGameRequest(null);
-        Assertions.assertThrows(BadRequestException.class, () -> {gameService.createGame(gameRequest);});
+        Assertions.assertThrows(BadRequestException.class, () -> gameService.createGame(gameRequest));
     }
 
 
@@ -181,7 +167,7 @@ public class JonahGameServiceTests {
     public void canGetListOfGames() {
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
         userService.createUser(request1);
-        LoginResult loggedIn = authService.createAuth("User");
+        authService.createAuth("User");
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
 
         Assertions.assertInstanceOf(ArrayList.class,gameService.listGames());

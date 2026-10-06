@@ -1,28 +1,17 @@
 package passoff.server;
 
-import chess.ChessGame;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
-import server.Server;
 import service.RegisterRequest;
 import service.*;
 import server.*;
-import model.*;
 import dataaccess.*;
-import java.net.HttpURLConnection;
-import java.util.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class JonahAuthServiceTests {
 
-    private static TestUser existingUser;
-    private static TestUser newUser;
-    private static TestCreateRequest createRequest;
     private static TestServerFacade serverFacade;
     private static Server server;
-    private String existingAuth;
     private static AuthService authService;
     private static UserService userService;
     // ### TESTING SETUP/CLEANUP ###
@@ -39,12 +28,8 @@ public class JonahAuthServiceTests {
         authService = new AuthService();
         server = new Server();
         var port = server.run(0);
-        System.out.println("Started test HTTP server on " + port);
 
         serverFacade = new TestServerFacade("localhost", Integer.toString(port));
-        existingUser = new TestUser("ExistingUser", "existingUserPassword", "eu@mail.com");
-        newUser = new TestUser("NewUser", "newUserPassword", "nu@mail.com");
-        createRequest = new TestCreateRequest("testGame");
     }
 
     @BeforeEach
@@ -53,8 +38,6 @@ public class JonahAuthServiceTests {
         userService.clear();
         authService.clear();
         //one user already logged in
-        TestAuthResult regResult = serverFacade.register(existingUser);
-        existingAuth = regResult.getAuthToken();
     }
 
     @Test
@@ -67,7 +50,7 @@ public class JonahAuthServiceTests {
         userService.createUser(registerRequest);
 
         LoginResult authData = authService.createAuth(targetUsername);
-        String authToken = authData.getAuthToken();
+        String authToken = authData.authToken();
 
         String username = authService.getUserUsername(authToken);
         Assertions.assertEquals(targetUsername, username);
@@ -84,7 +67,7 @@ public class JonahAuthServiceTests {
 
         authService.createAuth(targetUsername);
 
-        Assertions.assertThrows(BadRequestException.class, () -> {authService.getUserUsername("authToken");});
+        Assertions.assertThrows(BadRequestException.class, () -> authService.getUserUsername("authToken"));
     }
 
 
@@ -99,7 +82,7 @@ public class JonahAuthServiceTests {
 
         authService.createAuth(targetUsername);
 
-        Assertions.assertThrows(BadRequestException.class, () -> {authService.getUserUsername("");});
+        Assertions.assertThrows(BadRequestException.class, () -> authService.getUserUsername(""));
     }
 
 
@@ -112,26 +95,24 @@ public class JonahAuthServiceTests {
         RegisterRequest registerRequest = new RegisterRequest(targetUsername, "password", "email1@mail.com");
         userService.createUser(registerRequest);
 
-        String authToken = authService.createAuth(targetUsername).getAuthToken();
+        String authToken = authService.createAuth(targetUsername).authToken();
 
-        Assertions.assertDoesNotThrow(() -> {
-            authService.verifyLoggedIn(authToken);
-        }, "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
+        Assertions.assertDoesNotThrow(() -> authService.verifyLoggedIn(authToken), "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
     }
 
     @Test
     @Order(5)
     @DisplayName("Verify Logged In: Error if no authToken")
     public void verifyLoggedIn_NoAuthToken() {
-        Assertions.assertThrows(UnauthorizedException.class, () -> {authService.verifyLoggedIn("");});
+        Assertions.assertThrows(UnauthorizedException.class, () -> authService.verifyLoggedIn(""));
 
         String targetUsername = "jonahClark";
 
         RegisterRequest registerRequest = new RegisterRequest(targetUsername, "password", "email1@mail.com");
         userService.createUser(registerRequest);
 
-        authService.createAuth(targetUsername).getAuthToken();
-        Assertions.assertThrows(UnauthorizedException.class, () -> {authService.verifyLoggedIn("notTheRightAuthToken");});
+//        authService.createAuth(targetUsername).getAuthToken();
+        Assertions.assertThrows(UnauthorizedException.class, () -> authService.verifyLoggedIn("notTheRightAuthToken"));
 
     }
 
@@ -144,15 +125,11 @@ public class JonahAuthServiceTests {
         RegisterRequest registerRequest = new RegisterRequest(targetUsername, "password", "email1@mail.com");
         userService.createUser(registerRequest);
 
-        String authToken = authService.createAuth(targetUsername).getAuthToken();
+        String authToken = authService.createAuth(targetUsername).authToken();
 
-        Assertions.assertDoesNotThrow(() -> {
-            authService.verifyLoggedIn(authToken);
-        }, "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
+        Assertions.assertDoesNotThrow(() -> authService.verifyLoggedIn(authToken), "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
 
-        Assertions.assertDoesNotThrow(() -> {
-            authService.logOut(authToken);
-        }, "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
+        Assertions.assertDoesNotThrow(() -> authService.logOut(authToken), "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
 
 
     }
@@ -167,17 +144,13 @@ public class JonahAuthServiceTests {
         RegisterRequest registerRequest = new RegisterRequest(targetUsername, "password", "email1@mail.com");
         userService.createUser(registerRequest);
 
-        String authToken = authService.createAuth(targetUsername).getAuthToken();
+        String authToken = authService.createAuth(targetUsername).authToken();
 
-        Assertions.assertDoesNotThrow(() -> {
-            authService.verifyLoggedIn(authToken);
-        }, "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
+        Assertions.assertDoesNotThrow(() -> authService.verifyLoggedIn(authToken), "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
 
-        Assertions.assertDoesNotThrow(() -> {
-            authService.logOut(authToken);
-        }, "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
+        Assertions.assertDoesNotThrow(() -> authService.logOut(authToken), "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
 
-        Assertions.assertThrows(UnauthorizedException.class, () -> {authService.verifyLoggedIn(authToken);});
+        Assertions.assertThrows(UnauthorizedException.class, () -> authService.verifyLoggedIn(authToken));
 
     }
 
@@ -203,7 +176,7 @@ public class JonahAuthServiceTests {
         RegisterRequest registerRequest = new RegisterRequest(targetUsername, "password", "email1@mail.com");
         userService.createUser(registerRequest);
 
-        Assertions.assertThrows(BadRequestException.class, () -> {authService.createAuth("");});
+        Assertions.assertThrows(BadRequestException.class, () -> authService.createAuth(""));
     }
 
 

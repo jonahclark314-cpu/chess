@@ -1,6 +1,5 @@
 package passoff.server;
 
-import chess.ChessGame;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 import server.Server;
@@ -9,20 +8,14 @@ import service.*;
 import server.*;
 import model.*;
 import dataaccess.*;
-import java.net.HttpURLConnection;
 import java.util.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class JonahUserServiceTests {
 
-    private static TestUser existingUser;
-    private static TestUser newUser;
-    private static TestCreateRequest createRequest;
     private static TestServerFacade serverFacade;
     private static Server server;
-    private String existingAuth;
     private static UserService userService;
     // ### TESTING SETUP/CLEANUP ###
 
@@ -36,12 +29,8 @@ public class JonahUserServiceTests {
         userService = new UserService();
         server = new Server();
         var port = server.run(0);
-        System.out.println("Started test HTTP server on " + port);
 
         serverFacade = new TestServerFacade("localhost", Integer.toString(port));
-        existingUser = new TestUser("ExistingUser", "existingUserPassword", "eu@mail.com");
-        newUser = new TestUser("NewUser", "newUserPassword", "nu@mail.com");
-        createRequest = new TestCreateRequest("testGame");
     }
 
     @BeforeEach
@@ -50,8 +39,6 @@ public class JonahUserServiceTests {
 
         userService.clear();
         //one user already logged in
-        TestAuthResult regResult = serverFacade.register(existingUser);
-        existingAuth = regResult.getAuthToken();
     }
 
     @Test
@@ -60,9 +47,7 @@ public class JonahUserServiceTests {
     public void canCreateUser() {
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
 
-        Assertions.assertDoesNotThrow(() -> {
-            userService.createUser(request1);
-        }, "createUser should execute successfully for a new user without throwing exceptions.");
+        Assertions.assertDoesNotThrow(() -> userService.createUser(request1), "createUser should execute successfully for a new user without throwing exceptions.");
 
 
         Assertions.assertEquals(1,userService.getLenUsers());
@@ -85,9 +70,7 @@ public class JonahUserServiceTests {
         }
         RegisterRequest request2 = new RegisterRequest("DuplicateUser", "differentPassword", "email2@mail.com");
 
-        Assertions.assertThrows(AlreadyTakenException.class, () -> {
-            userService.createUser(request2);
-        });
+        Assertions.assertThrows(AlreadyTakenException.class, () -> userService.createUser(request2));
     }
 
     @Test
@@ -154,9 +137,7 @@ public class JonahUserServiceTests {
 
         LoginRequest request = new LoginRequest("username", "password");
 
-        Assertions.assertDoesNotThrow(() -> {
-            userService.verifyUser(request);
-        }, "verifyUser should execute successfully for a valid user without throwing exceptions.");
+        Assertions.assertDoesNotThrow(() -> userService.verifyUser(request), "verifyUser should execute successfully for a valid user without throwing exceptions.");
 
     }
 
@@ -173,9 +154,7 @@ public class JonahUserServiceTests {
         }
         LoginRequest request = new LoginRequest("", "password");
 
-        Assertions.assertThrows(BadRequestException.class,() -> {
-            userService.verifyUser(request);
-        }, "username is empty.");
+        Assertions.assertThrows(BadRequestException.class,() -> userService.verifyUser(request), "username is empty.");
 
     }
 
@@ -192,9 +171,7 @@ public class JonahUserServiceTests {
         }
         LoginRequest request = new LoginRequest("username", "");
 
-        Assertions.assertThrows(BadRequestException.class,() -> {
-            userService.verifyUser(request);
-        }, "password is empty.");
+        Assertions.assertThrows(BadRequestException.class,() -> userService.verifyUser(request), "password is empty.");
 
     }
 
@@ -211,9 +188,7 @@ public class JonahUserServiceTests {
         }
         LoginRequest request = new LoginRequest("username", "passwordWRONG");
 
-        Assertions.assertThrows(UnauthorizedException.class,() -> {
-            userService.verifyUser(request);
-        }, "Password is wrong.");
+        Assertions.assertThrows(UnauthorizedException.class,() -> userService.verifyUser(request), "Password is wrong.");
 
     }
 
@@ -224,16 +199,7 @@ public class JonahUserServiceTests {
 
         LoginRequest request = new LoginRequest("username", "password");
 
-        Assertions.assertThrows(UnauthorizedException.class,() -> {
-            userService.verifyUser(request);
-        }, "User Doesnt exist.");
+        Assertions.assertThrows(UnauthorizedException.class,() -> userService.verifyUser(request));
 
     }
-
-
-
-
-
-
-
 }

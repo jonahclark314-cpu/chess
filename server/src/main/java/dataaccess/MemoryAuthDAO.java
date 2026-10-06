@@ -22,14 +22,14 @@ public class MemoryAuthDAO implements AuthDAO{
     public String createAuth(String username, String authToken) {
         AuthData auth = new AuthData(username, authToken);
         this.listOfAuthData.add(auth);
-        return auth.getAuthToken();
+        return auth.authToken();
     }
 
     @Override
     public String getAuth(String authToken) {
         for (AuthData user : this.listOfAuthData) {
-            if (user.getAuthToken().equals(authToken)) {
-                return user.getUsername();
+            if (user.authToken().equals(authToken)) {
+                return user.username();
             }
         }
         return "";
@@ -37,6 +37,6 @@ public class MemoryAuthDAO implements AuthDAO{
 
     @Override
     public void deleteAuth(String authToken) {
-        this.listOfAuthData.removeIf(user -> user.getAuthToken().equals(authToken));
+        this.listOfAuthData.removeIf(user -> user.authToken().equals(authToken));
     }
 }

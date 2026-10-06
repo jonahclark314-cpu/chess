@@ -9,7 +9,6 @@ import com.google.gson.Gson;
 import io.javalin.http.Context;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Server {
 
@@ -108,7 +107,7 @@ public class Server {
     private void register (Context ctx) {
         RegisterRequest request = serializer.fromJson(ctx.body(),RegisterRequest.class);
         this.userService.createUser(request);
-        LoginResult auth = this.authService.createAuth(request.getUsername());
+        LoginResult auth = this.authService.createAuth(request.username());
         ctx.status(200);
         ctx.result(serializer.toJson(auth));
     }

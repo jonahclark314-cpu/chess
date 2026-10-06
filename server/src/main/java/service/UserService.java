@@ -1,6 +1,5 @@
 package service;
 import dataaccess.*;
-import io.javalin.http.Context;
 import model.*;
 
 public class UserService {
@@ -12,11 +11,11 @@ public class UserService {
 
 
     public void createUser (RegisterRequest registerRequest) throws AlreadyTakenException, BadRequestException {
-        if (registerRequest.getPassword() == null || registerRequest.getEmail() == null || registerRequest.getUsername() == null || registerRequest.getEmail().isEmpty() || registerRequest.getPassword().isEmpty() || registerRequest.getUsername().isEmpty()) {
+        if (registerRequest.password() == null || registerRequest.email() == null || registerRequest.username() == null || registerRequest.email().isEmpty() || registerRequest.password().isEmpty() || registerRequest.username().isEmpty()) {
             throw new BadRequestException("Error: bad request");
         }
 
-        UserData user = userDAO.getUser(registerRequest.getUsername());
+        UserData user = userDAO.getUser(registerRequest.username());
 
         if (user == null) {
             userDAO.createUser(registerRequest);
@@ -33,7 +32,7 @@ public class UserService {
         if (user == null){
             throw new UnauthorizedException("Error: unauthorized. Username is incorrect");
         }
-        if (!user.getPassword().equals(login.getPassword())) {
+        if (!user.password().equals(login.getPassword())) {
             throw new UnauthorizedException("Error: unauthorized");
         }
     }

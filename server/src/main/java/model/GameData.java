@@ -4,11 +4,11 @@ import chess.*;
 
 
 public class GameData {
-    int gameID;
-    String whiteUsername;
-    String blackUsername;
-    String gameName;
-    ChessGame game;
+    private final int gameID;
+    private String whiteUsername;
+    private String blackUsername;
+    private final String gameName;
+    private final ChessGame game;
 
     public GameData(String name, int gameID) {
         this.gameName = name;

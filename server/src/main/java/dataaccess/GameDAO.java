@@ -5,11 +5,10 @@ import model.GameData;
 import java.util.ArrayList;
 
 public interface GameDAO {
-
-    public void clear();
-    public ArrayList<GameData> listGames();
-    public GameData getGame(int gameID);
-    public boolean cantUseGameID(int gameID);
-    public void createGame(String gameName, int gameID);
-    public void updateGame (GameData game);
+    void clear();
+    ArrayList<GameData> listGames();
+    GameData getGame(int gameID);
+    boolean cantUseGameID(int gameID);
+    void createGame(String gameName, int gameID);
+    void updateGame (GameData game);
 }
