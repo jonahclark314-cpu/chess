@@ -1,9 +1,7 @@
-package passoff.server;
+package service;
 
 import org.junit.jupiter.api.*;
-import passoff.model.*;
-import service.RegisterRequest;
-import service.*;
+import passoff.server.TestServerFacade;
 import server.*;
 import dataaccess.*;
 
@@ -23,9 +21,6 @@ public class JonahAuthServiceTests {
 
     @BeforeAll
     public static void init() {
-        userService = new UserService();
-
-        authService = new AuthService();
         server = new Server();
         var port = server.run(0);
 
@@ -35,8 +30,9 @@ public class JonahAuthServiceTests {
     @BeforeEach
     public void setup() {
         serverFacade.clear();
-        userService.clear();
-        authService.clear();
+        userService = new UserService();
+        authService = new AuthService();
+
         //one user already logged in
     }
 
@@ -171,6 +167,7 @@ public class JonahAuthServiceTests {
     @Order(9)
     @DisplayName("Error Create Auth empty username")
     public void verifyCreateAuth_Error() {
+
         String targetUsername = "jonahClark";
 
         RegisterRequest registerRequest = new RegisterRequest(targetUsername, "password", "email1@mail.com");
@@ -179,6 +176,15 @@ public class JonahAuthServiceTests {
         Assertions.assertThrows(BadRequestException.class, () -> authService.createAuth(""));
     }
 
+
+    @Test
+    @Order(9)
+    @DisplayName("Error Create Auth empty username: 2")
+    public void verifyCreateAuth_Error2() {
+        RegisterRequest registerRequest = new RegisterRequest(null, "password", "email1@mail.com");
+
+        Assertions.assertEquals("", registerRequest.username());
+    }
 
 
 }

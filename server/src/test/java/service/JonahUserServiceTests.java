@@ -1,15 +1,9 @@
-package passoff.server;
+package service;
 
 import org.junit.jupiter.api.*;
-import passoff.model.*;
+import passoff.server.TestServerFacade;
 import server.Server;
-import service.RegisterRequest;
-import service.*;
-import server.*;
-import model.*;
 import dataaccess.*;
-import java.util.*;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class JonahUserServiceTests {
@@ -26,7 +20,6 @@ public class JonahUserServiceTests {
 
     @BeforeAll
     public static void init() {
-        userService = new UserService();
         server = new Server();
         var port = server.run(0);
 
@@ -36,8 +29,9 @@ public class JonahUserServiceTests {
     @BeforeEach
     public void setup() {
         serverFacade.clear();
+        userService = new UserService();
 
-        userService.clear();
+
         //one user already logged in
     }
 
@@ -55,7 +49,21 @@ public class JonahUserServiceTests {
 
     }
 
+    @Test
+    @Order(1)
+    @DisplayName("Cannot create user if missing the Username, Password, or Email.")
+    public void canCreateUser_MissingPassEmailorUserName() {
+        RegisterRequest request1 = new RegisterRequest("", "password", "email1@mail.com");
+        Assertions.assertThrows(BadRequestException.class,() -> userService.createUser(request1));
 
+        RegisterRequest request2 = new RegisterRequest("User", "", "email1@mail.com");
+        Assertions.assertThrows(BadRequestException.class,() -> userService.createUser(request2));
+
+        RegisterRequest request3 = new RegisterRequest("User", "password", "");
+        Assertions.assertThrows(BadRequestException.class,() -> userService.createUser(request3));
+
+
+    }
 
     @Test
     @Order(2)
@@ -63,11 +71,8 @@ public class JonahUserServiceTests {
     public void registerDuplicateUser() {
         RegisterRequest request1 = new RegisterRequest("DuplicateUser", "password", "email1@mail.com");
 
-        try {
-            userService.createUser(request1);
-        } catch (Exception e) {
-            fail("You cant even register one person.");
-        }
+
+        userService.createUser(request1);
         RegisterRequest request2 = new RegisterRequest("DuplicateUser", "differentPassword", "email2@mail.com");
 
         Assertions.assertThrows(AlreadyTakenException.class, () -> userService.createUser(request2));
@@ -78,18 +83,10 @@ public class JonahUserServiceTests {
     @DisplayName("Clear works")
     public void testIfClearWorks() {
         RegisterRequest request = new RegisterRequest("Username", "password", "email1@mail.com");
+        userService.createUser(request);
 
-        try {
-            userService.createUser(request);
-        } catch (Exception e) {
-            fail("You cant even register a person.");
-        }
+        userService.clear();
 
-        try {
-            userService.clear();
-        } catch (Exception e) {
-            fail("Clearing does not work!");
-        }
 
         Assertions.assertEquals(0, userService.getLenUsers());
 
@@ -105,19 +102,11 @@ public class JonahUserServiceTests {
         RegisterRequest request1 = new RegisterRequest("Username1", "password", "email1@mail.com");
         RegisterRequest request2 = new RegisterRequest("Username2", "password", "email1@mail.com");
 
-        try {
-            userService.createUser(request1);
-            userService.createUser(request2);
-        } catch (Exception e) {
-            fail("You cant even register a person.");
-        }
+        userService.createUser(request1);
+        userService.createUser(request2);
         Assertions.assertEquals(2, userService.getLenUsers());
 
-        try {
-            userService.clear();
-        } catch (Exception e) {
-            fail("Clearing does not work!");
-        }
+        userService.clear();
 
         Assertions.assertEquals(0, userService.getLenUsers());
 
@@ -129,11 +118,7 @@ public class JonahUserServiceTests {
     public void VerifyUser() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email1@mail.com");
 
-        try {
-            userService.createUser(registerRequest);
-        } catch (Exception e) {
-            fail("You cant even register a person.");
-        }
+        userService.createUser(registerRequest);
 
         LoginRequest request = new LoginRequest("username", "password");
 
@@ -147,11 +132,7 @@ public class JonahUserServiceTests {
     public void VerifyUser_EmptyUser() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email1@mail.com");
 
-        try {
-            userService.createUser(registerRequest);
-        } catch (Exception e) {
-            fail("You cant even register a person.");
-        }
+        userService.createUser(registerRequest);
         LoginRequest request = new LoginRequest("", "password");
 
         Assertions.assertThrows(BadRequestException.class,() -> userService.verifyUser(request), "username is empty.");
@@ -164,11 +145,7 @@ public class JonahUserServiceTests {
     public void VerifyUser_EmptyPass() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email1@mail.com");
 
-        try {
-            userService.createUser(registerRequest);
-        } catch (Exception e) {
-            fail("You cant even register a person.");
-        }
+        userService.createUser(registerRequest);
         LoginRequest request = new LoginRequest("username", "");
 
         Assertions.assertThrows(BadRequestException.class,() -> userService.verifyUser(request), "password is empty.");
@@ -181,11 +158,7 @@ public class JonahUserServiceTests {
     public void VerifyUser_WrongPass() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email1@mail.com");
 
-        try {
-            userService.createUser(registerRequest);
-        } catch (Exception e) {
-            fail("You cant even register a person.");
-        }
+        userService.createUser(registerRequest);
         LoginRequest request = new LoginRequest("username", "passwordWRONG");
 
         Assertions.assertThrows(UnauthorizedException.class,() -> userService.verifyUser(request), "Password is wrong.");
@@ -196,7 +169,6 @@ public class JonahUserServiceTests {
     @Order(9)
     @DisplayName("Verify user: Doesnt work if user doesn't exist.")
     public void VerifyUser_BadUser() {
-
         LoginRequest request = new LoginRequest("username", "password");
 
         Assertions.assertThrows(UnauthorizedException.class,() -> userService.verifyUser(request));

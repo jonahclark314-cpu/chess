@@ -16,7 +16,7 @@ public class AuthService {
     }
 
     public LoginResult createAuth(String username) {
-        if (username == null || username.isEmpty()) {
+        if (username.isEmpty()) {
             throw new BadRequestException("Error: bad request");
         }
         String authToken = this.authDAO.createAuth(username,generateAuthToken());
@@ -38,7 +38,7 @@ public class AuthService {
     }
 
     public String getUserUsername (String authToken) throws BadRequestException {
-        if (authToken == null || authToken.isEmpty()) {
+        if (authToken.isEmpty()) {
             throw new BadRequestException("Error: bad request");
         }
         String username = this.authDAO.getAuth(authToken);

@@ -1,11 +1,8 @@
-package passoff.server;
+package service;
 
 import org.junit.jupiter.api.*;
-import passoff.model.*;
+import passoff.server.TestServerFacade;
 import server.Server;
-import service.RegisterRequest;
-import service.*;
-import server.*;
 import model.*;
 import dataaccess.*;
 import java.util.*;
@@ -27,9 +24,6 @@ public class JonahGameServiceTests {
 
     @BeforeAll
     public static void init() {
-        userService = new UserService();
-        gameService = new GameService();
-        authService = new AuthService();
         server = new Server();
         var port = server.run(0);
 
@@ -38,10 +32,10 @@ public class JonahGameServiceTests {
 
     @BeforeEach
     public void setup() {
+        userService = new UserService();
+        gameService = new GameService();
+        authService = new AuthService();
         serverFacade.clear();
-        userService.clear();
-        authService.clear();
-        gameService.clear();
         //one user already logged in
     }
 
@@ -72,30 +66,103 @@ public class JonahGameServiceTests {
 
     @Test
     @Order(2)
-    @DisplayName("Error when mess up change color")
-    public void setColorCorrect_Errors() {
+    @DisplayName("Error when mess up change color 1")
+    public void setColorCorrect_Errors1() {
+        RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
+        userService.createUser(request1);
+        authService.createAuth("User");
+        CreateGameRequest gameRequest = new CreateGameRequest("newGame");
+        gameService.createGame(gameRequest);
+
+        Assertions.assertThrows(BadRequestException.class, ()-> gameService.setColorForGame(null));
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("Error when mess up change color 2")
+    public void setColorCorrect_Errors2() {
+
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
         userService.createUser(request1);
         authService.createAuth("User");
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
         int gameID = gameService.createGame(gameRequest);
 
-        Assertions.assertThrows(BadRequestException.class, ()-> gameService.setColorForGame(null));
-
         SetColorGameRequest setColorRequest = new SetColorGameRequest(gameID,"","User");
         Assertions.assertThrows(BadRequestException.class, ()-> gameService.setColorForGame(setColorRequest));
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("Error when mess up change color 2.5")
+    public void setColorCorrect_Errors2_5() {
+
+        RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
+        userService.createUser(request1);
+        authService.createAuth("User");
+        CreateGameRequest gameRequest = new CreateGameRequest("newGame");
+        int gameID = gameService.createGame(gameRequest);
+
+        SetColorGameRequest setColorRequest = new SetColorGameRequest(gameID,"WHITE","");
+        Assertions.assertThrows(BadRequestException.class, ()-> gameService.setColorForGame(setColorRequest));
+    }
+
+
+
+    @Test
+    @Order(2)
+    @DisplayName("Error when mess up change color 3")
+    public void setColorCorrect_Errors3() {
+        RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
+        userService.createUser(request1);
+        authService.createAuth("User");
+        CreateGameRequest gameRequest = new CreateGameRequest("newGame");
+        gameService.createGame(gameRequest);
 
         SetColorGameRequest setColorRequest2 = new SetColorGameRequest(0,"WHITE","User");
         Assertions.assertThrows(BadRequestException.class, ()-> gameService.setColorForGame(setColorRequest2));
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("Error when mess up change color 3.5")
+    public void setColorCorrect_Errors3_5() {
+        RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
+        userService.createUser(request1);
+        authService.createAuth("User");
+        CreateGameRequest gameRequest = new CreateGameRequest("newGame");
+        int gameID = gameService.createGame(gameRequest);
 
         SetColorGameRequest setColorRequest3 = new SetColorGameRequest(gameID,"BLUE","User");
         Assertions.assertThrows(BadRequestException.class, ()-> gameService.setColorForGame(setColorRequest3));
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("Error when mess up change color 4")
+    public void setColorCorrect_Errors4() {
+        RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
+        userService.createUser(request1);
+        authService.createAuth("User");
+        CreateGameRequest gameRequest = new CreateGameRequest("newGame");
+        int gameID = gameService.createGame(gameRequest);
 
         SetColorGameRequest setColorRequestCorrect = new SetColorGameRequest(gameID,"BLACK","User");
         Assertions.assertDoesNotThrow(()-> gameService.setColorForGame(setColorRequestCorrect));
 
         SetColorGameRequest setColorRequestCorrect2 = new SetColorGameRequest(gameID,"BLACK","User");
         Assertions.assertThrows(AlreadyTakenException.class, ()-> gameService.setColorForGame(setColorRequestCorrect2));
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("Error when mess up change color 5")
+    public void setColorCorrect_Errors5() {
+        RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
+        userService.createUser(request1);
+        authService.createAuth("User");
+        CreateGameRequest gameRequest = new CreateGameRequest("newGame");
+        int gameID = gameService.createGame(gameRequest);
 
         SetColorGameRequest setColorRequestCorrect3 = new SetColorGameRequest(gameID,"WHITE","User");
         Assertions.assertDoesNotThrow(()-> gameService.setColorForGame(setColorRequestCorrect3));
@@ -103,6 +170,7 @@ public class JonahGameServiceTests {
         SetColorGameRequest setColorRequestCorrect4 = new SetColorGameRequest(gameID,"WHITE","User");
         Assertions.assertThrows(AlreadyTakenException.class, ()-> gameService.setColorForGame(setColorRequestCorrect4));
     }
+
 
     @Test
     @Order(3)

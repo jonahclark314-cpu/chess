@@ -26,15 +26,7 @@ public class GameService {
             throw new BadRequestException("Error: bad request");
         }
 
-        boolean cont = true;
         int random = getPossibleGameID();
-        while (cont) {
-            if (this.gameDAO.cantUseGameID(random)) {
-                random = getPossibleGameID();
-            } else {
-                cont = false;
-            }
-        }
         gameDAO.createGame(name, random);
         return random;
 
@@ -60,9 +52,14 @@ public class GameService {
         }
         int gameID = request.getGameID();
         String color = request.getPlayerColor();
+
+        if (color == null) {
+            throw new BadRequestException("Error: bad request");
+        }
+
         String username = request.getUsername();
 
-        if (username.isEmpty() || color == null) {
+        if (username.isEmpty()) {
             throw new BadRequestException("Error: bad request");
         }
 
