@@ -191,4 +191,48 @@ public class JonahAuthServiceTests {
         Assertions.assertThrows(BadRequestException.class,() -> authService.getUserUsername(null));
     }
 
+
+    // ADDITIONAL TESTS
+    @Test
+    @Order(11)
+    @DisplayName("Check if ErrorResult class is functional")
+    public void testErrorResultWorks() {
+        ErrorResult error = new ErrorResult("Error message");
+        Assertions.assertInstanceOf(ErrorResult.class, error);
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("Check if GameResponse class is functional.")
+    public void testGameResponseWorks() {
+        GameResponse response = new GameResponse(123456789);
+        Assertions.assertInstanceOf(GameResponse.class, response);
+        Assertions.assertEquals(123456789, response.gameID());
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("Check if ListGamesResult class is functional.")
+    public void testListGamesResultWorks() {
+        ListGamesResult response = new ListGamesResult(null);
+        Assertions.assertInstanceOf(ListGamesResult.class, response);
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("Check if LoginRequest class is functional.")
+    public void testLoginRequestWorks() {
+        LoginRequest request = new LoginRequest("Username","Password");
+        Assertions.assertInstanceOf(LoginRequest.class, request);
+        Assertions.assertEquals("Username",request.username());
+        Assertions.assertEquals("Password",request.password());
+        Assertions.assertEquals("LoginRequest{username='Username', password='Password'}",request.toString());
+
+        LoginRequest request2 = new LoginRequest(null,null);
+        Assertions.assertEquals("",request2.username());
+        Assertions.assertEquals("",request2.password());
+    }
+
+
+
 }
