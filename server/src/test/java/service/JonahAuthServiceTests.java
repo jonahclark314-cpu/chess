@@ -1,14 +1,12 @@
 package service;
 
 import org.junit.jupiter.api.*;
-import passoff.server.TestServerFacade;
 import server.*;
 import dataaccess.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class JonahAuthServiceTests {
 
-    private static TestServerFacade serverFacade;
     private static Server server;
     private static AuthService authService;
     private static UserService userService;
@@ -22,18 +20,13 @@ public class JonahAuthServiceTests {
     @BeforeAll
     public static void init() {
         server = new Server();
-        var port = server.run(0);
-
-        serverFacade = new TestServerFacade("localhost", Integer.toString(port));
+        server.run(0);
     }
 
     @BeforeEach
     public void setup() {
-        serverFacade.clear();
         userService = new UserService();
         authService = new AuthService();
-
-        //one user already logged in
     }
 
     @Test

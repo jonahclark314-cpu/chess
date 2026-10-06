@@ -1,7 +1,6 @@
 package service;
 
 import org.junit.jupiter.api.*;
-import passoff.server.TestServerFacade;
 import server.Server;
 import model.*;
 import dataaccess.*;
@@ -10,7 +9,6 @@ import java.util.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class JonahGameServiceTests {
 
-    private static TestServerFacade serverFacade;
     private static Server server;
     private static AuthService authService;
     private static UserService userService;
@@ -25,9 +23,7 @@ public class JonahGameServiceTests {
     @BeforeAll
     public static void init() {
         server = new Server();
-        var port = server.run(0);
-
-        serverFacade = new TestServerFacade("localhost", Integer.toString(port));
+        server.run(0);
     }
 
     @BeforeEach
@@ -35,8 +31,6 @@ public class JonahGameServiceTests {
         userService = new UserService();
         gameService = new GameService();
         authService = new AuthService();
-        serverFacade.clear();
-        //one user already logged in
     }
 
     @Test
