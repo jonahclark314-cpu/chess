@@ -41,7 +41,8 @@ public class JonahUserServiceTests {
     public void canCreateUser() {
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
 
-        Assertions.assertDoesNotThrow(() -> userService.createUser(request1), "createUser should execute successfully for a new user without throwing exceptions.");
+        Assertions.assertDoesNotThrow(() -> userService.createUser(request1),
+                "createUser should execute successfully for a new user without throwing exceptions.");
 
 
         Assertions.assertEquals(1,userService.getLenUsers());
@@ -52,7 +53,7 @@ public class JonahUserServiceTests {
     @Test
     @Order(1)
     @DisplayName("Cannot create user if missing the Username, Password, or Email.")
-    public void canCreateUser_MissingPassEmailorUserName() {
+    public void canCreateUser_MissingPassEmailUserName() {
         RegisterRequest request1 = new RegisterRequest("", "password", "email1@mail.com");
         Assertions.assertThrows(BadRequestException.class,() -> userService.createUser(request1));
 
@@ -122,7 +123,8 @@ public class JonahUserServiceTests {
 
         LoginRequest request = new LoginRequest("username", "password");
 
-        Assertions.assertDoesNotThrow(() -> userService.verifyUser(request), "verifyUser should execute successfully for a valid user without throwing exceptions.");
+        Assertions.assertDoesNotThrow(() -> userService.verifyUser(request),
+                "verifyUser should execute successfully for a valid user without throwing exceptions.");
 
     }
 

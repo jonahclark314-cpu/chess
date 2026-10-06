@@ -3,6 +3,9 @@ package dataaccess;
 import model.UserData;
 import service.RegisterRequest;
 
+/**
+ * This is the implementation that I will use once I get the db up.
+ */
 public class SQLUserDAO implements UserDAO{
     @Override
     public void clear() {

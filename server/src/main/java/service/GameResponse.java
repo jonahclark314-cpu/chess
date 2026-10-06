@@ -1,13 +1,8 @@
 package service;
 
-public class GameResponse {
-    int gameID;
-
-    public GameResponse(int gameID) {
-        this.gameID = gameID;
-    }
-
-    public int getGameID() {
-        return gameID;
-    }
+/**
+ * This is the response object for a new game creation. Packages it up into a something that JSON can send to client.
+ * @param gameID Just stores the Game's ID.
+ */
+public record GameResponse(int gameID) {
 }

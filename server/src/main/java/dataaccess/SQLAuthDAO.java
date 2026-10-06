@@ -1,5 +1,8 @@
 package dataaccess;
 
+/**
+ * This is the implementation that I will use once I get the db up.
+ */
 public class SQLAuthDAO implements AuthDAO{
 
     @Override

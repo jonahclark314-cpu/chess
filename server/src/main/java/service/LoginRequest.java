@@ -1,28 +1,27 @@
 package service;
 
-public class LoginRequest {
-    private final String username;
-    private final String password;
-    public LoginRequest(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
+import org.jetbrains.annotations.NotNull;
+
+public record LoginRequest(String username, String password) {
 
 
-    public String getUsername () {
+    @Override
+    public String username() {
         if (this.username == null) {
             return "";
         }
         return username;
     }
 
-    public String getPassword () {
+    @Override
+    public String password() {
         if (this.password == null) {
             return "";
         }
         return password;
     }
 
+    @NotNull
     @Override
     public String toString() {
         return "LoginRequest{" +

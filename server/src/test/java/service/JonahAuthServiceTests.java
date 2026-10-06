@@ -93,7 +93,8 @@ public class JonahAuthServiceTests {
 
         String authToken = authService.createAuth(targetUsername).authToken();
 
-        Assertions.assertDoesNotThrow(() -> authService.verifyLoggedIn(authToken), "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
+        Assertions.assertDoesNotThrow(() -> authService.verifyLoggedIn(authToken),
+                "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
     }
 
     @Test
@@ -123,9 +124,11 @@ public class JonahAuthServiceTests {
 
         String authToken = authService.createAuth(targetUsername).authToken();
 
-        Assertions.assertDoesNotThrow(() -> authService.verifyLoggedIn(authToken), "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
+        Assertions.assertDoesNotThrow(() -> authService.verifyLoggedIn(authToken),
+                "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
 
-        Assertions.assertDoesNotThrow(() -> authService.logOut(authToken), "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
+        Assertions.assertDoesNotThrow(() -> authService.logOut(authToken),
+                "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
 
 
     }
@@ -142,9 +145,11 @@ public class JonahAuthServiceTests {
 
         String authToken = authService.createAuth(targetUsername).authToken();
 
-        Assertions.assertDoesNotThrow(() -> authService.verifyLoggedIn(authToken), "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
+        Assertions.assertDoesNotThrow(() -> authService.verifyLoggedIn(authToken),
+                "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
 
-        Assertions.assertDoesNotThrow(() -> authService.logOut(authToken), "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
+        Assertions.assertDoesNotThrow(() -> authService.logOut(authToken),
+                "verifyLoggedIn should execute successfully for a valid user without throwing exceptions.");
 
         Assertions.assertThrows(UnauthorizedException.class, () -> authService.verifyLoggedIn(authToken));
 
@@ -186,5 +191,11 @@ public class JonahAuthServiceTests {
         Assertions.assertEquals("", registerRequest.username());
     }
 
+    @Test
+    @Order(10)
+    @DisplayName("Check if getUserUsername gives error if null username is put in.")
+    public void getUserUsername_Error() {
+        Assertions.assertThrows(BadRequestException.class,() -> authService.getUserUsername(null));
+    }
 
 }

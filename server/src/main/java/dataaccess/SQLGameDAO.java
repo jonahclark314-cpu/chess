@@ -4,6 +4,9 @@ import model.GameData;
 
 import java.util.ArrayList;
 
+/**
+ * This is the implementation that I will use once I get the db up.
+ */
 public class SQLGameDAO implements GameDAO{
     @Override
     public void clear() {
@@ -18,11 +21,6 @@ public class SQLGameDAO implements GameDAO{
     @Override
     public GameData getGame(int gameID) {
         return null;
-    }
-
-    @Override
-    public boolean cantUseGameID(int gameID) {
-        return false;
     }
 
     @Override
