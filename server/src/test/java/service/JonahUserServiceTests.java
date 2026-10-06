@@ -53,7 +53,7 @@ public class JonahUserServiceTests {
     @Test
     @Order(1)
     @DisplayName("Cannot create user if missing the Username, Password, or Email.")
-    public void canCreateUser_MissingPassEmailUserName() {
+    public void canCreateUserMissingPassEmailUserName() {
         RegisterRequest request1 = new RegisterRequest("", "password", "email1@mail.com");
         Assertions.assertThrows(BadRequestException.class,() -> userService.createUser(request1));
 
@@ -116,7 +116,7 @@ public class JonahUserServiceTests {
     @Test
     @Order(5)
     @DisplayName("Verify user")
-    public void VerifyUser() {
+    public void verifyUser() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email1@mail.com");
 
         userService.createUser(registerRequest);
@@ -131,7 +131,7 @@ public class JonahUserServiceTests {
     @Test
     @Order(6)
     @DisplayName("Verify user: Doesnt work if the username is empty.")
-    public void VerifyUser_EmptyUser() {
+    public void verifyUserEmptyUser() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email1@mail.com");
 
         userService.createUser(registerRequest);
@@ -144,7 +144,7 @@ public class JonahUserServiceTests {
     @Test
     @Order(7)
     @DisplayName("Verify user: Doesnt work if the Password is empty.")
-    public void VerifyUser_EmptyPass() {
+    public void verifyUserEmptyPass() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email1@mail.com");
 
         userService.createUser(registerRequest);
@@ -157,7 +157,7 @@ public class JonahUserServiceTests {
     @Test
     @Order(8)
     @DisplayName("Verify user: Doesnt work if the Password is wrong.")
-    public void VerifyUser_WrongPass() {
+    public void verifyUserWrongPass() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email1@mail.com");
 
         userService.createUser(registerRequest);
@@ -170,7 +170,7 @@ public class JonahUserServiceTests {
     @Test
     @Order(9)
     @DisplayName("Verify user: Doesnt work if user doesn't exist.")
-    public void VerifyUser_BadUser() {
+    public void verifyUserBadUser() {
         LoginRequest request = new LoginRequest("username", "password");
 
         Assertions.assertThrows(UnauthorizedException.class,() -> userService.verifyUser(request));

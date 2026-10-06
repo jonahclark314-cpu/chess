@@ -100,7 +100,7 @@ public class JonahAuthServiceTests {
     @Test
     @Order(5)
     @DisplayName("Verify Logged In: Error if no authToken")
-    public void verifyLoggedIn_NoAuthToken() {
+    public void verifyLoggedInNoAuthToken() {
         Assertions.assertThrows(UnauthorizedException.class, () -> authService.verifyLoggedIn(""));
 
         String targetUsername = "jonahClark";
@@ -136,7 +136,7 @@ public class JonahAuthServiceTests {
     @Test
     @Order(7)
     @DisplayName("Verify Logged Out: Error if not logged in")
-    public void verifyLoggedOut_Error() {
+    public void verifyLoggedOutError() {
         String targetUsername = "jonahClark";
 
 
@@ -171,7 +171,7 @@ public class JonahAuthServiceTests {
     @Test
     @Order(9)
     @DisplayName("Error Create Auth empty username")
-    public void verifyCreateAuth_Error() {
+    public void verifyCreateAuthError() {
 
         String targetUsername = "jonahClark";
 
@@ -185,7 +185,7 @@ public class JonahAuthServiceTests {
     @Test
     @Order(9)
     @DisplayName("Error Create Auth empty username: 2")
-    public void verifyCreateAuth_Error2() {
+    public void verifyCreateAuthError2() {
         RegisterRequest registerRequest = new RegisterRequest(null, "password", "email1@mail.com");
 
         Assertions.assertEquals("", registerRequest.username());
@@ -194,7 +194,7 @@ public class JonahAuthServiceTests {
     @Test
     @Order(10)
     @DisplayName("Check if getUserUsername gives error if null username is put in.")
-    public void getUserUsername_Error() {
+    public void getUserUsernameError() {
         Assertions.assertThrows(BadRequestException.class,() -> authService.getUserUsername(null));
     }
 

@@ -67,7 +67,7 @@ public class JonahGameServiceTests {
     @Test
     @Order(2)
     @DisplayName("Error when mess up change color 1")
-    public void setColorCorrect_Errors1() {
+    public void setColorCorrectErrors1() {
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
         userService.createUser(request1);
         authService.createAuth("User");
@@ -80,7 +80,7 @@ public class JonahGameServiceTests {
     @Test
     @Order(2)
     @DisplayName("Error when mess up change color 2")
-    public void setColorCorrect_Errors2() {
+    public void setColorCorrectErrors2() {
 
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
         userService.createUser(request1);
@@ -94,8 +94,8 @@ public class JonahGameServiceTests {
 
     @Test
     @Order(2)
-    @DisplayName("Error when mess up change color 2.5")
-    public void setColorCorrect_Errors2_5() {
+    @DisplayName("Error when mess up change color 7")
+    public void setColorCorrectErrors7() {
 
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
         userService.createUser(request1);
@@ -112,7 +112,7 @@ public class JonahGameServiceTests {
     @Test
     @Order(2)
     @DisplayName("Error when mess up change color 3")
-    public void setColorCorrect_Errors3() {
+    public void setColorCorrectErrors3() {
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
         userService.createUser(request1);
         authService.createAuth("User");
@@ -125,8 +125,8 @@ public class JonahGameServiceTests {
 
     @Test
     @Order(2)
-    @DisplayName("Error when mess up change color 3.5")
-    public void setColorCorrect_Errors3_5() {
+    @DisplayName("Error when mess up change color 6")
+    public void setColorCorrectErrors6() {
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
         userService.createUser(request1);
         authService.createAuth("User");
@@ -140,7 +140,7 @@ public class JonahGameServiceTests {
     @Test
     @Order(2)
     @DisplayName("Error when mess up change color 4")
-    public void setColorCorrect_Errors4() {
+    public void setColorCorrectErrors4() {
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
         userService.createUser(request1);
         authService.createAuth("User");
@@ -157,7 +157,7 @@ public class JonahGameServiceTests {
     @Test
     @Order(2)
     @DisplayName("Error when mess up change color 5")
-    public void setColorCorrect_Errors5() {
+    public void setColorCorrectErrors5() {
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
         userService.createUser(request1);
         authService.createAuth("User");
@@ -188,7 +188,7 @@ public class JonahGameServiceTests {
     @Test
     @Order(4)
     @DisplayName("Error when tries to get nonexistent Game")
-    public void canGetGame_Error() {
+    public void canGetGameError() {
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
         userService.createUser(request1);
         authService.createAuth("User");
@@ -220,7 +220,7 @@ public class JonahGameServiceTests {
     @Test
     @Order(6)
     @DisplayName("Errors for create game")
-    public void canCreateGame_Error() {
+    public void canCreateGameError() {
         RegisterRequest request1 = new RegisterRequest("User", "password", "email1@mail.com");
         userService.createUser(request1);
         authService.createAuth("User");

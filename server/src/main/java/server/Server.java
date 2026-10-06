@@ -92,9 +92,9 @@ public class Server {
         CreateGameRequest request = serializer.fromJson(ctx.body(), CreateGameRequest.class);
 
         //Make the request to create the game.
-        int GameId = this.gameService.createGame(request);
+        int gameId = this.gameService.createGame(request);
         ctx.status(200);
-        ctx.result(serializer.toJson(new GameResponse(GameId)));
+        ctx.result(serializer.toJson(new GameResponse(gameId)));
     }
 
     /**
