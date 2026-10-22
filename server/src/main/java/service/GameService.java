@@ -1,4 +1,5 @@
 package service;
+
 import dataaccess.*;
 import model.GameData;
 
@@ -13,8 +14,8 @@ public class GameService {
     GameDAO gameDAO;
 
     // Constructor.
-    public GameService () {
-        this.gameDAO = new MemoryGameDAO();
+    public GameService() {
+        this.gameDAO = new SQLGameDAO();
     }
 
     /**
@@ -26,14 +27,16 @@ public class GameService {
 
     /**
      * This is the method that asks the DAO for a list of all the games in the db.
+     *
      * @return list of all the games.
      */
-    public ArrayList<GameData> listGames () {
+    public ArrayList<GameData> listGames() {
         return this.gameDAO.listGames();
     }
 
     /**
      * This is the method that tells the DAO to create a game with a specific name. It also generates the random gameID
+     *
      * @param request - request object that contains the gameName.
      * @return - returns the gameID
      * @throws BadRequestException - if there is no game name included, mark this as a bad request.
@@ -52,11 +55,12 @@ public class GameService {
 
     /**
      * This is the method that will get the GameData object that represents a particular game.
+     *
      * @param gameID - the int Game ID that represents the game of interest.
      * @return - returns the GameData object.
      * @throws BadRequestException - if the game ID is empty or not correct.
      */
-    public GameData getGame (int gameID) throws BadRequestException {
+    public GameData getGame(int gameID) throws BadRequestException {
         GameData game = gameDAO.getGame(gameID);
         if (game == null) {
             throw new BadRequestException("Error: bad request");
@@ -66,6 +70,7 @@ public class GameService {
 
     /**
      * This is the helper function that will create a 9 digit integer gameID.
+     *
      * @return integer game ID.
      */
     public static int getPossibleGameID() {
@@ -74,13 +79,14 @@ public class GameService {
 
     /**
      * This is the method that tells the DAO to put a user as one of the colors.
+     *
      * @param request - request object containing info on the game, the requested color, and the user.
-     * @throws BadRequestException - If any of the info is already taken, throw an exception.
+     * @throws BadRequestException   - If any of the info is already taken, throw an exception.
      * @throws AlreadyTakenException - If a user requests to be a color that already is taken, throw an exception.
      */
-    public void setColorForGame(SetColorGameRequest request) throws BadRequestException, AlreadyTakenException{
+    public void setColorForGame(SetColorGameRequest request) throws BadRequestException, AlreadyTakenException {
         // Make sure that there is a request that is being passed in.
-        if (request == null){
+        if (request == null) {
             throw new BadRequestException("Error: bad request");
         }
 
@@ -121,8 +127,7 @@ public class GameService {
             } else {
                 throw new AlreadyTakenException("Error: already taken");
             }
-        }
-        else { // If any other color is requested (such as BLUE), throw an exception.
+        } else { // If any other color is requested (such as BLUE), throw an exception.
             throw new BadRequestException("Error: bad request");
         }
     }

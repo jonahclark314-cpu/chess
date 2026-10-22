@@ -13,7 +13,7 @@ public class UserService {
 
     //Constructor.
     public UserService() {
-        this.userDAO = new MemoryUserDAO();
+        this.userDAO = new SQLUserDAO();
     }
 
     /**
@@ -55,8 +55,11 @@ public class UserService {
         }
 
         // Check if the username is valid and there is a user with the username.
+        System.out.println("Trying to login with the username:");
+        System.out.println(login.username());
         UserData user = this.userDAO.getUser(login.username());
         if (user == null) {
+            System.out.println("well that sucks.");
             throw new UnauthorizedException("Error: unauthorized. Username is incorrect");
         }
 

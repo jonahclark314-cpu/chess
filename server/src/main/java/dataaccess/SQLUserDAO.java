@@ -27,8 +27,9 @@ public class SQLUserDAO implements UserDAO {
             try (var preparedStatement = conn.prepareStatement("SELECT username, password, email FROM users WHERE username=?")) {
                 preparedStatement.setString(1, username);
                 try (var rs = preparedStatement.executeQuery()) {
+                    rs.next();
                     return new UserData(rs.getString("username"), rs.getString("password"), rs.getString("email"));
-                } catch (Exception e) {
+                } catch (SQLException e) {
                     return null;
                 }
             }
@@ -48,15 +49,6 @@ public class SQLUserDAO implements UserDAO {
             }
         } catch (SQLException e) {
             throw new DataAccessException("failed to create user", e);
-        }
-    }
-
-    static void insertUser(String username, String password, String email, Connection conn) throws SQLException {
-        try (var preparedStatement = conn.prepareStatement("INSERT INTO users (username, password, email) VALUES(?, ?, ?)")) {
-            preparedStatement.setString(1, username);
-            preparedStatement.setString(2, password);
-            preparedStatement.setString(3, email);
-            preparedStatement.executeUpdate();
         }
     }
 
