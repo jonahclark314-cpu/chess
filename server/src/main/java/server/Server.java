@@ -1,4 +1,5 @@
 package server;
+
 import dataaccess.*;
 import model.GameData;
 import service.*;
@@ -8,6 +9,7 @@ import com.google.gson.Gson;
 
 import io.javalin.http.Context;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 
 /**
@@ -25,20 +27,23 @@ public class Server {
      * This is the constructor. It is what creates all the endpoints.
      */
     public Server() {
+        DatabaseManager.createDatabase();
+        DatabaseManager.configureDatabase();
         // Instantiate all the services.
         this.authService = new AuthService();
         this.gameService = new GameService();
         this.userService = new UserService();
 
+
         //Create the "listeners" for the endpoints.
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .delete("/db", this::clearDb)
-                .post("/user",this::register)
-                .post("/session",this::logIn)
-                .delete("/session",this::logOut)
-                .get("/game",this::getGames)
-                .post("/game",this::createGame)
-                .put("/game",this::joinGame);
+                .post("/user", this::register)
+                .post("/session", this::logIn)
+                .delete("/session", this::logOut)
+                .get("/game", this::getGames)
+                .post("/game", this::createGame)
+                .put("/game", this::joinGame);
 
         // Below is where we set up what status and result to add to context with each specific type of exception.
         javalin.exception(BadRequestException.class, (e, ctx) -> {
@@ -61,9 +66,10 @@ public class Server {
 
     /**
      * This is the endpoint implementation for joining a game.
+     *
      * @param ctx - Context object passed in.
      */
-    private void joinGame (Context ctx) {
+    private void joinGame(Context ctx) {
         // Make sure you are logged in.
         String authorization = ctx.header("authorization");
         this.authService.verifyLoggedIn(authorization);
@@ -82,9 +88,10 @@ public class Server {
 
     /**
      * This is the endpoint implementation for creating a game.
+     *
      * @param ctx - Context object passed in.
      */
-    private void createGame (Context ctx) {
+    private void createGame(Context ctx) {
         // Make sure you are logged in.
         this.authService.verifyLoggedIn(ctx.header("authorization"));
 
@@ -99,9 +106,10 @@ public class Server {
 
     /**
      * This is the implementation of the endpoint getGame.
+     *
      * @param ctx - Context object passed in.
      */
-    private void getGames (Context ctx) {
+    private void getGames(Context ctx) {
         // Make sure you are logged in.
         this.authService.verifyLoggedIn(ctx.header("authorization"));
 
@@ -117,9 +125,10 @@ public class Server {
 
     /**
      * This is the implementation of the endpoint of logging out.
+     *
      * @param ctx - Context object that is passed in.
      */
-    private void logOut (Context ctx) {
+    private void logOut(Context ctx) {
         //Tell the authService to log out the user.
         this.authService.logOut(ctx.header("authorization"));
         ctx.status(200);
@@ -129,11 +138,12 @@ public class Server {
 
     /**
      * This is the implementation of the endpoint logging in.
+     *
      * @param ctx - Context object that is passed in.
      */
     private void logIn(Context ctx) {
         // Create the request object.
-        LoginRequest request = serializer.fromJson(ctx.body (), LoginRequest.class);
+        LoginRequest request = serializer.fromJson(ctx.body(), LoginRequest.class);
 
         // Make sure the user exists.
         this.userService.verifyUser(request);
@@ -147,11 +157,12 @@ public class Server {
 
     /**
      * This is the implementation of the register endpoint.
+     *
      * @param ctx - Context object that is passed in.
      */
-    private void register (Context ctx) {
+    private void register(Context ctx) {
         // Create the appropriate request object and create the user.
-        RegisterRequest request = serializer.fromJson(ctx.body(),RegisterRequest.class);
+        RegisterRequest request = serializer.fromJson(ctx.body(), RegisterRequest.class);
         this.userService.createUser(request);
 
         // Log the person in.
@@ -163,6 +174,7 @@ public class Server {
 
     /**
      * this is the implementation of the endpoint that clears the db. This is only used for testing.
+     *
      * @param ctx - Context object that is passed in.
      */
     private void clearDb(Context ctx) {
@@ -177,6 +189,7 @@ public class Server {
 
     /**
      * This is what starts the javalin.
+     *
      * @param desiredPort - this is the port that will be used. normally it is 8080.
      * @return - returns the port that is started.
      */

@@ -157,7 +157,7 @@ public class JonahAuthServiceTests {
         RegisterRequest registerRequest = new RegisterRequest(targetUsername, "password", "email1@mail.com");
         userService.createUser(registerRequest);
 
-        Assertions.assertInstanceOf(LoginResult.class,authService.createAuth(targetUsername));
+        Assertions.assertInstanceOf(LoginResult.class, authService.createAuth(targetUsername));
 
     }
 
@@ -188,7 +188,7 @@ public class JonahAuthServiceTests {
     @Order(10)
     @DisplayName("Check if getUserUsername gives error if null username is put in.")
     public void getUserUsernameError() {
-        Assertions.assertThrows(BadRequestException.class,() -> authService.getUserUsername(null));
+        Assertions.assertThrows(BadRequestException.class, () -> authService.getUserUsername(null));
     }
 
 
@@ -222,17 +222,16 @@ public class JonahAuthServiceTests {
     @Order(11)
     @DisplayName("Check if LoginRequest class is functional.")
     public void testLoginRequestWorks() {
-        LoginRequest request = new LoginRequest("Username","Password");
+        LoginRequest request = new LoginRequest("Username", "Password");
         Assertions.assertInstanceOf(LoginRequest.class, request);
-        Assertions.assertEquals("Username",request.username());
-        Assertions.assertEquals("Password",request.password());
-        Assertions.assertEquals("LoginRequest{username='Username', password='Password'}",request.toString());
+        Assertions.assertEquals("Username", request.username());
+        Assertions.assertEquals("Password", request.password());
+        Assertions.assertEquals("LoginRequest{username='Username', password='Password'}", request.toString());
 
-        LoginRequest request2 = new LoginRequest(null,null);
-        Assertions.assertEquals("",request2.username());
-        Assertions.assertEquals("",request2.password());
+        LoginRequest request2 = new LoginRequest(null, null);
+        Assertions.assertEquals("", request2.username());
+        Assertions.assertEquals("", request2.password());
     }
-
 
 
 }

@@ -11,11 +11,12 @@ public class GameData {
     private String whiteUsername;
     private String blackUsername;
     private final String gameName;
-    private final ChessGame game;
+    private ChessGame game;
 
     /**
      * This is the constructor for the game
-     * @param name - need a game name
+     *
+     * @param name   - need a game name
      * @param gameID - need a pre generated gameID.
      */
     public GameData(String name, int gameID) {
@@ -30,14 +31,29 @@ public class GameData {
 
     /**
      * This is the function that returns the game ID
+     *
      * @return - int representing the specific game.
      */
-    public int getGameID () {
+    public int getGameID() {
         return this.gameID;
     }
 
+    public String getGameName() {
+        return this.gameName;
+    }
+
+    public ChessGame getGame() {
+        return this.game;
+    }
+
+    public void setGameObject(ChessGame gameObject) {
+        this.game = gameObject;
+    }
+    
+
     /**
      * Gets the user playing as the white.
+     *
      * @return - username of person playing as white
      */
     public String getWhiteUsername() {
@@ -46,29 +62,31 @@ public class GameData {
 
     /**
      * This is how we can change the player.
+     *
      * @param username - username of the player.
      */
-    public void setWhiteUsername (String username) {
+    public void setWhiteUsername(String username) {
         this.whiteUsername = username;
     }
 
     /**
      * This is how we can change the player.
+     *
      * @param username - username of the player.
      */
-    public void setBlackUsername (String username) {
+    public void setBlackUsername(String username) {
         this.blackUsername = username;
     }
 
 
     /**
      * Gets the user playing as the black.
+     *
      * @return - username of person playing as black.
      */
-    public String getBlackUsername () {
+    public String getBlackUsername() {
         return this.blackUsername;
     }
-
 
 
 }
