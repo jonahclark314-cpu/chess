@@ -4,7 +4,9 @@ import dataaccess.sql.SQLAuthDAO;
 import dataaccess.sql.SQLGameDAO;
 import dataaccess.sql.SQLUserDAO;
 import model.GameData;
+import model.UserData;
 import org.junit.jupiter.api.*;
+import service.RegisterRequest;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -109,14 +111,37 @@ public class JonahDataAccessTests {
         ArrayList<GameData> ourList = gameDAO.listGames();
         Assertions.assertEquals(3, ourList.size());
 
-
         gameDAO.clear();
 
         Assertions.assertDoesNotThrow(() -> gameDAO.listGames());
         ArrayList<GameData> ourList2 = gameDAO.listGames();
         Assertions.assertEquals(0, ourList2.size());
+    }
 
+    @Test
+    @Order(8)
+    @DisplayName("can create User.")
+    public void canCreateUser() {
+        RegisterRequest request1 = new RegisterRequest("username1", "password1", "email1@gmail.com");
+        Assertions.assertDoesNotThrow(() -> userDAO.createUser(request1));
+    }
 
+    @Test
+    @Order(9)
+    @DisplayName("can get User.")
+    public void canGetUser() {
+        Assertions.assertEquals(0, userDAO.getLenUsers());
+        RegisterRequest request1 = new RegisterRequest("username1", "password1", "email1@gmail.com");
+        Assertions.assertDoesNotThrow(() -> userDAO.createUser(request1));
+        Assertions.assertDoesNotThrow(() -> userDAO.getUser("username1"));
+        UserData userData = userDAO.getUser("username1");
+        Assertions.assertEquals("password1", userData.password());
+
+        Assertions.assertEquals(1, userDAO.getLenUsers());
+
+        Assertions.assertDoesNotThrow(() -> userDAO.getUser("username_NONEXISTANT"));
+        UserData nonExistantUserData = userDAO.getUser("username_NONEXISTANT");
+        Assertions.assertNull(nonExistantUserData);
     }
 
 

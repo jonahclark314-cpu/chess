@@ -63,8 +63,6 @@ public class SQLUserDAO implements UserDAO {
                 try (var rs = preparedStatement.executeQuery()) {
                     rs.next();
                     return rs.getInt("COUNT(*)");
-                } catch (Exception e) {
-                    return 0;
                 }
             }
         } catch (SQLException e) {
