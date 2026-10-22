@@ -34,7 +34,7 @@ public class SQLGameDAO implements GameDAO {
                         GameData gameData = new GameData(rs.getString("gameName"), rs.getInt("gameID"));
                         gameData.setWhiteUsername(rs.getString("whiteUsername"));
                         gameData.setBlackUsername(rs.getString("blackUsername"));
-                        ChessGame gameObject = new Gson().fromJson(rs.getString("game"),ChessGame.class);
+                        ChessGame gameObject = new Gson().fromJson(rs.getString("game"), ChessGame.class);
                         gameData.setGameObject(gameObject);
                         ourList.add(gameData);
                     }
@@ -55,10 +55,11 @@ public class SQLGameDAO implements GameDAO {
             try (var preparedStatement = conn.prepareStatement("SELECT gameID, gameName, whiteUsername, blackUsername, game FROM games WHERE gameID=?")) {
                 preparedStatement.setString(1, Integer.toString(gameID));
                 try (var rs = preparedStatement.executeQuery()) {
+                    rs.next();
                     GameData gameData = new GameData(rs.getString("gameName"), rs.getInt("gameID"));
                     gameData.setWhiteUsername(rs.getString("whiteUsername"));
                     gameData.setBlackUsername(rs.getString("blackUsername"));
-                    ChessGame gameObject = new Gson().fromJson(rs.getString("game"),ChessGame.class);
+                    ChessGame gameObject = new Gson().fromJson(rs.getString("game"), ChessGame.class);
                     gameData.setGameObject(gameObject);
                     return gameData;
                 } catch (Exception e) {
