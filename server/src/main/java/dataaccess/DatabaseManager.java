@@ -16,16 +16,6 @@ public class DatabaseManager {
         loadPropertiesFromResources();
     }
 
-    public static void main(String[] args) throws RuntimeException {
-//        try (var conn = DatabaseManager.getConnection()) {
-//            DatabaseManager.createDatabase();
-//            DatabaseManager.configureDatabase();
-//
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-    }
-
     public static void configureDatabase() {
         try (var conn = getConnection()) {
             var createDbStatement = conn.prepareStatement("CREATE DATABASE IF NOT EXISTS chess");

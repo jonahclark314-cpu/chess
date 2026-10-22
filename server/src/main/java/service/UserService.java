@@ -34,7 +34,9 @@ public class UserService {
         UserData user = userDAO.getUser(registerRequest.username());
         if (user == null) {
             // If it is not taken, create the user.
-            RegisterRequest hashedPasswordUser = new RegisterRequest(registerRequest.username(), BCrypt.hashpw(registerRequest.password(), BCrypt.gensalt()), registerRequest.email());
+            RegisterRequest hashedPasswordUser = new RegisterRequest(
+                    registerRequest.username(), BCrypt.hashpw(registerRequest.password(), BCrypt.gensalt()), registerRequest.email()
+            );
             userDAO.createUser(hashedPasswordUser);
         } else {
             // If it IS taken, throw an exception.

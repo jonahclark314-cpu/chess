@@ -67,7 +67,9 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public GameData getGame(int gameID) {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("SELECT gameID, gameName, whiteUsername, blackUsername, game FROM games WHERE gameID=?")) {
+            try (var preparedStatement = conn.prepareStatement(
+                    "SELECT gameID, gameName, whiteUsername, blackUsername, game FROM games WHERE gameID=?")
+            ) {
                 preparedStatement.setString(1, Integer.toString(gameID));
                 try (var rs = preparedStatement.executeQuery()) {
                     rs.next();
@@ -96,7 +98,9 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public void createGame(String gameName, int gameID) {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("INSERT INTO games (gameID, gameName, game) VALUES(?, ?, ?)")) {
+            try (var preparedStatement = conn.prepareStatement(
+                    "INSERT INTO games (gameID, gameName, game) VALUES(?, ?, ?)")
+            ) {
                 String stringGameID = Integer.toString(gameID);
                 preparedStatement.setString(1, stringGameID);
                 preparedStatement.setString(2, gameName);
@@ -118,7 +122,9 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public void updateGame(GameData game) {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("UPDATE games SET gameName=?, whiteUsername=?, blackUsername=?, game=? WHERE gameID=?")) {
+            try (var preparedStatement = conn.prepareStatement(
+                    "UPDATE games SET gameName=?, whiteUsername=?, blackUsername=?, game=? WHERE gameID=?")
+            ) {
                 preparedStatement.setString(1, game.getGameName());
                 preparedStatement.setString(2, game.getWhiteUsername());
                 preparedStatement.setString(3, game.getBlackUsername());
