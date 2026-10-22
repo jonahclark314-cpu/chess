@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.*;
+import dataaccess.sql.SQLUserDAO;
 import model.*;
 import org.mindrot.jbcrypt.BCrypt;
 

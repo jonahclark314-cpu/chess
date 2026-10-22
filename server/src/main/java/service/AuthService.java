@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.*;
+import dataaccess.sql.SQLAuthDAO;
 
 import java.util.UUID;
 
