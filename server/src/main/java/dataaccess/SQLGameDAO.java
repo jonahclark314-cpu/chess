@@ -17,9 +17,11 @@ public class SQLGameDAO implements GameDAO {
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("TRUNCATE TABLE games")) {
                 preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                throw new DataAccessException("Error: failed to create user", e);
             }
         } catch (SQLException e) {
-            throw new DataAccessException("failed to create user", e);
+            throw new DataAccessException("Error: failed to create user", e);
         }
     }
 
@@ -39,12 +41,14 @@ public class SQLGameDAO implements GameDAO {
                         ourList.add(gameData);
                     }
                     return ourList;
-                } catch (Exception e) {
-                    return null;
+                } catch (SQLException e) {
+                    throw new DataAccessException("Error: failed to create user", e);
                 }
+            } catch (SQLException e) {
+                throw new DataAccessException("Error: failed to create user", e);
             }
         } catch (SQLException e) {
-            throw new DataAccessException("failed to create user", e);
+            throw new DataAccessException("Error: failed to create user", e);
         }
 
     }
@@ -67,7 +71,7 @@ public class SQLGameDAO implements GameDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException("failed to create user", e);
+            throw new DataAccessException("Error: failed to create user", e);
         }
 
     }
@@ -85,7 +89,7 @@ public class SQLGameDAO implements GameDAO {
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
-            throw new DataAccessException("failed to create game", e);
+            throw new DataAccessException("Error: failed to create game", e);
         }
     }
 
@@ -104,9 +108,11 @@ public class SQLGameDAO implements GameDAO {
                 preparedStatement.setString(5, Integer.toString(game.getGameID()));
 
                 preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                throw new DataAccessException("Error: failed to update game", e);
             }
         } catch (SQLException e) {
-            throw new DataAccessException("failed to update game", e);
+            throw new DataAccessException("Error: failed to update game", e);
         }
     }
 

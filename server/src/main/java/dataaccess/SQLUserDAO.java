@@ -15,9 +15,11 @@ public class SQLUserDAO implements UserDAO {
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("TRUNCATE TABLE users")) {
                 preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                throw new DataAccessException("Error: failed to create user", e);
             }
         } catch (SQLException e) {
-            throw new DataAccessException("failed to create user", e);
+            throw new DataAccessException("Error: failed to create user", e);
         }
     }
 
@@ -32,9 +34,11 @@ public class SQLUserDAO implements UserDAO {
                 } catch (SQLException e) {
                     return null;
                 }
+            } catch (SQLException e) {
+                throw new DataAccessException("Error: failed to create user", e);
             }
         } catch (SQLException e) {
-            throw new DataAccessException("failed to create user", e);
+            throw new DataAccessException("Error: failed to create user", e);
         }
     }
 
@@ -46,9 +50,11 @@ public class SQLUserDAO implements UserDAO {
                 preparedStatement.setString(2, userInfo.password());
                 preparedStatement.setString(3, userInfo.email());
                 preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                throw new DataAccessException("Error: failed to create user", e);
             }
         } catch (SQLException e) {
-            throw new DataAccessException("failed to create user", e);
+            throw new DataAccessException("Error: failed to create user", e);
         }
     }
 
@@ -64,9 +70,11 @@ public class SQLUserDAO implements UserDAO {
                 } catch (Exception e) {
                     return 0;
                 }
+            } catch (SQLException e) {
+                throw new DataAccessException("Error: failed to create user", e);
             }
         } catch (SQLException e) {
-            throw new DataAccessException("failed to create user", e);
+            throw new DataAccessException("Error: failed to create user", e);
         }
     }
 }

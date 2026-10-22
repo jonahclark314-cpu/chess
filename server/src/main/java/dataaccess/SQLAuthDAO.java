@@ -12,9 +12,11 @@ public class SQLAuthDAO implements AuthDAO {
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("TRUNCATE TABLE auths")) {
                 preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                throw new DataAccessException("Error: failed to create user", e);
             }
         } catch (SQLException e) {
-            throw new DataAccessException("failed to create user", e);
+            throw new DataAccessException("Error: failed to create user", e);
         }
     }
 
@@ -25,10 +27,12 @@ public class SQLAuthDAO implements AuthDAO {
                 preparedStatement.setString(1, username);
                 preparedStatement.setString(2, authToken);
                 preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                throw new DataAccessException("Error: failed to create user", e);
             }
             return authToken;
         } catch (SQLException e) {
-            throw new DataAccessException("failed to create user", e);
+            throw new DataAccessException("Error: failed to create user", e);
         }
     }
 
@@ -43,9 +47,11 @@ public class SQLAuthDAO implements AuthDAO {
                 } catch (Exception e) {
                     return "";
                 }
+            } catch (SQLException e) {
+                throw new DataAccessException("Error: failed to create user", e);
             }
         } catch (SQLException e) {
-            throw new DataAccessException("failed to create user", e);
+            throw new DataAccessException("Error: failed to create user", e);
         }
     }
 
@@ -55,9 +61,11 @@ public class SQLAuthDAO implements AuthDAO {
             try (var preparedStatement = conn.prepareStatement("DELETE FROM auths WHERE authToken=?")) {
                 preparedStatement.setString(1, authToken);
                 preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                throw new DataAccessException("Error: failed to create user", e);
             }
         } catch (SQLException e) {
-            throw new DataAccessException("failed to delete the authToken", e);
+            throw new DataAccessException("Error: failed to delete the authToken", e);
         }
 
     }
