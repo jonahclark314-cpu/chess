@@ -14,6 +14,10 @@ import java.util.ArrayList;
  * This is the implementation that I will use once I get the db up.
  */
 public class SQLGameDAO implements GameDAO {
+
+    /**
+     * This is what clears this portion of the db.
+     */
     @Override
     public void clear() {
         try (var conn = DatabaseManager.getConnection()) {
@@ -25,6 +29,11 @@ public class SQLGameDAO implements GameDAO {
         }
     }
 
+    /**
+     * This is what lists all the Games that we have stored.
+     *
+     * @return a list of the games.
+     */
     @Override
     public ArrayList<GameData> listGames() {
         try (var conn = DatabaseManager.getConnection()) {
@@ -49,6 +58,12 @@ public class SQLGameDAO implements GameDAO {
 
     }
 
+    /**
+     * This is what can get a specific game based off of the game id.
+     *
+     * @param gameID - integer. It represents the unique game.
+     * @return returns the game object or null if there is no such game object.
+     */
     @Override
     public GameData getGame(int gameID) {
         try (var conn = DatabaseManager.getConnection()) {
@@ -72,6 +87,12 @@ public class SQLGameDAO implements GameDAO {
 
     }
 
+    /**
+     * This is what is used to create a new game.
+     *
+     * @param gameName - name of the game
+     * @param gameID   - pre-generated integer representing the specific game.
+     */
     @Override
     public void createGame(String gameName, int gameID) {
         try (var conn = DatabaseManager.getConnection()) {
@@ -89,6 +110,11 @@ public class SQLGameDAO implements GameDAO {
         }
     }
 
+    /**
+     * This is the method that we use to update the game.
+     *
+     * @param game - new game object that you want saved in the db.
+     */
     @Override
     public void updateGame(GameData game) {
         try (var conn = DatabaseManager.getConnection()) {

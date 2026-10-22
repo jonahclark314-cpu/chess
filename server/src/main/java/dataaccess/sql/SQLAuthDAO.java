@@ -11,6 +11,9 @@ import java.sql.SQLException;
  */
 public class SQLAuthDAO implements AuthDAO {
 
+    /**
+     * clears all the data in this database.
+     */
     @Override
     public void clear() {
         try (var conn = DatabaseManager.getConnection()) {
@@ -22,6 +25,13 @@ public class SQLAuthDAO implements AuthDAO {
         }
     }
 
+    /**
+     * This logs in a person and returns their authToken
+     *
+     * @param username  - the username of the user.
+     * @param authToken - a pre-generated authoring.
+     * @return AuthToken
+     */
     @Override
     public String createAuth(String username, String authToken) {
         try (var conn = DatabaseManager.getConnection()) {
@@ -38,6 +48,12 @@ public class SQLAuthDAO implements AuthDAO {
         }
     }
 
+    /**
+     * This is the way you can check if someone is logged in.
+     *
+     * @param authToken - this is the authToken string.
+     * @return returns the username if they are logged in, and empty string otherwise.
+     */
     @Override
     public String getAuth(String authToken) {
         try (var conn = DatabaseManager.getConnection()) {
@@ -55,6 +71,11 @@ public class SQLAuthDAO implements AuthDAO {
         }
     }
 
+    /**
+     * This is how you can log someone out.
+     *
+     * @param authToken - the auth token that they are logged in through.
+     */
     @Override
     public void deleteAuth(String authToken) {
         try (var conn = DatabaseManager.getConnection()) {

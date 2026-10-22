@@ -8,7 +8,6 @@ import model.UserData;
 import org.junit.jupiter.api.*;
 import service.RegisterRequest;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -96,7 +95,7 @@ public class JonahDataAccessTests {
         gameData.setWhiteUsername("randomUser");
         Assertions.assertDoesNotThrow(() -> gameDAO.updateGame(gameData));
         GameData gameData2 = gameDAO.getGame(123);
-        Assertions.assertEquals("randomUser", gameData.getWhiteUsername());
+        Assertions.assertEquals("randomUser", gameData2.getWhiteUsername());
     }
 
     @Test
