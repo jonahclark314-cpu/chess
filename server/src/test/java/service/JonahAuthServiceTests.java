@@ -27,6 +27,7 @@ public class JonahAuthServiceTests {
     public void setup() {
         userService = new UserService();
         authService = new AuthService();
+        userService.clear();
     }
 
     @Test

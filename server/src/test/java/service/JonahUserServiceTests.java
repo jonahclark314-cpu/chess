@@ -25,6 +25,7 @@ public class JonahUserServiceTests {
     @BeforeEach
     public void setup() {
         userService = new UserService();
+        userService.clear();
     }
 
     @Test
@@ -37,7 +38,7 @@ public class JonahUserServiceTests {
                 "createUser should execute successfully for a new user without throwing exceptions.");
 
 
-        Assertions.assertEquals(1,userService.getLenUsers());
+        Assertions.assertEquals(1, userService.getLenUsers());
 
 
     }
@@ -47,13 +48,13 @@ public class JonahUserServiceTests {
     @DisplayName("Cannot create user if missing the Username, Password, or Email.")
     public void canCreateUserMissingPassEmailUserName() {
         RegisterRequest request1 = new RegisterRequest("", "password", "email1@mail.com");
-        Assertions.assertThrows(BadRequestException.class,() -> userService.createUser(request1));
+        Assertions.assertThrows(BadRequestException.class, () -> userService.createUser(request1));
 
         RegisterRequest request2 = new RegisterRequest("User", "", "email1@mail.com");
-        Assertions.assertThrows(BadRequestException.class,() -> userService.createUser(request2));
+        Assertions.assertThrows(BadRequestException.class, () -> userService.createUser(request2));
 
         RegisterRequest request3 = new RegisterRequest("User", "password", "");
-        Assertions.assertThrows(BadRequestException.class,() -> userService.createUser(request3));
+        Assertions.assertThrows(BadRequestException.class, () -> userService.createUser(request3));
 
 
     }
@@ -129,7 +130,7 @@ public class JonahUserServiceTests {
         userService.createUser(registerRequest);
         LoginRequest request = new LoginRequest("", "password");
 
-        Assertions.assertThrows(BadRequestException.class,() -> userService.verifyUser(request), "username is empty.");
+        Assertions.assertThrows(BadRequestException.class, () -> userService.verifyUser(request), "username is empty.");
 
     }
 
@@ -142,7 +143,7 @@ public class JonahUserServiceTests {
         userService.createUser(registerRequest);
         LoginRequest request = new LoginRequest("username", "");
 
-        Assertions.assertThrows(BadRequestException.class,() -> userService.verifyUser(request), "password is empty.");
+        Assertions.assertThrows(BadRequestException.class, () -> userService.verifyUser(request), "password is empty.");
 
     }
 
@@ -155,7 +156,7 @@ public class JonahUserServiceTests {
         userService.createUser(registerRequest);
         LoginRequest request = new LoginRequest("username", "passwordWRONG");
 
-        Assertions.assertThrows(UnauthorizedException.class,() -> userService.verifyUser(request), "Password is wrong.");
+        Assertions.assertThrows(UnauthorizedException.class, () -> userService.verifyUser(request), "Password is wrong.");
 
     }
 
@@ -165,7 +166,7 @@ public class JonahUserServiceTests {
     public void verifyUserBadUser() {
         LoginRequest request = new LoginRequest("username", "password");
 
-        Assertions.assertThrows(UnauthorizedException.class,() -> userService.verifyUser(request));
+        Assertions.assertThrows(UnauthorizedException.class, () -> userService.verifyUser(request));
 
     }
 }

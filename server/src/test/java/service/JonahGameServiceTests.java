@@ -4,6 +4,7 @@ import org.junit.jupiter.api.*;
 import server.Server;
 import model.*;
 import dataaccess.*;
+
 import java.util.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -31,6 +32,8 @@ public class JonahGameServiceTests {
         userService = new UserService();
         gameService = new GameService();
         authService = new AuthService();
+        userService.clear();
+        gameService.clear();
     }
 
     @Test
@@ -43,15 +46,15 @@ public class JonahGameServiceTests {
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
         int gameID = gameService.createGame(gameRequest);
 
-        SetColorGameRequest setColorRequest = new SetColorGameRequest(gameID,"WHITE","User");
-        Assertions.assertDoesNotThrow(()-> gameService.setColorForGame(setColorRequest));
+        SetColorGameRequest setColorRequest = new SetColorGameRequest(gameID, "WHITE", "User");
+        Assertions.assertDoesNotThrow(() -> gameService.setColorForGame(setColorRequest));
 
         GameData game = gameService.getGame(gameID);
         Assertions.assertEquals("User", game.getWhiteUsername());
 
 
-        SetColorGameRequest setColorRequest2 = new SetColorGameRequest(gameID,"BLACK","User");
-        Assertions.assertDoesNotThrow(()-> gameService.setColorForGame(setColorRequest2));
+        SetColorGameRequest setColorRequest2 = new SetColorGameRequest(gameID, "BLACK", "User");
+        Assertions.assertDoesNotThrow(() -> gameService.setColorForGame(setColorRequest2));
 
         GameData game2 = gameService.getGame(gameID);
         Assertions.assertEquals("User", game2.getBlackUsername());
@@ -68,7 +71,7 @@ public class JonahGameServiceTests {
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
         gameService.createGame(gameRequest);
 
-        Assertions.assertThrows(BadRequestException.class, ()-> gameService.setColorForGame(null));
+        Assertions.assertThrows(BadRequestException.class, () -> gameService.setColorForGame(null));
     }
 
     @Test
@@ -82,8 +85,8 @@ public class JonahGameServiceTests {
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
         int gameID = gameService.createGame(gameRequest);
 
-        SetColorGameRequest setColorRequest = new SetColorGameRequest(gameID,"","User");
-        Assertions.assertThrows(BadRequestException.class, ()-> gameService.setColorForGame(setColorRequest));
+        SetColorGameRequest setColorRequest = new SetColorGameRequest(gameID, "", "User");
+        Assertions.assertThrows(BadRequestException.class, () -> gameService.setColorForGame(setColorRequest));
     }
 
     @Test
@@ -97,10 +100,9 @@ public class JonahGameServiceTests {
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
         int gameID = gameService.createGame(gameRequest);
 
-        SetColorGameRequest setColorRequest = new SetColorGameRequest(gameID,"WHITE","");
-        Assertions.assertThrows(BadRequestException.class, ()-> gameService.setColorForGame(setColorRequest));
+        SetColorGameRequest setColorRequest = new SetColorGameRequest(gameID, "WHITE", "");
+        Assertions.assertThrows(BadRequestException.class, () -> gameService.setColorForGame(setColorRequest));
     }
-
 
 
     @Test
@@ -113,8 +115,8 @@ public class JonahGameServiceTests {
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
         gameService.createGame(gameRequest);
 
-        SetColorGameRequest setColorRequest2 = new SetColorGameRequest(0,"WHITE","User");
-        Assertions.assertThrows(BadRequestException.class, ()-> gameService.setColorForGame(setColorRequest2));
+        SetColorGameRequest setColorRequest2 = new SetColorGameRequest(0, "WHITE", "User");
+        Assertions.assertThrows(BadRequestException.class, () -> gameService.setColorForGame(setColorRequest2));
     }
 
     @Test
@@ -127,8 +129,8 @@ public class JonahGameServiceTests {
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
         int gameID = gameService.createGame(gameRequest);
 
-        SetColorGameRequest setColorRequest3 = new SetColorGameRequest(gameID,"BLUE","User");
-        Assertions.assertThrows(BadRequestException.class, ()-> gameService.setColorForGame(setColorRequest3));
+        SetColorGameRequest setColorRequest3 = new SetColorGameRequest(gameID, "BLUE", "User");
+        Assertions.assertThrows(BadRequestException.class, () -> gameService.setColorForGame(setColorRequest3));
     }
 
     @Test
@@ -141,11 +143,11 @@ public class JonahGameServiceTests {
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
         int gameID = gameService.createGame(gameRequest);
 
-        SetColorGameRequest setColorRequestCorrect = new SetColorGameRequest(gameID,"BLACK","User");
-        Assertions.assertDoesNotThrow(()-> gameService.setColorForGame(setColorRequestCorrect));
+        SetColorGameRequest setColorRequestCorrect = new SetColorGameRequest(gameID, "BLACK", "User");
+        Assertions.assertDoesNotThrow(() -> gameService.setColorForGame(setColorRequestCorrect));
 
-        SetColorGameRequest setColorRequestCorrect2 = new SetColorGameRequest(gameID,"BLACK","User");
-        Assertions.assertThrows(AlreadyTakenException.class, ()-> gameService.setColorForGame(setColorRequestCorrect2));
+        SetColorGameRequest setColorRequestCorrect2 = new SetColorGameRequest(gameID, "BLACK", "User");
+        Assertions.assertThrows(AlreadyTakenException.class, () -> gameService.setColorForGame(setColorRequestCorrect2));
     }
 
     @Test
@@ -158,11 +160,11 @@ public class JonahGameServiceTests {
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
         int gameID = gameService.createGame(gameRequest);
 
-        SetColorGameRequest setColorRequestCorrect3 = new SetColorGameRequest(gameID,"WHITE","User");
-        Assertions.assertDoesNotThrow(()-> gameService.setColorForGame(setColorRequestCorrect3));
+        SetColorGameRequest setColorRequestCorrect3 = new SetColorGameRequest(gameID, "WHITE", "User");
+        Assertions.assertDoesNotThrow(() -> gameService.setColorForGame(setColorRequestCorrect3));
 
-        SetColorGameRequest setColorRequestCorrect4 = new SetColorGameRequest(gameID,"WHITE","User");
-        Assertions.assertThrows(AlreadyTakenException.class, ()-> gameService.setColorForGame(setColorRequestCorrect4));
+        SetColorGameRequest setColorRequestCorrect4 = new SetColorGameRequest(gameID, "WHITE", "User");
+        Assertions.assertThrows(AlreadyTakenException.class, () -> gameService.setColorForGame(setColorRequestCorrect4));
     }
 
 
@@ -176,7 +178,7 @@ public class JonahGameServiceTests {
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
         int gameID = gameService.createGame(gameRequest);
 
-        Assertions.assertEquals(gameID,gameService.getGame(gameID).getGameID());
+        Assertions.assertEquals(gameID, gameService.getGame(gameID).getGameID());
     }
 
     @Test
@@ -202,11 +204,13 @@ public class JonahGameServiceTests {
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
 
         int length = gameService.listGames().size();
-        Assertions.assertEquals(0,length);
+        Assertions.assertEquals(0, length);
 
-        Assertions.assertDoesNotThrow(() -> {gameService.createGame(gameRequest);});
+        Assertions.assertDoesNotThrow(() -> {
+            gameService.createGame(gameRequest);
+        });
         int length2 = gameService.listGames().size();
-        Assertions.assertEquals(1,length2);
+        Assertions.assertEquals(1, length2);
 
 
     }
@@ -232,20 +236,18 @@ public class JonahGameServiceTests {
         authService.createAuth("User");
         CreateGameRequest gameRequest = new CreateGameRequest("newGame");
 
-        Assertions.assertInstanceOf(ArrayList.class,gameService.listGames());
+        Assertions.assertInstanceOf(ArrayList.class, gameService.listGames());
         int length = gameService.listGames().size();
-        Assertions.assertEquals(0,length);
+        Assertions.assertEquals(0, length);
 
         gameService.createGame(gameRequest);
 
-        Assertions.assertInstanceOf(ArrayList.class,gameService.listGames());
+        Assertions.assertInstanceOf(ArrayList.class, gameService.listGames());
         int length2 = gameService.listGames().size();
-        Assertions.assertEquals(1,length2);
+        Assertions.assertEquals(1, length2);
 
 
     }
-
-
 
 
 }

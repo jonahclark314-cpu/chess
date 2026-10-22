@@ -55,9 +55,11 @@ public class SQLUserDAO implements UserDAO {
 
     @Override
     public int getLenUsers() {
+        System.out.println("calling: getLenUsers()");
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("SELECT COUNT(*) FROM users")) {
                 try (var rs = preparedStatement.executeQuery()) {
+                    rs.next();
                     return rs.getInt("COUNT(*)");
                 } catch (Exception e) {
                     return 0;
