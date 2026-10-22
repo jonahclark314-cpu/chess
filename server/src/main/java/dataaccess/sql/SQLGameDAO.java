@@ -19,8 +19,6 @@ public class SQLGameDAO implements GameDAO {
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("TRUNCATE TABLE games")) {
                 preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new DataAccessException("Error: failed to create user", e);
             }
         } catch (SQLException e) {
             throw new DataAccessException("Error: failed to create user", e);
@@ -43,11 +41,7 @@ public class SQLGameDAO implements GameDAO {
                         ourList.add(gameData);
                     }
                     return ourList;
-                } catch (SQLException e) {
-                    throw new DataAccessException("Error: failed to create user", e);
                 }
-            } catch (SQLException e) {
-                throw new DataAccessException("Error: failed to create user", e);
             }
         } catch (SQLException e) {
             throw new DataAccessException("Error: failed to create user", e);
@@ -110,8 +104,6 @@ public class SQLGameDAO implements GameDAO {
                 preparedStatement.setString(5, Integer.toString(game.getGameID()));
 
                 preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new DataAccessException("Error: failed to update game", e);
             }
         } catch (SQLException e) {
             throw new DataAccessException("Error: failed to update game", e);
