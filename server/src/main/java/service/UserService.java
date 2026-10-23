@@ -58,11 +58,8 @@ public class UserService {
         }
 
         // Check if the username is valid and there is a user with the username.
-        System.out.println("Trying to login with the username:");
-        System.out.println(login.username());
         UserData user = this.userDAO.getUser(login.username());
         if (user == null) {
-            System.out.println("well that sucks.");
             throw new UnauthorizedException("Error: unauthorized. Username is incorrect");
         }
 
@@ -73,7 +70,7 @@ public class UserService {
     }
 
     /**
-     * This is the method that tells the DAO to clear all of the User data from the db.
+     * This is the method that tells the DAO to clear all the User data from the db.
      */
     public void clear() {
         this.userDAO.clear();
