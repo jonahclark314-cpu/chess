@@ -18,10 +18,10 @@ public class DatabaseManager {
 
     public static void configureDatabase() {
         try (var conn = getConnection()) {
-            var createDbStatement = conn.prepareStatement("CREATE DATABASE IF NOT EXISTS chess");
+            var createDbStatement = conn.prepareStatement("CREATE DATABASE IF NOT EXISTS " + databaseName);
             createDbStatement.executeUpdate();
 
-            conn.setCatalog("chess");
+            conn.setCatalog(databaseName);
 
             var createUsersTable = """
                     CREATE TABLE IF NOT EXISTS users (
