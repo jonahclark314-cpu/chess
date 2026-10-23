@@ -21,7 +21,8 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public void clear() {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("TRUNCATE TABLE games")) {
+            String statement = "TRUNCATE TABLE games";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -37,7 +38,8 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public ArrayList<GameData> listGames() {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("SELECT gameID, gameName, whiteUsername, blackUsername, game FROM games")) {
+            String statement = "SELECT gameID, gameName, whiteUsername, blackUsername, game FROM games";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
 
                 try (var rs = preparedStatement.executeQuery()) {
                     ArrayList<GameData> ourList = new ArrayList<>();
@@ -67,9 +69,8 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public GameData getGame(int gameID) {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(
-                    "SELECT gameID, gameName, whiteUsername, blackUsername, game FROM games WHERE gameID=?")
-            ) {
+            String statement = "SELECT gameID, gameName, whiteUsername, blackUsername, game FROM games WHERE gameID=?";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, Integer.toString(gameID));
                 try (var rs = preparedStatement.executeQuery()) {
                     rs.next();
@@ -98,9 +99,8 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public void createGame(String gameName, int gameID) {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(
-                    "INSERT INTO games (gameID, gameName, game) VALUES(?, ?, ?)")
-            ) {
+            String statement = "INSERT INTO games (gameID, gameName, game) VALUES(?, ?, ?)";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
                 String stringGameID = Integer.toString(gameID);
                 preparedStatement.setString(1, stringGameID);
                 preparedStatement.setString(2, gameName);
@@ -122,18 +122,21 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public void updateGame(GameData game) {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(
-                    "UPDATE games SET gameName=?, whiteUsername=?, blackUsername=?, game=? WHERE gameID=?")
-            ) {
-                preparedStatement.setString(1, game.getGameName());
-                preparedStatement.setString(2, game.getWhiteUsername());
-                preparedStatement.setString(3, game.getBlackUsername());
+            String statement = "UPDATE games SET gameName=?, whiteUsername=?, blackUsername=?, game=? WHERE gameID=?";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                String gameName = game.getGameName();
+                String whiteUsername = game.getWhiteUsername();
+                String blackUsername = game.getBlackUsername();
+                preparedStatement.setString(1, gameName);
+                preparedStatement.setString(2, whiteUsername);
+                preparedStatement.setString(3, blackUsername);
 
                 ChessGame actualGameObject = game.getGame();
                 var json = new Gson().toJson(actualGameObject);
                 preparedStatement.setString(4, json);
 
-                preparedStatement.setString(5, Integer.toString(game.getGameID()));
+                String gameID = Integer.toString(game.getGameID());
+                preparedStatement.setString(5, gameID);
 
                 preparedStatement.executeUpdate();
             }

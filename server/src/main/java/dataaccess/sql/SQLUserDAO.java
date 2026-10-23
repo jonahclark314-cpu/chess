@@ -19,7 +19,8 @@ public class SQLUserDAO implements UserDAO {
     @Override
     public void clear() {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("TRUNCATE TABLE users")) {
+            String statement = "TRUNCATE TABLE users";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -36,11 +37,15 @@ public class SQLUserDAO implements UserDAO {
     @Override
     public UserData getUser(String username) {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("SELECT username, password, email FROM users WHERE username=?")) {
+            String statement = "SELECT username, password, email FROM users WHERE username=?";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, username);
                 try (var rs = preparedStatement.executeQuery()) {
                     rs.next();
-                    return new UserData(rs.getString("username"), rs.getString("password"), rs.getString("email"));
+                    String userUsername = rs.getString("username");
+                    String userPassword = rs.getString("password");
+                    String userEmail = rs.getString("email");
+                    return new UserData(userUsername, userPassword, userEmail);
                 } catch (SQLException e) {
                     return null;
                 }
@@ -58,10 +63,14 @@ public class SQLUserDAO implements UserDAO {
     @Override
     public void createUser(RegisterRequest userInfo) {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("INSERT INTO users (username, password, email) VALUES(?, ?, ?)")) {
-                preparedStatement.setString(1, userInfo.username());
-                preparedStatement.setString(2, userInfo.password());
-                preparedStatement.setString(3, userInfo.email());
+            String statement = "INSERT INTO users (username, password, email) VALUES(?, ?, ?)";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                String userUsername = userInfo.username();
+                String userPassword = userInfo.password();
+                String userEmail = userInfo.email();
+                preparedStatement.setString(1, userUsername);
+                preparedStatement.setString(2, userPassword);
+                preparedStatement.setString(3, userEmail);
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -79,7 +88,8 @@ public class SQLUserDAO implements UserDAO {
     public int getLenUsers() {
         System.out.println("calling: getLenUsers()");
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("SELECT COUNT(*) FROM users")) {
+            String statement = "SELECT COUNT(*) FROM users";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
                 try (var rs = preparedStatement.executeQuery()) {
                     rs.next();
                     return rs.getInt("COUNT(*)");

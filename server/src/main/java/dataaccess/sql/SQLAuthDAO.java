@@ -17,7 +17,8 @@ public class SQLAuthDAO implements AuthDAO {
     @Override
     public void clear() {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("TRUNCATE TABLE auths")) {
+            String statement = "TRUNCATE TABLE auths";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -35,7 +36,8 @@ public class SQLAuthDAO implements AuthDAO {
     @Override
     public String createAuth(String username, String authToken) {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("INSERT INTO auths (username,authToken) VALUES(?, ?)")) {
+            String statement = "INSERT INTO auths (username,authToken) VALUES(?, ?)";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, username);
                 preparedStatement.setString(2, authToken);
                 preparedStatement.executeUpdate();
@@ -57,7 +59,8 @@ public class SQLAuthDAO implements AuthDAO {
     @Override
     public String getAuth(String authToken) {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("SELECT username FROM auths WHERE authToken=?")) {
+            String statement = "SELECT username FROM auths WHERE authToken=?";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, authToken);
                 try (var rs = preparedStatement.executeQuery()) {
                     rs.next();
@@ -79,7 +82,8 @@ public class SQLAuthDAO implements AuthDAO {
     @Override
     public void deleteAuth(String authToken) {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("DELETE FROM auths WHERE authToken=?")) {
+            String statement = "DELETE FROM auths WHERE authToken=?";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, authToken);
                 preparedStatement.executeUpdate();
             }
