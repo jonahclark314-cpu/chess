@@ -8,6 +8,7 @@ import model.UserData;
 import org.junit.jupiter.api.*;
 import service.RegisterRequest;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 
@@ -66,6 +67,46 @@ public class JonahDataAccessTests {
         Assertions.assertDoesNotThrow(() -> authDAO.deleteAuth("AuthToken123"));
     }
 
+    @Test
+    @Order(3)
+    @DisplayName("Auth Errors.")
+    public void authErrors() {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "DROP TABLE auths";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.executeUpdate();
+                Assertions.assertThrows(DataAccessException.class, () -> authDAO.clear());
+                Assertions.assertThrows(DataAccessException.class, () -> authDAO.createAuth("nonexistant", "NotGoingToWork"));
+                Assertions.assertThrows(DataAccessException.class, () -> authDAO.deleteAuth("someToken"));
+
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error: failed to create user", e);
+        } finally {
+            DatabaseManager.configureDatabase();
+        }
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("Game Errors.")
+    public void gameErrors() {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "DROP TABLE games";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.executeUpdate();
+                Assertions.assertThrows(DataAccessException.class, () -> gameDAO.clear());
+                Assertions.assertThrows(DataAccessException.class, () -> gameDAO.listGames());
+                Assertions.assertThrows(DataAccessException.class, () -> gameDAO.createGame("gameName", 123));
+                GameData gameData = new GameData("gameName", 123);
+                Assertions.assertThrows(DataAccessException.class, () -> gameDAO.updateGame(gameData));
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error: failed to create user", e);
+        } finally {
+            DatabaseManager.configureDatabase();
+        }
+    }
 
     @Test
     @Order(4)
@@ -123,6 +164,30 @@ public class JonahDataAccessTests {
     public void canCreateUser() {
         RegisterRequest request1 = new RegisterRequest("username1", "password1", "email1@gmail.com");
         Assertions.assertDoesNotThrow(() -> userDAO.createUser(request1));
+
+        RegisterRequest request2 = new RegisterRequest("username1", "password1", "email1@gmail.com");
+        Assertions.assertThrows(DataAccessException.class, () -> userDAO.createUser(request2));
+
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("User Errors.")
+    public void userErrors() {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "DROP TABLE users";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.executeUpdate();
+                RegisterRequest request2 = new RegisterRequest("username1", "password1", "email1@gmail.com");
+                Assertions.assertThrows(DataAccessException.class, () -> userDAO.createUser(request2));
+                Assertions.assertThrows(DataAccessException.class, () -> userDAO.clear());
+                Assertions.assertThrows(DataAccessException.class, () -> userDAO.getLenUsers());
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error: failed to create user", e);
+        } finally {
+            DatabaseManager.configureDatabase();
+        }
     }
 
     @Test
