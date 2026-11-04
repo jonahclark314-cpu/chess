@@ -47,8 +47,9 @@ public class ChessClient {
 
     public String eval(String input) {
         try {
-            String[] tokens = input.toLowerCase().split(" ");
-            String cmd = (tokens.length > 0) ? tokens[0] : "help";
+            String[] tokens = input.split(" ");
+            String upperCmd = (tokens.length > 0) ? tokens[0] : "help";
+            String cmd = upperCmd.toLowerCase();
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
             if (state == State.SIGNEDOUT) {
                 return switch (cmd) {
@@ -79,13 +80,21 @@ public class ChessClient {
     }
 
     public String signIn(String... params) throws ResponseException {
-        if (params.length >= 1) {
-            state = State.SIGNEDIN;
-            visitorName = String.join("-", params);
-            ws.enterPetShop(visitorName);
-            return String.format("You signed in as %s.", visitorName);
+        if (params.length == 2) {
+            try {
+                String username = server.signIn(params[0], params[1]);
+                if (username == null) {
+                    return "You entered the wrong Username or password";
+                }
+                state = State.SIGNEDIN;
+                return String.format("You signed in as %s.", username);
+            } catch (NullPointerException e) {
+                return "You entered the wrong Username or password";
+            } catch (Exception e) {
+                return "Something went wrong! Maybe the server isn't up!";
+            }
         }
-        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <yourname>");
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <userName> <password>");
     }
 
 

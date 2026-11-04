@@ -24,7 +24,7 @@ public record LoginRequest(String username, String password) {
     @NotNull
     @Override
     public String toString() {
-        return "LoginRequest{" +
+        return "model.LoginRequest{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';

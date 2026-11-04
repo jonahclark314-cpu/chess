@@ -13,21 +13,44 @@ import java.net.http.HttpResponse.BodyHandlers;
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
     private final String serverUrl;
+    private String authentication = "";
 
     public ServerFacade(String url) {
         serverUrl = url;
     }
 
+    public String signIn(String username, String password) throws ResponseException {
+        LoginRequest loginRequest = new LoginRequest(username, password);
+        var request = buildRequest("POST", "/session", loginRequest);
+        var response = sendRequest(request);
+        AuthData authData = handleResponse(response, AuthData.class);
+        authentication = authData.authToken();
+        return authData.username();
+    }
+
+
     public Pet addPet(Pet pet) throws ResponseException {
+        var request = buildRequest("POST", "/pet", pet);
+        var response = sendRequest(request);
+        return handleResponse(response, Pet.class);
     }
 
     public void deletePet(int id) throws ResponseException {
+        var path = String.format("/pet/%s", id);
+        var request = buildRequest("DELETE", path, null);
+        var response = sendRequest(request);
+        handleResponse(response, null);
     }
 
     public void deleteAllPets() throws ResponseException {
+        var request = buildRequest("DELETE", "/pet", null);
+        sendRequest(request);
     }
 
     public PetList listPets() throws ResponseException {
+        var request = buildRequest("GET", "/pet", null);
+        var response = sendRequest(request);
+        return handleResponse(response, PetList.class);
     }
 
     private HttpRequest buildRequest(String method, String path, Object body) {

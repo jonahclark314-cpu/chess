@@ -47,7 +47,7 @@ public class UserService {
     /**
      * This is the method that helps verify if login information is correct.
      *
-     * @param login - LoginRequest object that has the username and password.
+     * @param login - model.LoginRequest object that has the username and password.
      * @throws UnauthorizedException - if the password is incorrect, or the user does not exist, throw an exception.
      * @throws BadRequestException   - if any login info is not provided, throw an exception.
      */

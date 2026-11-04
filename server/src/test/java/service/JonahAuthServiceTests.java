@@ -221,13 +221,13 @@ public class JonahAuthServiceTests {
 
     @Test
     @Order(11)
-    @DisplayName("Check if LoginRequest class is functional.")
+    @DisplayName("Check if model.LoginRequest class is functional.")
     public void testLoginRequestWorks() {
         LoginRequest request = new LoginRequest("Username", "Password");
         Assertions.assertInstanceOf(LoginRequest.class, request);
         Assertions.assertEquals("Username", request.username());
         Assertions.assertEquals("Password", request.password());
-        Assertions.assertEquals("LoginRequest{username='Username', password='Password'}", request.toString());
+        Assertions.assertEquals("model.LoginRequest{username='Username', password='Password'}", request.toString());
 
         LoginRequest request2 = new LoginRequest(null, null);
         Assertions.assertEquals("", request2.username());
