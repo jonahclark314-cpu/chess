@@ -3,6 +3,7 @@ package client;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import exception.ResponseException;
 import server.ServerFacade;
 import com.google.gson.Gson;
 import model.*;
@@ -29,7 +30,7 @@ public class ChessClient {
 
             try {
                 result = eval(line);
-                System.out.print(BLUE + result);
+                System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result + EscapeSequences.SET_TEXT_COLOR_BLACK);
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -39,13 +40,8 @@ public class ChessClient {
     }
 
 
-    public void notify(Notification notification) {
-        System.out.println(RED + notification.message());
-        printPrompt();
-    }
-
     private void printPrompt() {
-        System.out.print("\n" + RESET + ">>> " + GREEN);
+        System.out.print("\n" + EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR + ">>> " + EscapeSequences.SET_TEXT_COLOR_GREEN);
     }
 
 
@@ -54,16 +50,29 @@ public class ChessClient {
             String[] tokens = input.toLowerCase().split(" ");
             String cmd = (tokens.length > 0) ? tokens[0] : "help";
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            return switch (cmd) {
-                case "signin" -> signIn(params);
-                case "rescue" -> rescuePet(params);
-                case "list" -> listPets();
-                case "signout" -> signOut();
-                case "adopt" -> adoptPet(params);
-                case "adoptall" -> adoptAllPets();
-                case "quit" -> "quit";
-                default -> help();
-            };
+            if (state == State.SIGNEDOUT) {
+                return switch (cmd) {
+                    case "login" -> signIn(params);
+                    case "register" -> register(params);
+                    default -> help();
+                };
+            } else if (state == State.SIGNEDIN) {
+                return switch (cmd) {
+                    case "create" -> createGame(params);
+                    case "list" -> listGames();
+                    case "join" -> joinGame(params);
+                    case "observe" -> observeGame(params);
+                    case "logout" -> logout();
+                    default -> help();
+                };
+            } else { // the state is INGAME.
+                return switch (cmd) {
+                    case "move" -> move(params);
+                    case "quit" -> "quit";
+                    default -> help();
+                };
+            }
+
         } catch (ResponseException ex) {
             return ex.getMessage();
         }
@@ -79,17 +88,6 @@ public class ChessClient {
         throw new ResponseException(ResponseException.Code.ClientError, "Expected: <yourname>");
     }
 
-    public String rescuePet(String... params) throws ResponseException {
-        assertSignedIn();
-        if (params.length >= 2) {
-            String name = params[0];
-            PetType type = PetType.valueOf(params[1].toUpperCase());
-            var pet = new Pet(0, name, type);
-            pet = server.addPet(pet);
-            return String.format("You rescued %s. Assigned ID: %d", pet.name(), pet.id());
-        }
-        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <name> <CAT|DOG|FROG>");
-    }
 
     public String listPets() throws ResponseException {
         assertSignedIn();
@@ -131,7 +129,7 @@ public class ChessClient {
 
     public String signOut() throws ResponseException {
         assertSignedIn();
-        ws.leavePetShop(visitorName);
+        server.leavePetShop(visitorName);
         state = State.SIGNEDOUT;
         return String.format("%s left the shop", visitorName);
     }
@@ -167,4 +165,6 @@ public class ChessClient {
             throw new ResponseException(ResponseException.Code.ClientError, "You must sign in");
         }
     }
+
+
 }
