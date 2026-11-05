@@ -39,10 +39,16 @@ public class ServerFacade {
     }
 
     public String logout() throws ResponseException {
-        var request = buildRequest("Delete", "/session", null);
+        var request = buildRequest("DELETE", "/session", null);
         var response = sendRequest(request);
         handleResponse(response, Object.class);
         return "Success";
+    }
+
+    public ListGamesResult listGames() throws ResponseException {
+        var request = buildRequest("GET", "/game", null);
+        var response = sendRequest(request);
+        return handleResponse(response, ListGamesResult.class);
     }
 
 

@@ -1,5 +1,6 @@
 package client;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -93,7 +94,35 @@ public class ChessClient {
     }
 
     public String listGames(String... params) throws ResponseException {
-        return "listGames()";
+        try {
+            ListGamesResult allGames = server.listGames();
+            ArrayList<GameData> games = allGames.games();
+            StringBuilder toScreen = new StringBuilder();
+            int count = 1;
+            toScreen.append("Here are all of the games being played right now:");
+            for (GameData game : games) {
+                String name = game.getGameName();
+                String nextLine = "   - " + Integer.toString(count) + ": " + name + "\n";
+                count += 1;
+                toScreen.append(nextLine);
+            }
+            if (count == 1) {
+                return "There are no games so far! Feel free to make one!";
+            }
+
+            return toScreen.toString();
+        } catch (ResponseException e) {
+            if (e.code() == ResponseException.Code.Unauthorized) {
+                return "You entered the wrong Username or password";
+            }
+            if (e.code() == ResponseException.Code.ServerError) {
+                return "Something went wrong... Maybe the Server isn't up?";
+            }
+            if (e.code() == ResponseException.Code.BadRequest) {
+                return "That was a bad request. Use the help menu.";
+            }
+            return "Cannot log you in. We are not sure why.";
+        }
     }
 
     public String joinGame(String... params) throws ResponseException {
