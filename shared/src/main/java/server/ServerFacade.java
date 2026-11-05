@@ -9,6 +9,7 @@ import java.net.http.*;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.Objects;
 
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
@@ -35,6 +36,13 @@ public class ServerFacade {
         AuthData authData = handleResponse(response, AuthData.class);
         authentication = authData.authToken();
         return authData.username();
+    }
+
+    public String logout() throws ResponseException {
+        var request = buildRequest("Delete", "/session", null);
+        var response = sendRequest(request);
+        handleResponse(response, Object.class);
+        return "Success";
     }
 
 
@@ -66,6 +74,9 @@ public class ServerFacade {
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + path))
                 .method(method, makeRequestBody(body));
+        if (!Objects.equals(authentication, "")) {
+            request.setHeader("authorization", authentication);
+        }
         if (body != null) {
             request.setHeader("Content-Type", "application/json");
         }

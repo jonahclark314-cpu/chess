@@ -19,7 +19,7 @@ public class ChessClient {
     }
 
     public void run() {
-        System.out.println(EscapeSequences.BLACK_BISHOP + " Welcome to the pet store. Sign in to start.");
+        System.out.println(EscapeSequences.BLACK_BISHOP + " Welcome to this chess app! Sign in to start.");
         System.out.print(help());
 
         Scanner scanner = new Scanner(System.in);
@@ -41,7 +41,15 @@ public class ChessClient {
 
 
     private void printPrompt() {
-        System.out.print("\n" + EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR + ">>> " + EscapeSequences.SET_TEXT_COLOR_GREEN);
+        String yourState;
+        if (state == State.INGAME) {
+            yourState = "[IN GAME]";
+        } else if (state == State.SIGNEDIN) {
+            yourState = "[SIGNED IN]";
+        } else {
+            yourState = "[CURRENTLY SIGNED OUT]";
+        }
+        System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY + EscapeSequences.RESET_BG_COLOR + yourState + EscapeSequences.RESET_TEXT_COLOR + ">>> " + EscapeSequences.SET_TEXT_COLOR_GREEN);
     }
 
 
@@ -69,6 +77,7 @@ public class ChessClient {
             } else { // the state is INGAME.
                 return switch (cmd) {
                     case "move" -> move(params);
+                    case "leave" -> leave(params);
                     case "quit" -> "quit";
                     default -> help();
                 };
@@ -96,12 +105,33 @@ public class ChessClient {
     }
 
     public String logout(String... params) throws ResponseException {
-        return "logout()";
+        try {
+            server.logout();
+            state = State.SIGNEDOUT;
+            return String.format("You are signed out. Come again soon!");
+        } catch (ResponseException e) {
+            if (e.code() == ResponseException.Code.Unauthorized) {
+                return "You are not logged in! So you can't log out!";
+            }
+            if (e.code() == ResponseException.Code.ServerError) {
+                return "Something went wrong... Maybe the Server isn't up?";
+            }
+            if (e.code() == ResponseException.Code.BadRequest) {
+                return "That was a bad request. Use the help menu.";
+            }
+            return "Cannot log you out. We are not sure why.";
+        }
+
     }
 
     public String move(String... params) throws ResponseException {
         return "move()";
     }
+
+    public String leave(String... params) throws ResponseException {
+        return "leave()";
+    }
+
 
     public String signIn(String... params) throws ResponseException {
         if (params.length == 2) {
@@ -211,16 +241,26 @@ public class ChessClient {
     public String help() {
         if (state == State.SIGNEDOUT) {
             return """
-                    - signIn <yourname>
+                    - login <Username> <Password>
+                    - register <Username> <Password> <Email>
+                    - help
+                    - quit
+                    """;
+        }
+        if (state == State.SIGNEDIN) {
+            return """
+                    - create
+                    - list
+                    - join
+                    - observe
+                    - logout
+                    - help
                     - quit
                     """;
         }
         return """
-                - list
-                - adopt <pet id>
-                - rescue <name> <CAT|DOG|FROG|FISH>
-                - adoptAll
-                - signOut
+                - move
+                - leave
                 - quit
                 """;
     }
