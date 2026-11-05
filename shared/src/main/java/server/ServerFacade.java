@@ -51,6 +51,14 @@ public class ServerFacade {
         return handleResponse(response, ListGamesResult.class);
     }
 
+    public String createGame(String gameName) throws ResponseException {
+        CreateGameRequest gameRequest = new CreateGameRequest(gameName);
+        var request = buildRequest("POST", "/game", gameRequest);
+        var response = sendRequest(request);
+        handleResponse(response, Object.class);
+        return "Created a game called:" + gameName;
+    }
+
 
 //    public Pet addPet(Pet pet) throws ResponseException {
 //        var request = buildRequest("POST", "/pet", pet);

@@ -90,7 +90,24 @@ public class ChessClient {
     }
 
     public String createGame(String... params) throws ResponseException {
-        return "createGame()";
+        if (params.length == 1) {
+            try {
+                return server.createGame(params[0]);
+            } catch (ResponseException e) {
+                if (e.code() == ResponseException.Code.Unauthorized) {
+                    return "You are not logged in!";
+                }
+                if (e.code() == ResponseException.Code.ServerError) {
+                    return "Something went wrong... Maybe the Server isn't up?";
+                }
+                if (e.code() == ResponseException.Code.BadRequest) {
+                    return "That was a bad request. Use the help menu.";
+                }
+                return "Cannot create game. We are not sure why.";
+            }
+        }
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <userName> <password>");
+
     }
 
     public String listGames(String... params) throws ResponseException {
@@ -99,10 +116,10 @@ public class ChessClient {
             ArrayList<GameData> games = allGames.games();
             StringBuilder toScreen = new StringBuilder();
             int count = 1;
-            toScreen.append("Here are all of the games being played right now:");
+            toScreen.append("Here are all of the games being played right now:\n");
             for (GameData game : games) {
                 String name = game.getGameName();
-                String nextLine = "   - " + Integer.toString(count) + ": " + name + "\n";
+                String nextLine = "   - " + Integer.toString(count) + ": " + name + "   White Player: " + game.getWhiteUsername() + "   Black Player: " + game.getBlackUsername() + "\n";
                 count += 1;
                 toScreen.append(nextLine);
             }
@@ -113,7 +130,7 @@ public class ChessClient {
             return toScreen.toString();
         } catch (ResponseException e) {
             if (e.code() == ResponseException.Code.Unauthorized) {
-                return "You entered the wrong Username or password";
+                return "You are not logged in!";
             }
             if (e.code() == ResponseException.Code.ServerError) {
                 return "Something went wrong... Maybe the Server isn't up?";
@@ -121,7 +138,7 @@ public class ChessClient {
             if (e.code() == ResponseException.Code.BadRequest) {
                 return "That was a bad request. Use the help menu.";
             }
-            return "Cannot log you in. We are not sure why.";
+            return "Cannot list the games. We are not sure why.";
         }
     }
 
