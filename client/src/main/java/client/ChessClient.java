@@ -79,6 +79,30 @@ public class ChessClient {
         }
     }
 
+    public String createGame(String... params) throws ResponseException {
+        return "createGame()";
+    }
+
+    public String listGames(String... params) throws ResponseException {
+        return "listGames()";
+    }
+
+    public String joinGame(String... params) throws ResponseException {
+        return "joinGame()";
+    }
+
+    public String observeGame(String... params) throws ResponseException {
+        return "observeGame()";
+    }
+
+    public String logout(String... params) throws ResponseException {
+        return "logout()";
+    }
+
+    public String move(String... params) throws ResponseException {
+        return "move()";
+    }
+
     public String signIn(String... params) throws ResponseException {
         if (params.length == 2) {
             try {
@@ -88,69 +112,101 @@ public class ChessClient {
                 }
                 state = State.SIGNEDIN;
                 return String.format("You signed in as %s.", username);
-            } catch (NullPointerException e) {
-                return "You entered the wrong Username or password";
-            } catch (Exception e) {
-                return "Something went wrong! Maybe the server isn't up!";
+            } catch (ResponseException e) {
+                if (e.code() == ResponseException.Code.Unauthorized) {
+                    return "You entered the wrong Username or password";
+                }
+                if (e.code() == ResponseException.Code.ServerError) {
+                    return "Something went wrong... Maybe the Server isn't up?";
+                }
+                if (e.code() == ResponseException.Code.BadRequest) {
+                    return "That was a bad request. Use the help menu.";
+                }
+                return "Cannot log you in. We are not sure why.";
             }
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected: <userName> <password>");
     }
 
-
-    public String listPets() throws ResponseException {
-        assertSignedIn();
-        PetList pets = server.listPets();
-        var result = new StringBuilder();
-        var gson = new Gson();
-        for (Pet pet : pets) {
-            result.append(gson.toJson(pet)).append('\n');
-        }
-        return result.toString();
-    }
-
-    public String adoptPet(String... params) throws ResponseException {
-        assertSignedIn();
-        if (params.length == 1) {
+    public String register(String... params) throws ResponseException {
+        if (params.length == 3) {
             try {
-                int id = Integer.parseInt(params[0]);
-                Pet pet = getPet(id);
-                if (pet != null) {
-                    server.deletePet(id);
-                    return String.format("%s says %s", pet.name(), pet.sound());
+                String username = server.register(params[0], params[1], params[2]);
+                if (username == null) {
+                    return "That Username is already taken.";
                 }
-            } catch (NumberFormatException ignored) {
+                state = State.SIGNEDIN;
+                return String.format("You signed in as %s.", username);
+            } catch (ResponseException e) {
+                if (e.code() == ResponseException.Code.AlreadyTaken) {
+                    return "That username is already taken!";
+                }
+                if (e.code() == ResponseException.Code.ServerError) {
+                    return "Something went wrong... Maybe the Server isn't up?";
+                }
+                if (e.code() == ResponseException.Code.BadRequest) {
+                    return "That was a bad request. Use the help menu.";
+                }
+                return "Cannot register, we are not sure why.";
             }
         }
-        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <pet id>");
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <userName> <password> <email>");
     }
 
-    public String adoptAllPets() throws ResponseException {
-        assertSignedIn();
-        var buffer = new StringBuilder();
-        for (Pet pet : server.listPets()) {
-            buffer.append(String.format("%s says %s%n", pet.name(), pet.sound()));
-        }
+//
+//    public String listPets() throws ResponseException {
+//        assertSignedIn();
+//        PetList pets = server.listPets();
+//        var result = new StringBuilder();
+//        var gson = new Gson();
+//        for (Pet pet : pets) {
+//            result.append(gson.toJson(pet)).append('\n');
+//        }
+//        return result.toString();
+//    }
 
-        server.deleteAllPets();
-        return buffer.toString();
-    }
+//    public String adoptPet(String... params) throws ResponseException {
+//        assertSignedIn();
+//        if (params.length == 1) {
+//            try {
+//                int id = Integer.parseInt(params[0]);
+//                Pet pet = getPet(id);
+//                if (pet != null) {
+//                    server.deletePet(id);
+//                    return String.format("%s says %s", pet.name(), pet.sound());
+//                }
+//            } catch (NumberFormatException ignored) {
+//            }
+//        }
+//        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <pet id>");
+//    }
 
-    public String signOut() throws ResponseException {
-        assertSignedIn();
-        server.leavePetShop(visitorName);
-        state = State.SIGNEDOUT;
-        return String.format("%s left the shop", visitorName);
-    }
+//    public String adoptAllPets() throws ResponseException {
+//        assertSignedIn();
+//        var buffer = new StringBuilder();
+//        for (Pet pet : server.listPets()) {
+//            buffer.append(String.format("%s says %s%n", pet.name(), pet.sound()));
+//        }
+//
+//        server.deleteAllPets();
+//        return buffer.toString();
+//    }
 
-    private Pet getPet(int id) throws ResponseException {
-        for (Pet pet : server.listPets()) {
-            if (pet.id() == id) {
-                return pet;
-            }
-        }
-        return null;
-    }
+//    public String signOut() throws ResponseException {
+//        assertSignedIn();
+//        server.leavePetShop(visitorName);
+//        state = State.SIGNEDOUT;
+//        return String.format("%s left the shop", visitorName);
+//    }
+
+//    private Pet getPet(int id) throws ResponseException {
+//        for (Pet pet : server.listPets()) {
+//            if (pet.id() == id) {
+//                return pet;
+//            }
+//        }
+//        return null;
+//    }
 
     public String help() {
         if (state == State.SIGNEDOUT) {

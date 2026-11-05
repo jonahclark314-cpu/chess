@@ -28,12 +28,21 @@ public class ServerFacade {
         return authData.username();
     }
 
-
-    public Pet addPet(Pet pet) throws ResponseException {
-        var request = buildRequest("POST", "/pet", pet);
+    public String register(String username, String password, String email) throws ResponseException {
+        RegisterRequest registerRequest = new RegisterRequest(username, password, email);
+        var request = buildRequest("POST", "/user", registerRequest);
         var response = sendRequest(request);
-        return handleResponse(response, Pet.class);
+        AuthData authData = handleResponse(response, AuthData.class);
+        authentication = authData.authToken();
+        return authData.username();
     }
+
+
+//    public Pet addPet(Pet pet) throws ResponseException {
+//        var request = buildRequest("POST", "/pet", pet);
+//        var response = sendRequest(request);
+//        return handleResponse(response, Pet.class);
+//    }
 
     public void deletePet(int id) throws ResponseException {
         var path = String.format("/pet/%s", id);
@@ -47,11 +56,11 @@ public class ServerFacade {
         sendRequest(request);
     }
 
-    public PetList listPets() throws ResponseException {
-        var request = buildRequest("GET", "/pet", null);
-        var response = sendRequest(request);
-        return handleResponse(response, PetList.class);
-    }
+//    public PetList listPets() throws ResponseException {
+//        var request = buildRequest("GET", "/pet", null);
+//        var response = sendRequest(request);
+//        return handleResponse(response, PetList.class);
+//    }
 
     private HttpRequest buildRequest(String method, String path, Object body) {
         var request = HttpRequest.newBuilder()
@@ -84,7 +93,7 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             var body = response.body();
             if (body != null) {
-                throw ResponseException.fromJson(body);
+                throw ResponseException.fromJson(body, status);
             }
 
             throw new ResponseException(ResponseException.fromHttpStatusCode(status), "other failure: " + status);

@@ -10,6 +10,9 @@ public class ResponseException extends Exception {
     public enum Code {
         ServerError,
         ClientError,
+        BadRequest,
+        Unauthorized,
+        AlreadyTaken,
     }
 
     final private Code code;
@@ -23,11 +26,17 @@ public class ResponseException extends Exception {
         return new Gson().toJson(Map.of("message", getMessage(), "status", code));
     }
 
-    public static ResponseException fromJson(String json) {
+    public static ResponseException fromJson(String json, int httpResponse) {
         var map = new Gson().fromJson(json, HashMap.class);
-        var status = Code.valueOf(map.get("status").toString());
-        String message = map.get("message").toString();
-        return new ResponseException(status, message);
+        Object mesageValue = map.get("message");
+        String message;
+        if (mesageValue == null) {
+            message = "There was no message.";
+        } else {
+            message = mesageValue.toString();
+        }
+        Code code = fromHttpStatusCode(httpResponse);
+        return new ResponseException(code, message);
     }
 
     public Code code() {
@@ -37,7 +46,9 @@ public class ResponseException extends Exception {
     public static Code fromHttpStatusCode(int httpStatusCode) {
         return switch (httpStatusCode) {
             case 500 -> Code.ServerError;
-            case 400 -> Code.ClientError;
+            case 401 -> Code.Unauthorized;
+            case 403 -> Code.AlreadyTaken;
+            case 400 -> Code.BadRequest;
             default -> throw new IllegalArgumentException("Unknown HTTP status code: " + httpStatusCode);
         };
     }
@@ -45,7 +56,9 @@ public class ResponseException extends Exception {
     public int toHttpStatusCode() {
         return switch (code) {
             case ServerError -> 500;
-            case ClientError -> 400;
+            case BadRequest, ClientError -> 400;
+            case AlreadyTaken -> 403;
+            case Unauthorized -> 401;
         };
     }
 }
