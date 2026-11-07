@@ -72,5 +72,50 @@ public class ServerFacadeTests {
         Assertions.assertEquals(ResponseException.Code.Unauthorized, ex.code());
     }
 
+    @Test
+    void createAndListGame() throws Exception {
+        facade.register("player1", "password", "p1@email.com");
+        Assertions.assertEquals("Created a game called:fun", facade.createGame("fun"));
+        var games = facade.listGames().games();
+        Assertions.assertEquals(1, games.size());
+        Assertions.assertEquals("fun", games.get(0).getGameName());
+    }
+
+    @Test
+    void listGamesWithoutLogin() {
+        ResponseException ex = Assertions.assertThrows(ResponseException.class,
+                () -> facade.listGames());
+        Assertions.assertEquals(ResponseException.Code.Unauthorized, ex.code());
+    }
+
+    @Test
+    void logoutThenListFails() throws Exception {
+        facade.register("player1", "password", "p1@email.com");
+        facade.logout();
+        ResponseException ex = Assertions.assertThrows(ResponseException.class,
+                () -> facade.logout());
+        Assertions.assertEquals(ResponseException.Code.Unauthorized, ex.code());
+    }
+
+    @Test
+    void joinGameSuccess() throws Exception {
+        facade.register("player1", "password", "p1@email.com");
+        facade.createGame("fun");
+        int gameID = facade.listGames().games().get(0).getGameID();
+        String result = facade.joinGame(gameID, "WHITE");
+        Assertions.assertTrue(result.contains("WHITE"));
+        Assertions.assertNotNull(facade.getBoard());
+    }
+
+    @Test
+    void joinBadColor() throws Exception {
+        facade.register("player1", "password", "p1@email.com");
+        facade.createGame("fun");
+        int gameID = facade.listGames().games().get(0).getGameID();
+        ResponseException ex = Assertions.assertThrows(ResponseException.class,
+                () -> facade.joinGame(gameID, "BLUE"));
+        Assertions.assertEquals(ResponseException.Code.BadRequest, ex.code());
+    }
+
 
 }
