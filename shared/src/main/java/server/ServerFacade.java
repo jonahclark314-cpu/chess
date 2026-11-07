@@ -24,6 +24,10 @@ public class ServerFacade {
         serverUrl = url;
     }
 
+    public ServerFacade(int port) {
+        this("http://localhost:" + port);
+    }
+
     public String signIn(String username, String password) throws ResponseException {
         LoginRequest loginRequest = new LoginRequest(username, password);
         var request = buildRequest("POST", "/session", loginRequest);

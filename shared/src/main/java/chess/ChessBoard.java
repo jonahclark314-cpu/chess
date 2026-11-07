@@ -156,7 +156,7 @@ public class ChessBoard {
                 for (int j = 0; j <= 9; j++) {
 //                    totalString.append("|");
                     if (j != 0 && j != 9) {
-                        if ((j + i) % 2 == 1) {
+                        if ((j + i) % 2 == 0) {
                             totalString.append(EscapeSequences.SET_BG_COLOR_BLACK);
                         } else {
                             totalString.append(EscapeSequences.SET_BG_COLOR_WHITE);
