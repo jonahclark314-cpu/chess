@@ -2,18 +2,18 @@ package client;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
 
 import exception.ResponseException;
 import server.ServerFacade;
-import com.google.gson.Gson;
 import model.*;
 import ui.EscapeSequences;
 
 public class ChessClient {
-    private String visitorName = null;
     private State state = State.SIGNEDOUT;
     private final ServerFacade server;
+    private String playerColor = "";
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -78,7 +78,7 @@ public class ChessClient {
             } else { // the state is INGAME.
                 return switch (cmd) {
                     case "move" -> move(params);
-                    case "leave" -> leave(params);
+                    case "leave" -> leave();
                     case "quit" -> "quit";
                     default -> help();
                 };
@@ -92,6 +92,7 @@ public class ChessClient {
     public String createGame(String... params) throws ResponseException {
         if (params.length == 1) {
             try {
+                assertSignedIn();
                 return server.createGame(params[0]);
             } catch (ResponseException e) {
                 if (e.code() == ResponseException.Code.Unauthorized) {
@@ -110,18 +111,19 @@ public class ChessClient {
 
     }
 
-    public String listGames(String... params) throws ResponseException {
+    public String listGames() throws ResponseException {
         try {
+            assertSignedIn();
             ListGamesResult allGames = server.listGames();
             ArrayList<GameData> games = allGames.games();
             StringBuilder toScreen = new StringBuilder();
-            int count = 1;
             toScreen.append("Here are all of the games being played right now:\n");
+            int count = 1;
             for (GameData game : games) {
                 String name = game.getGameName();
-                String nextLine = "   - " + Integer.toString(count) + ": " + name + "   White Player: " + game.getWhiteUsername() + "   Black Player: " + game.getBlackUsername() + "\n";
-                count += 1;
+                String nextLine = "   - " + game.getGameID() + ": " + name + "   White Player: " + game.getWhiteUsername() + "   Black Player: " + game.getBlackUsername() + "\n";
                 toScreen.append(nextLine);
+                count += 1;
             }
             if (count == 1) {
                 return "There are no games so far! Feel free to make one!";
@@ -143,18 +145,65 @@ public class ChessClient {
     }
 
     public String joinGame(String... params) throws ResponseException {
-        return "joinGame()";
+        if (params.length == 2) {
+            try {
+                assertSignedIn();
+                var output = server.joinGame(Integer.parseInt(params[0]), params[1]);
+                state = State.INGAME;
+                playerColor = params[1];
+                var board = server.getBoard();
+                return output + board.show(playerColor);
+            } catch (ResponseException e) {
+                if (e.code() == ResponseException.Code.Unauthorized) {
+                    return "You are not logged in!";
+                }
+                if (e.code() == ResponseException.Code.ServerError) {
+                    return "Something went wrong... Maybe the Server isn't up?";
+                }
+                if (e.code() == ResponseException.Code.AlreadyTaken) {
+                    return "That color is already taken!";
+                }
+                if (e.code() == ResponseException.Code.BadRequest) {
+                    return "That was a bad request. Use the help menu.";
+                }
+                return "Cannot create game. We are not sure why.";
+            }
+        }
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <ID> [WHITE/BLACK]");
     }
+
 
     public String observeGame(String... params) throws ResponseException {
-        return "observeGame()";
+        try {
+            assertSignedIn();
+            server.setUserInGame(Integer.parseInt(params[0]));
+            state = State.INGAME;
+            var board = server.getBoard();
+            return board.show("WHITE");
+        } catch (ResponseException e) {
+            if (e.code() == ResponseException.Code.Unauthorized) {
+                return "You are not logged in!";
+            }
+            if (e.code() == ResponseException.Code.ServerError) {
+                return "Something went wrong... Maybe the Server isn't up?";
+            }
+            if (e.code() == ResponseException.Code.AlreadyTaken) {
+                return "That color is already taken!";
+            }
+            if (e.code() == ResponseException.Code.BadRequest) {
+                return "That was a bad request. Use the help menu.";
+            }
+            return "Cannot create game. We are not sure why.";
+        }
+
     }
 
-    public String logout(String... params) throws ResponseException {
+    public String logout() throws ResponseException {
         try {
+            assertSignedIn();
             server.logout();
             state = State.SIGNEDOUT;
-            return String.format("You are signed out. Come again soon!");
+            return "You are signed out. Come again soon!";
         } catch (ResponseException e) {
             if (e.code() == ResponseException.Code.Unauthorized) {
                 return "You are not logged in! So you can't log out!";
@@ -171,10 +220,39 @@ public class ChessClient {
     }
 
     public String move(String... params) throws ResponseException {
-        return "move()";
+        assertSignedIn();
+//        try {
+//            if (params.length == 2) {
+//                String start = params[0];
+//                String end = params[1];
+//                ChessMove move = ChessMove.createMove(start, end, null);
+//                var board = server.getBoard();
+//                server.doMove(move);
+//                return "move()" + board.show(playerColor);
+//            }
+//        } catch (ResponseException e) {
+//            if (e.code() == ResponseException.Code.Unauthorized) {
+//                return "You are not logged in! So you can't log out!";
+//            }
+//            if (e.code() == ResponseException.Code.ServerError) {
+//                return "Something went wrong... Maybe the Server isn't up?";
+//            }
+//            if (e.code() == ResponseException.Code.BadRequest) {
+//                return "That was a bad request. Use the help menu.";
+//            }
+//            return "Cannot log you out. We are not sure why.";
+//        } catch (RuntimeException e) {
+//            return "We could not understand what you said. make sure you make it in this form: move a1 e5";
+//        }
+//        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <space1> <space2>");
+        return "We have not implemented moves yet. Thanks for the patience";
     }
 
-    public String leave(String... params) throws ResponseException {
+    public String leave() throws ResponseException {
+        assertSignedIn();
+        state = State.SIGNEDIN;
+        playerColor = "";
+        server.leaveGame();
         return "leave()";
     }
 
@@ -229,61 +307,6 @@ public class ChessClient {
         throw new ResponseException(ResponseException.Code.ClientError, "Expected: <userName> <password> <email>");
     }
 
-//
-//    public String listPets() throws ResponseException {
-//        assertSignedIn();
-//        PetList pets = server.listPets();
-//        var result = new StringBuilder();
-//        var gson = new Gson();
-//        for (Pet pet : pets) {
-//            result.append(gson.toJson(pet)).append('\n');
-//        }
-//        return result.toString();
-//    }
-
-//    public String adoptPet(String... params) throws ResponseException {
-//        assertSignedIn();
-//        if (params.length == 1) {
-//            try {
-//                int id = Integer.parseInt(params[0]);
-//                Pet pet = getPet(id);
-//                if (pet != null) {
-//                    server.deletePet(id);
-//                    return String.format("%s says %s", pet.name(), pet.sound());
-//                }
-//            } catch (NumberFormatException ignored) {
-//            }
-//        }
-//        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <pet id>");
-//    }
-
-//    public String adoptAllPets() throws ResponseException {
-//        assertSignedIn();
-//        var buffer = new StringBuilder();
-//        for (Pet pet : server.listPets()) {
-//            buffer.append(String.format("%s says %s%n", pet.name(), pet.sound()));
-//        }
-//
-//        server.deleteAllPets();
-//        return buffer.toString();
-//    }
-
-//    public String signOut() throws ResponseException {
-//        assertSignedIn();
-//        server.leavePetShop(visitorName);
-//        state = State.SIGNEDOUT;
-//        return String.format("%s left the shop", visitorName);
-//    }
-
-//    private Pet getPet(int id) throws ResponseException {
-//        for (Pet pet : server.listPets()) {
-//            if (pet.id() == id) {
-//                return pet;
-//            }
-//        }
-//        return null;
-//    }
-
     public String help() {
         if (state == State.SIGNEDOUT) {
             return """
@@ -304,10 +327,33 @@ public class ChessClient {
                     - quit
                     """;
         }
+        if (state == State.INGAME) {
+            try {
+                var board = server.getBoard();
+                if (Objects.equals(playerColor, "BLACK")) {
+                    return """
+                            - move
+                            - leave
+                            - quit
+                            """ + board.show("BLACK");
+                } else {
+                    return """
+                            - move
+                            - leave
+                            - quit
+                            """ + board.show("WHITE");
+                }
+
+            } catch (Exception e) {
+                return """
+                        - move
+                        - leave
+                        - quit
+                        """;
+            }
+        }
         return """
-                - move
-                - leave
-                - quit
+                dawg something is wrong. you should check it out!
                 """;
     }
 

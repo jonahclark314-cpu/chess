@@ -110,7 +110,6 @@ public class GameService {
         if (game == null) {
             throw new BadRequestException("Error: bad request");
         }
-
         // If the requested color is WHITE, make sure it is not already taken and tell DAO to update it.
         if (color.equals("WHITE")) {
             if (game.getWhiteUsername() == null) {

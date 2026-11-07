@@ -18,8 +18,9 @@ public class ChessMove {
 
     /**
      * This is the instantiation of this class.
-     * @param startPosition where the piece is coming from
-     * @param endPosition where the class is going to
+     *
+     * @param startPosition  where the piece is coming from
+     * @param endPosition    where the class is going to
      * @param promotionPiece if it is a pawn, and it has progressed accross the board and reaches the other side,
      *                       it can be promoted to a Queen, Rook, Knight, or Bishop. This variable is null unless
      *                       it is a pawn in this situation.
@@ -31,12 +32,20 @@ public class ChessMove {
         this.pieceType = promotionPiece;
     }
 
+
+    public static ChessMove createMove(String start, String end, ChessPiece.PieceType promotionPiece) throws RuntimeException {
+        ChessPosition startPosition = ChessPosition.calculatePosition(start);
+        ChessPosition endPosition = ChessPosition.calculatePosition(end);
+        return new ChessMove(startPosition, endPosition, promotionPiece);
+    }
+
     /**
      * This checks if the proposed move is a castle move. It does so by seeing if the King moves 2 spaces.
+     *
      * @param board the current state of the board
      * @return returns true if the move is a castling move
      */
-    public boolean isACastle (ChessBoard board) {
+    public boolean isACastle(ChessBoard board) {
         // Make sure the piece moving is a king.
         if (board.getPiece(this.startPosition) != null &&
                 board.getPiece(this.startPosition).getPieceType() == ChessPiece.PieceType.KING) {
@@ -53,10 +62,11 @@ public class ChessMove {
     /**
      * This is a helper function to see if the move LOOKS like it should be en Passant. Does not take into account
      * turns.
+     *
      * @param board - current board set up.
      * @return returns true if the move looks like it should be en Passant. False otherwise.
      */
-    public boolean looksLikeShouldBeEnPassant (ChessBoard board) {
+    public boolean looksLikeShouldBeEnPassant(ChessBoard board) {
         // Make sure it moves 1 square diagonally
         int horizontalMovement = Math.abs(this.getStartPosition().getColumn() - this.getEndPosition().getColumn());
         int verticalMovement = Math.abs(this.getStartPosition().getRow() - this.getEndPosition().getRow());
@@ -66,7 +76,7 @@ public class ChessMove {
         ChessPiece pieceAtNewLocation = board.getPiece(this.getEndPosition());
 
         // Make sure that the pawn being taken by the en passant move is actually a pawn.
-        ChessPosition enPassantPawnPosition = new ChessPosition(this.getStartPosition().getRow(),this.getEndPosition().getColumn());
+        ChessPosition enPassantPawnPosition = new ChessPosition(this.getStartPosition().getRow(), this.getEndPosition().getColumn());
         ChessPiece enPassantPawn = board.getPiece(enPassantPawnPosition);
 
         // All of the logic of the comments above is contained in this return statement.
@@ -82,11 +92,12 @@ public class ChessMove {
     /**
      * This tests if the move is ACTUALLY an en passant move. It takes everything into account including what the previous move was.
      * Compare this to looksLikeShouldBeEnPassant().
-     * @param board - current board setup.
+     *
+     * @param board    - current board setup.
      * @param lastMove - the most recent move that was done in the game.
      * @return - returns true if it follows all the en passant rules. returns false otherwise.
      */
-    public boolean isAEnPassant (ChessBoard board, ChessMove lastMove) {
+    public boolean isAEnPassant(ChessBoard board, ChessMove lastMove) {
 
         // If it is the first move of the game, it is NOT en passant.
         if (lastMove == null) {
@@ -114,6 +125,7 @@ public class ChessMove {
 
     /**
      * This is what returns the start position of the move.
+     *
      * @return ChessPosition of starting location
      */
     public ChessPosition getStartPosition() {
@@ -122,6 +134,7 @@ public class ChessMove {
 
     /**
      * This is what returns the end position of the move.
+     *
      * @return ChessPosition of ending location
      */
     public ChessPosition getEndPosition() {
@@ -139,12 +152,12 @@ public class ChessMove {
     }
 
 
-    public boolean isMoveSilly  (ChessBoard board, ChessGame.TeamColor teamTurn){
+    public boolean isMoveSilly(ChessBoard board, ChessGame.TeamColor teamTurn) {
 
         // If there is a piece at the start position, lets check if it is in the valid moves Collection.
         boolean moveIsValid = false;
         if (board.getPiece(this.getStartPosition()) != null) {
-            Collection<ChessMove> moves = board.getPiece(this.getStartPosition()).pieceMoves(board,this.getStartPosition());
+            Collection<ChessMove> moves = board.getPiece(this.getStartPosition()).pieceMoves(board, this.getStartPosition());
 
             // This just checks if the given move is somewhere in the valid moves Collection.
             for (ChessMove possibleMove : moves) {
@@ -159,7 +172,7 @@ public class ChessMove {
         }
 
         // If the move is out of turn, don't allow move.
-        if (board.getPiece(this.getStartPosition()).getTeamColor() != teamTurn){
+        if (board.getPiece(this.getStartPosition()).getTeamColor() != teamTurn) {
             moveIsValid = false;
         }
 
@@ -168,10 +181,9 @@ public class ChessMove {
     }
 
 
-
-
     /**
      * This is the override of the to string method so that when printing chess moves it is more readable.
+     *
      * @return it will return something that looks like this: {{1,2} to {8,2}} (this is a rook going from the bottom of the board to the top).
      */
     @Override
@@ -184,7 +196,8 @@ public class ChessMove {
     /**
      * This is the override method of equals. It makes it so that you can compare moves
      * and decide that they are equivalent even if they are different objects.
-     * @param o   the reference object with which to compare.
+     *
+     * @param o the reference object with which to compare.
      * @return it will return true or false. True if each component of the move is the same, false otherwise.
      */
     @Override
@@ -202,6 +215,7 @@ public class ChessMove {
 
     /**
      * This is a override of the hashCode method. It helps with the equals method above.
+     *
      * @return the hash code. It is an int.
      */
     @Override

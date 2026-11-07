@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -16,6 +18,7 @@ public class ChessPosition {
 
     /**
      * this is where we instantiate the position on the board. You have to pass in row and column.
+     *
      * @param row counts vertically starting at 1 from the bottom of the board.
      * @param col counts horizontally left to right starting at 1.
      */
@@ -40,9 +43,31 @@ public class ChessPosition {
         return col;
     }
 
+    public static ChessPosition calculatePosition(String position) {
+        Map<Character, Integer> letters = new HashMap<>();
+        letters.put('a', 1);
+        letters.put('b', 2);
+        letters.put('c', 3);
+        letters.put('d', 4);
+        letters.put('e', 5);
+        letters.put('f', 6);
+        letters.put('g', 7);
+        letters.put('h', 8);
+
+        try {
+            char letter = position.charAt(0);
+            int number = Integer.parseInt(String.valueOf(position.charAt(1)));
+            return new ChessPosition(number, letters.get(letter));
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot understand what you mean by" + position);
+        }
+
+
+    }
 
     /**
      * This is where I overide the tostring method to make things more readable when printing out the chess position.
+     *
      * @return is just what it is printing. should look like this: {1, 2}
      */
     @Override
@@ -55,7 +80,8 @@ public class ChessPosition {
     /**
      * This is where I override the equals method so that two chess positions can be equivalent if they are the
      * same location, but not necessarily the same object.
-     * @param o   the reference object with which to compare.
+     *
+     * @param o the reference object with which to compare.
      * @return this returns true or false if the position the object represents is the same or different
      */
     @Override

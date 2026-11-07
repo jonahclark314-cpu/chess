@@ -1,5 +1,6 @@
 package server;
 
+import chess.*;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
@@ -9,12 +10,15 @@ import java.net.http.*;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
     private final String serverUrl;
     private String authentication = "";
+    private String personalUsername = "";
+    private int currentGameID = 0;
 
     public ServerFacade(String url) {
         serverUrl = url;
@@ -25,7 +29,9 @@ public class ServerFacade {
         var request = buildRequest("POST", "/session", loginRequest);
         var response = sendRequest(request);
         AuthData authData = handleResponse(response, AuthData.class);
+        assert authData != null;
         authentication = authData.authToken();
+        personalUsername = authData.username();
         return authData.username();
     }
 
@@ -34,15 +40,17 @@ public class ServerFacade {
         var request = buildRequest("POST", "/user", registerRequest);
         var response = sendRequest(request);
         AuthData authData = handleResponse(response, AuthData.class);
+        assert authData != null;
         authentication = authData.authToken();
+        personalUsername = authData.username();
         return authData.username();
     }
 
-    public String logout() throws ResponseException {
+
+    public void logout() throws ResponseException {
         var request = buildRequest("DELETE", "/session", null);
         var response = sendRequest(request);
         handleResponse(response, Object.class);
-        return "Success";
     }
 
     public ListGamesResult listGames() throws ResponseException {
@@ -59,6 +67,48 @@ public class ServerFacade {
         return "Created a game called:" + gameName;
     }
 
+    public ChessBoard getBoard() throws ResponseException {
+        var request = buildRequest("GET", "/game", null);
+        var response = sendRequest(request);
+        ArrayList<GameData> games = Objects.requireNonNull(handleResponse(response, ListGamesResult.class)).games();
+        GameData ourGame = null;
+        for (GameData game : games) {
+            if (game.getGameID() == currentGameID) {
+                ourGame = game;
+            }
+        }
+        if (ourGame == null) {
+            return null;
+        } else {
+            return ourGame.getGame().getBoard();
+        }
+    }
+
+    public String joinGame(int gameID, String colorPlayer) throws ResponseException {
+        SetColorGameRequest gameRequest = new SetColorGameRequest(gameID, colorPlayer, personalUsername);
+        var request = buildRequest("PUT", "/game", gameRequest);
+        var response = sendRequest(request);
+        handleResponse(response, Object.class);
+        currentGameID = gameID;
+        return "Joined the game numbered:" + gameID + " as " + colorPlayer;
+    }
+
+//    public String doMove(ChessMove move) {
+//        if (currentGameID == 0) {
+//            return "You are just an observer in this game.";
+//        }
+//        var request = buildRequest("PUT", "/game", gameRequest);
+//        var response = sendRequest(request);
+//        handleResponse(response, Object.class);
+//        return "Joined the game numbered:" + gameID + " as " + colorPlayer;
+//
+//    }
+
+
+    public void leaveGame() {
+        currentGameID = 0;
+    }
+
 
 //    public Pet addPet(Pet pet) throws ResponseException {
 //        var request = buildRequest("POST", "/pet", pet);
@@ -66,17 +116,6 @@ public class ServerFacade {
 //        return handleResponse(response, Pet.class);
 //    }
 
-    public void deletePet(int id) throws ResponseException {
-        var path = String.format("/pet/%s", id);
-        var request = buildRequest("DELETE", path, null);
-        var response = sendRequest(request);
-        handleResponse(response, null);
-    }
-
-    public void deleteAllPets() throws ResponseException {
-        var request = buildRequest("DELETE", "/pet", null);
-        sendRequest(request);
-    }
 
 //    public PetList listPets() throws ResponseException {
 //        var request = buildRequest("GET", "/pet", null);
@@ -133,5 +172,9 @@ public class ServerFacade {
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
+    }
+
+    public void setUserInGame(int gameID) {
+        currentGameID = gameID;
     }
 }

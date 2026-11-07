@@ -56,29 +56,30 @@ public class ChessPiece {
      * check if it is black or white. If it is your same color you cannot go there, if it is different color than you, you
      * can go there (by capturing the piece)
      * It will create the move and add it to the growing list that will be returned in pieceMoves
-     * @param board this is the current state of the board. it allows us to know if there is a piece where you want to go
-     * @param ourList this is the list that pieceMoves is creating. This function will add to it
+     *
+     * @param board      this is the current state of the board. it allows us to know if there is a piece where you want to go
+     * @param ourList    this is the list that pieceMoves is creating. This function will add to it
      * @param myPosition Your current position. It is required to input for creating chess moves.
-     * @param newRow The row you want to go to.
-     * @param newCol The column you want to go to.
-     * @param myColor the color of your piece. This helps compare against the color of the piece that is in the space you might go.
+     * @param newRow     The row you want to go to.
+     * @param newCol     The column you want to go to.
+     * @param myColor    the color of your piece. This helps compare against the color of the piece that is in the space you might go.
      * @return returns TRUE if there are no pieces in that place. returns FALSE if there is a piece there (black or white).
      * This helps pieceMmoves track if a rook/bishop/queen can continue going past a piece.
      */
     public boolean checkIfPeiceThereAndGo(ChessBoard board, Collection<ChessMove> ourList, ChessPosition myPosition, int newRow,
                                           int newCol, ChessGame.TeamColor myColor) {
         // Start by making sure where you want to go is a valid place to go.
-        if (newRow >= 1 && newRow <= 8 && newCol >= 1 && newCol <= 8){
+        if (newRow >= 1 && newRow <= 8 && newCol >= 1 && newCol <= 8) {
 
             //If it is a valid place to go, We will set up some starting variables.
             boolean noPeiceHere = true; //becomes false if there is a piece in the ChessPosition: {newRow, newCol}.
             boolean canGo = true; //this becomes false if your color is equal to the color of the piece in the new location.
-            var possibleLoc = new ChessPosition(newRow,newCol); // Create the ChessPosition object that represents the new location.
+            var possibleLoc = new ChessPosition(newRow, newCol); // Create the ChessPosition object that represents the new location.
             ChessPiece peiceThere = board.getPiece(possibleLoc);
 
-            if (peiceThere != null){ //If there is a piece in the new location
+            if (peiceThere != null) { //If there is a piece in the new location
                 ChessGame.TeamColor colorThere = peiceThere.getTeamColor();
-                noPeiceHere=false;
+                noPeiceHere = false;
 
                 if (myColor == colorThere) {//Check if you are the same color as them
                     canGo = false;
@@ -90,19 +91,19 @@ public class ChessPiece {
                 // make sure that you say you can become a Bishop, Queen, Rook, or Knight.
                 if (board.getPiece(myPosition).getPieceType() == PieceType.PAWN && ((myColor == ChessGame.TeamColor.WHITE &&
                         myPosition.getRow() == 7 && newRow == 8) || (myColor == ChessGame.TeamColor.BLACK &&
-                        myPosition.getRow() == 2 && newRow == 1))){
-                    var possibleMove = new ChessMove(myPosition,possibleLoc,PieceType.BISHOP);
+                        myPosition.getRow() == 2 && newRow == 1))) {
+                    var possibleMove = new ChessMove(myPosition, possibleLoc, PieceType.BISHOP);
                     ourList.add(possibleMove);
-                    possibleMove = new ChessMove(myPosition,possibleLoc,PieceType.QUEEN);
+                    possibleMove = new ChessMove(myPosition, possibleLoc, PieceType.QUEEN);
                     ourList.add(possibleMove);
-                    possibleMove = new ChessMove(myPosition,possibleLoc,PieceType.ROOK);
+                    possibleMove = new ChessMove(myPosition, possibleLoc, PieceType.ROOK);
                     ourList.add(possibleMove);
-                    possibleMove = new ChessMove(myPosition,possibleLoc,PieceType.KNIGHT);
+                    possibleMove = new ChessMove(myPosition, possibleLoc, PieceType.KNIGHT);
                     ourList.add(possibleMove);
 
-                // If you are NOT A pawn that is being promoted, then lets just make a new ChessMove and add it to our list.
+                    // If you are NOT A pawn that is being promoted, then lets just make a new ChessMove and add it to our list.
                 } else {
-                    var possibleMove = new ChessMove(myPosition,possibleLoc,null);
+                    var possibleMove = new ChessMove(myPosition, possibleLoc, null);
                     ourList.add(possibleMove);
                 }
             }
@@ -116,13 +117,14 @@ public class ChessPiece {
 
     /**
      * This function just makes it easier to check if the location in question has another chess piece there.
+     *
      * @param board current state of the board. Pass in a ChessBoard object.
-     * @param row The row you are inquiring about.
-     * @param col the Column you are inquiring about.
+     * @param row   The row you are inquiring about.
+     * @param col   the Column you are inquiring about.
      * @return true if there IS a piece in the space. false if there ISN'T a piece there.
      */
-    public boolean checkIfSpotEmpty (ChessBoard board, int row, int col) {
-        ChessPosition toCheck = new ChessPosition(row,col);
+    public boolean checkIfSpotEmpty(ChessBoard board, int row, int col) {
+        ChessPosition toCheck = new ChessPosition(row, col);
         return board.getPiece(toCheck) == null;
     }
 
@@ -136,6 +138,7 @@ public class ChessPiece {
 
     /**
      * This function just returns the private variable hasMoved.
+     *
      * @return Simply returns true if the piece has already moved, and false if it has not yet.
      */
     public boolean getHasMoved() {
@@ -143,14 +146,12 @@ public class ChessPiece {
     }
 
 
-
-
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
      * danger
      *
-     * @param board The ChessBoard object that shows where current pieces are.
+     * @param board      The ChessBoard object that shows where current pieces are.
      * @param myPosition Where the piece is that you are wondering about.
      * @return Collection of valid moves of that piece.
      */
@@ -166,44 +167,44 @@ public class ChessPiece {
         //If the piece is a Bishop or a Queen, this allows it to move diagonally until it hits something.
         if (piece.getPieceType() == PieceType.BISHOP) {
             BishopPiece newBishop = new BishopPiece(myColor);
-            newBishop.bishopMoves(currentRow,currentCol,board,ourList,myPosition,myColor);
+            newBishop.bishopMoves(currentRow, currentCol, board, ourList, myPosition, myColor);
         }
 
         //Lets Kings move in any direction by 1 square.
         if (piece.getPieceType() == PieceType.KING) {
             KingPiece newKing = new KingPiece(myColor);
-            if (this.getHasMoved()){
+            if (this.getHasMoved()) {
                 newKing.setHasMoved();
             }
-            newKing.kingMoves(board,ourList,myPosition,myColor);
+            newKing.kingMoves(board, ourList, myPosition, myColor);
         }
 
         //Lets knights move in the L shape.
         if (piece.getPieceType() == PieceType.KNIGHT) {
             KnightPiece newKnight = new KnightPiece(myColor);
-            newKnight.knightMoves(currentRow,currentCol,board,ourList,myPosition,myColor);
+            newKnight.knightMoves(currentRow, currentCol, board, ourList, myPosition, myColor);
         }
 
         //This part gives all functionality to pawns.
         if (piece.getPieceType() == PieceType.PAWN) {
             PawnPiece newPawn = new PawnPiece(myColor);
             //Let's define the move rules if the pawn is white first. The pawn will only move UP (row getting bigger)
-            newPawn.pawnMoves(currentRow,currentCol,board,ourList,myPosition,myColor);
+            newPawn.pawnMoves(currentRow, currentCol, board, ourList, myPosition, myColor);
 
         }
 
         //If the piece is a Rook or a Queen, this allows it to move straight until it hits something.
         if (piece.getPieceType() == PieceType.ROOK) {
             RookPiece newRook = new RookPiece(myColor);
-            if (this.getHasMoved()){
+            if (this.getHasMoved()) {
                 newRook.setHasMoved();
             }
-            newRook.rookMoves(currentRow,currentCol,board,ourList,myPosition,myColor);
+            newRook.rookMoves(currentRow, currentCol, board, ourList, myPosition, myColor);
         }
 
         if (piece.getPieceType() == PieceType.QUEEN) {
             QueenPiece newQueen = new QueenPiece(myColor);
-            newQueen.queenMoves(currentRow,currentCol,board,ourList,myPosition,myColor);
+            newQueen.queenMoves(currentRow, currentCol, board, ourList, myPosition, myColor);
 
         }
 
@@ -214,50 +215,56 @@ public class ChessPiece {
 
     /**
      * This is where we make an override toString method that makes the ChessPiece output more readable.
+     *
      * @return ChessPiece{ROOK} or whatever it really is.
      */
     @Override
     public String toString() {
-        if (getTeamColor()== ChessGame.TeamColor.BLACK) {
+        String returnString = "";
+        if (getTeamColor() == ChessGame.TeamColor.BLACK) {
+            returnString += EscapeSequences.SET_TEXT_COLOR_BLUE;
             if (getPieceType() == PieceType.PAWN) {
-                return "p";
-            } else if (getPieceType() == PieceType.ROOK){
-                return "r";
-            }else if (getPieceType() == PieceType.KNIGHT) {
-                return "n";
-            }else if (getPieceType()==PieceType.BISHOP){
-                return"b";
-            }else if (getPieceType()==PieceType.QUEEN) {
-                return "q";
-            } else if (getPieceType() == PieceType.KING){
-                return "k";
+                returnString += " p ";
+            } else if (getPieceType() == PieceType.ROOK) {
+                returnString += " r ";
+            } else if (getPieceType() == PieceType.KNIGHT) {
+                returnString += " n ";
+            } else if (getPieceType() == PieceType.BISHOP) {
+                returnString += " b ";
+            } else if (getPieceType() == PieceType.QUEEN) {
+                returnString += " q ";
+            } else if (getPieceType() == PieceType.KING) {
+                returnString += " k ";
             } else {
-                return ".";
+                returnString += " . ";
             }
         }
-        if (getTeamColor()== ChessGame.TeamColor.WHITE) {
+        if (getTeamColor() == ChessGame.TeamColor.WHITE) {
+            returnString += EscapeSequences.SET_TEXT_COLOR_RED;
             if (getPieceType() == PieceType.PAWN) {
-                return "P";
-            } else if (getPieceType() == PieceType.ROOK){
-                return "R";
-            }else if (getPieceType() == PieceType.KNIGHT) {
-                return "N";
-            }else if (getPieceType()==PieceType.BISHOP){
-                return"B";
-            }else if (getPieceType()==PieceType.QUEEN) {
-                return "Q";
-            } else if (getPieceType() == PieceType.KING){
-                return "K";
+                returnString += " P ";
+            } else if (getPieceType() == PieceType.ROOK) {
+                returnString += " R ";
+            } else if (getPieceType() == PieceType.KNIGHT) {
+                returnString += " N ";
+            } else if (getPieceType() == PieceType.BISHOP) {
+                returnString += " B ";
+            } else if (getPieceType() == PieceType.QUEEN) {
+                returnString += " Q ";
+            } else if (getPieceType() == PieceType.KING) {
+                returnString += " K ";
             } else {
-                return ".";
+                returnString += " . ";
             }
         }
-        return ".";
+        returnString += EscapeSequences.RESET_TEXT_COLOR;
+        return returnString;
     }
 
     /**
      * This is where I make the Override equals function so that we can compare two pieces and make sure they are equivalent.
-     * @param o   the reference object with which to compare.
+     *
+     * @param o the reference object with which to compare.
      * @return true if they are equivalent pieces, false if not.
      */
     @Override
