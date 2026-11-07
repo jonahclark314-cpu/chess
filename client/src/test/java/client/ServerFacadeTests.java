@@ -117,5 +117,22 @@ public class ServerFacadeTests {
         Assertions.assertEquals(ResponseException.Code.BadRequest, ex.code());
     }
 
+    @Test
+    void getBoardBeforeJoining() throws Exception {
+        facade.register("player1", "password", "p1@email.com");
+        Assertions.assertNull(facade.getBoard());
+    }
+
+    @Test
+    void leaveGameClearsBoard() throws Exception {
+        facade.register("player1", "password", "p1@email.com");
+        facade.createGame("fun");
+        int gameID = facade.listGames().games().get(0).getGameID();
+        facade.setUserInGame(gameID);
+        Assertions.assertNotNull(facade.getBoard());
+        facade.leaveGame();
+        Assertions.assertNull(facade.getBoard());
+    }
+
 
 }
