@@ -41,44 +41,44 @@ public class ServerFacadeTests {
 
     @Test
     void registerSuccess() throws Exception {
-        String username = facade.register("player1", "password", "p1@email.com");
-        Assertions.assertEquals("player1", username);
+        String username = facade.register("testUser", "password", "testUser@email.com");
+        Assertions.assertEquals("testUser", username);
         ListGamesResult games = facade.listGames();
         Assertions.assertTrue(games.games().isEmpty());
     }
 
     @Test
     void registerDuplicateUsername() throws Exception {
-        facade.register("player1", "password", "p1@email.com");
+        facade.register("player", "password", "p@email.com");
         ResponseException ex = Assertions.assertThrows(ResponseException.class,
-                () -> facade.register("player1", "password", "p1@email.com"));
+                () -> facade.register("player", "password", "p@email.com"));
         Assertions.assertEquals(ResponseException.Code.AlreadyTaken, ex.code());
     }
 
     @Test
     void signInSuccess() throws Exception {
-        facade.register("player1", "password", "p1@email.com");
+        facade.register("playerSignin", "password", "pS@email.com");
         ServerFacade again = new ServerFacade(port);
-        Assertions.assertEquals("player1", again.signIn("player1", "password"));
+        Assertions.assertEquals("playerSignin", again.signIn("playerSignin", "password"));
         Assertions.assertNotNull(again.listGames());
     }
 
     @Test
     void signInWrongPassword() throws Exception {
-        facade.register("player1", "password", "p1@email.com");
+        facade.register("user", "password", "u@email.com");
         ServerFacade again = new ServerFacade(port);
         ResponseException ex = Assertions.assertThrows(ResponseException.class,
-                () -> again.signIn("player1", "nope"));
+                () -> again.signIn("user", "wrongPasswordddddd"));
         Assertions.assertEquals(ResponseException.Code.Unauthorized, ex.code());
     }
 
     @Test
     void createAndListGame() throws Exception {
-        facade.register("player1", "password", "p1@email.com");
-        Assertions.assertEquals("Created a game called:fun", facade.createGame("fun"));
+        facade.register("guy", "password", "g@email.com");
+        Assertions.assertEquals("Created a game called:guysGame", facade.createGame("guysGame"));
         var games = facade.listGames().games();
         Assertions.assertEquals(1, games.size());
-        Assertions.assertEquals("fun", games.get(0).getGameName());
+        Assertions.assertEquals("guysGame", games.getFirst().getGameName());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class ServerFacadeTests {
 
     @Test
     void logoutThenListFails() throws Exception {
-        facade.register("player1", "password", "p1@email.com");
+        facade.register("guy", "password", "g@email.com");
         facade.logout();
         ResponseException ex = Assertions.assertThrows(ResponseException.class,
                 () -> facade.logout());
@@ -99,9 +99,9 @@ public class ServerFacadeTests {
 
     @Test
     void joinGameSuccess() throws Exception {
-        facade.register("player1", "password", "p1@email.com");
-        facade.createGame("fun");
-        int gameID = facade.listGames().games().get(0).getGameID();
+        facade.register("guy", "password", "g@email.com");
+        facade.createGame("guysGame");
+        int gameID = facade.listGames().games().getFirst().getGameID();
         String result = facade.joinGame(gameID, "WHITE");
         Assertions.assertTrue(result.contains("WHITE"));
         Assertions.assertNotNull(facade.getBoard());
@@ -109,9 +109,9 @@ public class ServerFacadeTests {
 
     @Test
     void joinBadColor() throws Exception {
-        facade.register("player1", "password", "p1@email.com");
-        facade.createGame("fun");
-        int gameID = facade.listGames().games().get(0).getGameID();
+        facade.register("badGuy", "password", "bg@email.com");
+        facade.createGame("badGuyGame");
+        int gameID = facade.listGames().games().getFirst().getGameID();
         ResponseException ex = Assertions.assertThrows(ResponseException.class,
                 () -> facade.joinGame(gameID, "BLUE"));
         Assertions.assertEquals(ResponseException.Code.BadRequest, ex.code());
@@ -119,15 +119,15 @@ public class ServerFacadeTests {
 
     @Test
     void getBoardBeforeJoining() throws Exception {
-        facade.register("player1", "password", "p1@email.com");
+        facade.register("guy", "password", "g@email.com");
         Assertions.assertNull(facade.getBoard());
     }
 
     @Test
     void leaveGameClearsBoard() throws Exception {
-        facade.register("player1", "password", "p1@email.com");
-        facade.createGame("fun");
-        int gameID = facade.listGames().games().get(0).getGameID();
+        facade.register("guy", "password", "g@email.com");
+        facade.createGame("guysGame");
+        int gameID = facade.listGames().games().getFirst().getGameID();
         facade.setUserInGame(gameID);
         Assertions.assertNotNull(facade.getBoard());
         facade.leaveGame();
