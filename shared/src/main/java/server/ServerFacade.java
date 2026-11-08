@@ -97,17 +97,6 @@ public class ServerFacade {
         return "Joined the game numbered:" + gameID + " as " + colorPlayer;
     }
 
-//    public String doMove(ChessMove move) {
-//        if (currentGameID == 0) {
-//            return "You are just an observer in this game.";
-//        }
-//        var request = buildRequest("PUT", "/game", gameRequest);
-//        var response = sendRequest(request);
-//        handleResponse(response, Object.class);
-//        return "Joined the game numbered:" + gameID + " as " + colorPlayer;
-//
-//    }
-
 
     public void leaveGame() {
         currentGameID = 0;

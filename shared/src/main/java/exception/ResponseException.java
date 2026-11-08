@@ -53,12 +53,12 @@ public class ResponseException extends Exception {
         };
     }
 
-    public int toHttpStatusCode() {
-        return switch (code) {
-            case ServerError -> 500;
-            case BadRequest, ClientError -> 400;
-            case AlreadyTaken -> 403;
-            case Unauthorized -> 401;
-        };
-    }
+//    public int toHttpStatusCode() {
+//        return switch (code) {
+//            case ServerError -> 500;
+//            case BadRequest, ClientError -> 400;
+//            case AlreadyTaken -> 403;
+//            case Unauthorized -> 401;
+//        };
+//    }
 }

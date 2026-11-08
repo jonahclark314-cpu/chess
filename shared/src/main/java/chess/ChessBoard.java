@@ -138,7 +138,6 @@ public class ChessBoard {
     public String toString() {
         StringBuilder totalString = new StringBuilder("\n");
         ArrayList<String> colHeader = new ArrayList<>(List.of(" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "));
-        ArrayList<String> rowHeader = new ArrayList<>(List.of(" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 "));
 
         for (int i = 9; i >= 0; i--) {
             if (i == 9 || i == 0) {
@@ -154,27 +153,33 @@ public class ChessBoard {
                 totalString.append(EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
             } else {
                 for (int j = 0; j <= 9; j++) {
-//                    totalString.append("|");
-                    if (j != 0 && j != 9) {
-                        if ((j + i) % 2 == 0) {
-                            totalString.append(EscapeSequences.SET_BG_COLOR_BLACK);
-                        } else {
-                            totalString.append(EscapeSequences.SET_BG_COLOR_WHITE);
-                        }
-                        totalString.append(format(squares[i - 1][j - 1]));
-                        totalString.append(EscapeSequences.RESET_BG_COLOR);
-                    } else {
-                        totalString.append(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_COLOR_WHITE);
-                        totalString.append(rowHeader.get(i - 1));
-                        totalString.append(EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
-                    }
-
+                    drawBoardHelper(j, i, totalString);
                 }
             }
             totalString.append("\n");
         }
         return totalString.toString();
     }
+
+    private void drawBoardHelper(int j, int i, StringBuilder totalString) {
+        ArrayList<String> rowHeader = new ArrayList<>(List.of(" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 "));
+
+        if (j != 0 && j != 9) {
+            if ((j + i) % 2 == 0) {
+                totalString.append(EscapeSequences.SET_BG_COLOR_BLACK);
+            } else {
+                totalString.append(EscapeSequences.SET_BG_COLOR_WHITE);
+            }
+            totalString.append(format(squares[i - 1][j - 1]));
+            totalString.append(EscapeSequences.RESET_BG_COLOR);
+        } else {
+            totalString.append(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_COLOR_WHITE);
+            totalString.append(rowHeader.get(i - 1));
+            totalString.append(EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
+        }
+
+    }
+
 
     public String show(String color) {
         if (Objects.equals(color, "WHITE")) {
@@ -187,16 +192,15 @@ public class ChessBoard {
 
     }
 
+
     private String blackToString() {
         StringBuilder totalString = new StringBuilder("\n");
         ArrayList<String> colHeader = new ArrayList<>(List.of(" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "));
-        ArrayList<String> rowHeader = new ArrayList<>(List.of(" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 "));
 
         for (int i = 0; i <= 9; i++) {
             if (i == 9 || i == 0) {
                 totalString.append(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_COLOR_WHITE);
                 for (int j = 9; j >= 0; j--) {
-//                    totalString.append("|");
                     if (j != 0 && j != 9) {
                         totalString.append(colHeader.get(j - 1));
                     } else {
@@ -206,21 +210,7 @@ public class ChessBoard {
                 totalString.append(EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
             } else {
                 for (int j = 9; j >= 0; j--) {
-//                    totalString.append("|");
-                    if (j != 0 && j != 9) {
-                        if ((j + i) % 2 == 0) {
-                            totalString.append(EscapeSequences.SET_BG_COLOR_BLACK);
-                        } else {
-                            totalString.append(EscapeSequences.SET_BG_COLOR_WHITE);
-                        }
-                        totalString.append(format(squares[i - 1][j - 1]));
-                        totalString.append(EscapeSequences.RESET_BG_COLOR);
-                    } else {
-                        totalString.append(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_COLOR_WHITE);
-                        totalString.append(rowHeader.get(i - 1));
-                        totalString.append(EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
-                    }
-
+                    drawBoardHelper(j, i, totalString);
                 }
             }
             totalString.append("\n");

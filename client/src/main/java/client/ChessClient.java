@@ -50,7 +50,8 @@ public class ChessClient {
         } else {
             yourState = "[CURRENTLY SIGNED OUT]";
         }
-        System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY + EscapeSequences.RESET_BG_COLOR + yourState + EscapeSequences.RESET_TEXT_COLOR + ">>> " + EscapeSequences.SET_TEXT_COLOR_GREEN);
+        System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY + EscapeSequences.RESET_BG_COLOR + yourState
+                + EscapeSequences.RESET_TEXT_COLOR + ">>> " + EscapeSequences.SET_TEXT_COLOR_GREEN);
     }
 
 
@@ -121,7 +122,8 @@ public class ChessClient {
             int count = 1;
             for (GameData game : games) {
                 String name = game.getGameName();
-                String nextLine = "   - " + game.getGameID() + ": " + name + "   White Player: " + game.getWhiteUsername() + "   Black Player: " + game.getBlackUsername() + "\n";
+                String nextLine = "   - " + game.getGameID() + ": " + name + "   White Player: "
+                        + game.getWhiteUsername() + "   Black Player: " + game.getBlackUsername() + "\n";
                 toScreen.append(nextLine);
                 count += 1;
             }
@@ -187,9 +189,6 @@ public class ChessClient {
             if (e.code() == ResponseException.Code.ServerError) {
                 return "Something went wrong... Maybe the Server isn't up?";
             }
-            if (e.code() == ResponseException.Code.AlreadyTaken) {
-                return "That color is already taken!";
-            }
             if (e.code() == ResponseException.Code.BadRequest) {
                 return "That was a bad request. Use the help menu.";
             }
@@ -221,30 +220,6 @@ public class ChessClient {
 
     public String move(String... params) throws ResponseException {
         assertSignedIn();
-//        try {
-//            if (params.length == 2) {
-//                String start = params[0];
-//                String end = params[1];
-//                ChessMove move = ChessMove.createMove(start, end, null);
-//                var board = server.getBoard();
-//                server.doMove(move);
-//                return "move()" + board.show(playerColor);
-//            }
-//        } catch (ResponseException e) {
-//            if (e.code() == ResponseException.Code.Unauthorized) {
-//                return "You are not logged in! So you can't log out!";
-//            }
-//            if (e.code() == ResponseException.Code.ServerError) {
-//                return "Something went wrong... Maybe the Server isn't up?";
-//            }
-//            if (e.code() == ResponseException.Code.BadRequest) {
-//                return "That was a bad request. Use the help menu.";
-//            }
-//            return "Cannot log you out. We are not sure why.";
-//        } catch (RuntimeException e) {
-//            return "We could not understand what you said. make sure you make it in this form: move a1 e5";
-//        }
-//        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <space1> <space2>");
         return "We have not implemented moves yet. Thanks for the patience";
     }
 
