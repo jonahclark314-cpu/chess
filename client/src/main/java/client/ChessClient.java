@@ -8,7 +8,7 @@ import java.util.Scanner;
 import exception.ResponseException;
 import server.ServerFacade;
 import model.*;
-import ui.EscapeSequences;
+import chess.EscapeSequences;
 
 public class ChessClient {
     private State state = State.SIGNEDOUT;
@@ -157,7 +157,7 @@ public class ChessClient {
                 return output + board.show(playerColor);
             } catch (ResponseException e) {
                 if (e.code() == ResponseException.Code.Unauthorized) {
-                    return "You are not logged in!";
+                    return "You are not logged in! Log in to join games";
                 }
                 if (e.code() == ResponseException.Code.ServerError) {
                     return "Something went wrong... Maybe the Server isn't up?";
@@ -168,7 +168,7 @@ public class ChessClient {
                 if (e.code() == ResponseException.Code.BadRequest) {
                     return "That was a bad request. Use the help menu.";
                 }
-                return "Cannot create game. We are not sure why.";
+                return "Cannot join game. We are not sure why.";
             }
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected: <ID> [WHITE/BLACK]");
@@ -184,15 +184,15 @@ public class ChessClient {
             return board.show("WHITE");
         } catch (ResponseException e) {
             if (e.code() == ResponseException.Code.Unauthorized) {
-                return "You are not logged in!";
+                return "You are not logged in! Please log in to observe games.";
             }
             if (e.code() == ResponseException.Code.ServerError) {
-                return "Something went wrong... Maybe the Server isn't up?";
+                return "Something went wrong. Maybe the Server isn't up.";
             }
             if (e.code() == ResponseException.Code.BadRequest) {
-                return "That was a bad request. Use the help menu.";
+                return "That was a bad request. Use the help menu. You should use observe with the integer game ID";
             }
-            return "Cannot create game. We are not sure why.";
+            return "Cannot observe game. We are not sure why.";
         }
 
     }

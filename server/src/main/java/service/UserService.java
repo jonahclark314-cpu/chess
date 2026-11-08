@@ -4,6 +4,8 @@ import dataaccess.*;
 import dataaccess.sql.SQLUserDAO;
 import model.*;
 import org.mindrot.jbcrypt.BCrypt;
+import model.LoginRequest;
+import model.RegisterRequest;
 
 /**
  * This is the User Service class that handles all the logic for the users. it interacts with the Data Access Object for users.

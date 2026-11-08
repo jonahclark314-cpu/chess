@@ -6,7 +6,7 @@ import dataaccess.sql.SQLUserDAO;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import service.RegisterRequest;
+import model.RegisterRequest;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

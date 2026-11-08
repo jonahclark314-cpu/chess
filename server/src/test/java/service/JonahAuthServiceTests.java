@@ -3,6 +3,8 @@ package service;
 import org.junit.jupiter.api.*;
 import server.*;
 import dataaccess.*;
+import model.LoginRequest;
+import model.RegisterRequest;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class JonahAuthServiceTests {

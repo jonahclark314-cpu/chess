@@ -4,7 +4,7 @@ import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.UserDAO;
 import model.UserData;
-import service.RegisterRequest;
+import model.RegisterRequest;
 
 import java.sql.SQLException;
 

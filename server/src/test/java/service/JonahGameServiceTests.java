@@ -4,6 +4,7 @@ import org.junit.jupiter.api.*;
 import server.Server;
 import model.*;
 import dataaccess.*;
+import model.RegisterRequest;
 
 import java.util.*;
 

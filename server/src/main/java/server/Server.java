@@ -7,6 +7,8 @@ import io.javalin.*;
 import com.google.gson.Gson;
 
 import io.javalin.http.Context;
+import model.LoginRequest;
+import model.RegisterRequest;
 
 import java.util.ArrayList;
 

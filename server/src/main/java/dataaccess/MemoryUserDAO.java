@@ -1,19 +1,20 @@
 package dataaccess;
+
 import model.*;
-import service.RegisterRequest;
+import model.RegisterRequest;
 
 import java.util.ArrayList;
 
 /**
  * this is the implementation of UserDAO that I am using until I get the db up and running.
  */
-public class MemoryUserDAO implements UserDAO{
+public class MemoryUserDAO implements UserDAO {
     ArrayList<UserData> listOfUserData;
 
     /**
      * Constructor.
      */
-    public MemoryUserDAO () {
+    public MemoryUserDAO() {
         this.listOfUserData = new ArrayList<>();
     }
 
@@ -27,6 +28,7 @@ public class MemoryUserDAO implements UserDAO{
 
     /**
      * This is what gets a specific users data from their username.
+     *
      * @param username - string username.
      * @return - returns the person object or null if there is no such username in use.
      */
@@ -42,6 +44,7 @@ public class MemoryUserDAO implements UserDAO{
 
     /**
      * This is what is used during registration of a new user.
+     *
      * @param userInfo - This is the RegisterRequest object passed in by the Service.
      */
     @Override
@@ -53,6 +56,7 @@ public class MemoryUserDAO implements UserDAO{
     /**
      * This is the way we can test how many users are in our database. This is only
      * used for testing purposes.
+     *
      * @return - number of users in the db.
      */
     @Override
