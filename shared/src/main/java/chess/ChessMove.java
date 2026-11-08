@@ -33,12 +33,6 @@ public class ChessMove {
     }
 
 
-//    public static ChessMove createMove(String start, String end, ChessPiece.PieceType promotionPiece) throws RuntimeException {
-//        ChessPosition startPosition = ChessPosition.calculatePosition(start);
-//        ChessPosition endPosition = ChessPosition.calculatePosition(end);
-//        return new ChessMove(startPosition, endPosition, promotionPiece);
-//    }
-
     /**
      * This checks if the proposed move is a castle move. It does so by seeing if the King moves 2 spaces.
      *
