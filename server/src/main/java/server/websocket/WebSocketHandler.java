@@ -44,9 +44,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             UserGameCommand action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             switch (action.GetCommandType()) {
                 case UserGameCommand.CommandType.CONNECT -> enter(action, ctx.session);
-                case UserGameCommand.CommandType.LEAVE -> leave(action.getAuthToken(), ctx.session);
-                case UserGameCommand.CommandType.RESIGN -> resign(action.getAuthToken(), ctx.session);
-                case UserGameCommand.CommandType.MAKE_MOVE -> makeMove(action.getAuthToken(), ctx.session);
+                case UserGameCommand.CommandType.LEAVE -> leave(action, ctx.session);
+                case UserGameCommand.CommandType.RESIGN -> resign(action, ctx.session);
+                case UserGameCommand.CommandType.MAKE_MOVE -> makeMove(action, ctx.session);
 
             }
         } catch (IOException ex) {
@@ -60,43 +60,58 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void enter(UserGameCommand action, Session session) throws IOException {
-        String username = authService.getUserUsername(action.getAuthToken());
-        GameData gameData = gameService.getGame(action.getGameID());
-        String whiteUser = gameData.getWhiteUsername();
-        String blackUser = gameData.getBlackUsername();
-        String message;
-        if (username.equals(whiteUser)) {
-            message = String.format("%s entered the game as White!", username);
-        } else if (username.equals(blackUser)) {
-            message = String.format("%s entered the game as Black!", username);
-        } else {
-            message = String.format("%s entered the game as an Observer!", username);
+        try {
+            String username = authService.getUserUsername(action.getAuthToken());
+            GameData gameData = gameService.getGame(action.getGameID());
+            String whiteUser = gameData.getWhiteUsername();
+            String blackUser = gameData.getBlackUsername();
+            String message;
+            if (username.equals(whiteUser)) {
+                message = String.format("%s entered the game as White!", username);
+            } else if (username.equals(blackUser)) {
+                message = String.format("%s entered the game as Black!", username);
+            } else {
+                message = String.format("%s entered the game as an Observer!", username);
+            }
+
+            connections.add(session, gameData.getGameID(), username);
+            var notification = ServerMessage.notification(message);
+            connections.send(session, ServerMessage.loadGame(gameData.getGame()));
+            connections.broadcast(session, notification);
+        } catch (Exception e) {
+            connections.send(session, ServerMessage.error("Something is wrong. You cant enter the websocket."));
         }
-
-        connections.add(session, gameData.getGameID(), username);
-        var notification = ServerMessage.notification(message);
-        connections.send(session, ServerMessage.loadGame(gameData.getGame()));
-        connections.broadcast(session, notification);
     }
 
-    private void leave(String authToken, Session session) throws IOException {
-        String username = authService.getUserUsername(authToken);
-        var message = String.format("%s left the game", username);
-        var notification = ServerMessage.notification(message);
-        connections.broadcast(session, notification);
-        connections.remove(session);
+    private void leave(UserGameCommand action, Session session) throws IOException {
+        try {
+
+            String authToken = action.getAuthToken();
+            String username = authService.getUserUsername(authToken);
+
+            GameData ourGame = gameService.getGame(action.getGameID());
+            var message = String.format("%s left the game", username);
+            var notification = ServerMessage.notification(message);
+            gameService.leaveGame(action.getGameID(), username);
+            connections.broadcast(session, notification);
+            connections.send(session, ServerMessage.notification("You left the game!"));
+            connections.remove(session);
+        } catch (Exception e) {
+            connections.send(session, ServerMessage.error("Something is wrong. You cant leave the game."));
+        }
     }
 
-    private void resign(String authToken, Session session) throws IOException {
-        String username = authService.getUserUsername(authToken);
+
+    private void resign(UserGameCommand action, Session session) throws IOException {
+        String username = authService.getUserUsername(action.getAuthToken());
         var message = String.format("%s resigned the game", username);
         var notification = ServerMessage.notification(message);
         connections.broadcast(session, notification);
-        connections.remove(session);
     }
 
-    private void makeMove(String authToken, Session session) throws IOException {
-        var message = String.format("%s moved a piece", authToken);
+    private void makeMove(UserGameCommand action, Session session) throws IOException {
+        String username = authService.getUserUsername(action.getAuthToken());
+        var message = String.format("%s moved a piece", username);
         var notification = ServerMessage.notification(message);
         connections.broadcast(session, notification);
         connections.remove(session);

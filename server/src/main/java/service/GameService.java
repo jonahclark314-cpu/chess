@@ -133,4 +133,16 @@ public class GameService {
     }
 
 
+    public void leaveGame(int gameID, String username) throws BadRequestException {
+        GameData game = getGame(gameID);
+        String whitePlayer = game.getWhiteUsername();
+        String blackPlayer = game.getWhiteUsername();
+        if (username.equals(whitePlayer)) {
+            setColorForGame(new SetColorGameRequest(gameID, "WHITE", null));
+        } else if (username.equals(blackPlayer)) {
+            setColorForGame(new SetColorGameRequest(gameID, "BLACK", null));
+        }
+        gameDAO.updateGame(game);
+    }
+
 }
