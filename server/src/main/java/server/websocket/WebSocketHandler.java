@@ -28,9 +28,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     public void handleMessage(WsMessageContext ctx) {
         try {
             UserGameCommand action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
-            switch (action.CommandType()) {
-                case UserGameCommand.CommandType.CONNECT -> enter(action.visitorName(), ctx.session);
-                case UserGameCommand.CommandType.MAKE_MOVE -> exit(action.visitorName(), ctx.session);
+            switch (action.GetCommandType()) {
+                case UserGameCommand.CommandType.CONNECT -> enter(ctx.session);
+                case UserGameCommand.CommandType.LEAVE -> leave(action.getAuthToken(), ctx.session);
             }
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -42,27 +42,19 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         System.out.println("Websocket closed");
     }
 
-    private void enter(String visitorName, Session session) throws IOException {
+    private void enter(Session session) throws IOException {
         connections.add(session);
-        var message = String.format("%s is in the shop", visitorName);
-        var notification = new ServerMessage(ServerMessage.Type.ARRIVAL, message);
+        var message = "You have entered a game!";
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, message);
         connections.broadcast(session, notification);
     }
 
-    private void exit(String visitorName, Session session) throws IOException {
-        var message = String.format("%s left the shop", visitorName);
-        var notification = new ServerMessage(ServerMessage.Type.DEPARTURE, message);
+    private void leave(String authToken, Session session) throws IOException {
+        var message = String.format("%s left the game", authToken);
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(session, notification);
         connections.remove(session);
     }
 
-    public void makeNoise(Pet pet) throws ResponseException {
-        try {
-            var message = String.format("%s says %s", pet.name(), pet.sound());
-            var notification = new ServerMessage(ServerMessage.Type.NOISE, message);
-            connections.broadcast(null, notification);
-        } catch (Exception ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
-        }
-    }
+
 }
