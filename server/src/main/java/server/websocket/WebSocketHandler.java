@@ -79,7 +79,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             connections.send(session, ServerMessage.loadGame(gameData.getGame()));
             connections.broadcast(session, notification);
         } catch (Exception e) {
-            connections.send(session, ServerMessage.error("Something is wrong. You cant enter the websocket."));
+            connections.send(session, ServerMessage.error("ERROR: something is wrong. You cant enter the websocket."));
         }
     }
 
@@ -94,19 +94,26 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             var notification = ServerMessage.notification(message);
             gameService.leaveGame(action.getGameID(), username);
             connections.broadcast(session, notification);
-            connections.send(session, ServerMessage.notification("You left the game!"));
+//            connections.send(session, ServerMessage.notification("You left the game!"));
             connections.remove(session);
         } catch (Exception e) {
-            connections.send(session, ServerMessage.error("Something is wrong. You cant leave the game."));
+            connections.send(session, ServerMessage.error("ERROR: something is wrong. You cant leave the game."));
         }
     }
 
 
     private void resign(UserGameCommand action, Session session) throws IOException {
-        String username = authService.getUserUsername(action.getAuthToken());
-        var message = String.format("%s resigned the game", username);
-        var notification = ServerMessage.notification(message);
-        connections.broadcast(session, notification);
+        try {
+            String username = authService.getUserUsername(action.getAuthToken());
+            int gameID = action.getGameID();
+            gameService.resign(gameID, username);
+            var message = String.format("%s resigned the game", username);
+            var notification = ServerMessage.notification(message);
+            connections.send(session, ServerMessage.notification("You resigned the game"));
+            connections.broadcast(session, notification);
+        } catch (Exception e) {
+            connections.send(session, ServerMessage.error(e.getMessage()));
+        }
     }
 
     private void makeMove(UserGameCommand action, Session session) throws IOException {

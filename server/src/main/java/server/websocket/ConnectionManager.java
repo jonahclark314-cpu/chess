@@ -35,7 +35,7 @@ public class ConnectionManager {
         }
         String msg = new Gson().toJson(notification);
         for (Connection c : connections.values()) {
-            if (c.session.isOpen() && c.gameID == originPerson.gameID && Objects.equals(c.username, originPerson.username)) {
+            if (c.session.isOpen() && c.gameID == originPerson.gameID && !Objects.equals(c.username, originPerson.username)) {
                 if (!c.session.equals(excludeSession)) {
                     c.session.getRemote().sendString(msg);
                 }

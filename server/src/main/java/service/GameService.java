@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.*;
 import dataaccess.sql.SQLGameDAO;
 import model.GameData;
@@ -136,13 +137,29 @@ public class GameService {
     public void leaveGame(int gameID, String username) throws BadRequestException {
         GameData game = getGame(gameID);
         String whitePlayer = game.getWhiteUsername();
-        String blackPlayer = game.getWhiteUsername();
+        String blackPlayer = game.getBlackUsername();
         if (username.equals(whitePlayer)) {
-            setColorForGame(new SetColorGameRequest(gameID, "WHITE", null));
+            game.setWhiteUsername(null);
         } else if (username.equals(blackPlayer)) {
-            setColorForGame(new SetColorGameRequest(gameID, "BLACK", null));
+            game.setBlackUsername(null);
         }
         gameDAO.updateGame(game);
+    }
+
+    public void resign(int gameID, String username) throws BadRequestException {
+        GameData gameData = getGame(gameID);
+        if (username.equals(gameData.getWhiteUsername()) || username.equals(gameData.getBlackUsername())) {
+            if (gameData.getGame().isGameOver()) {
+                throw new BadRequestException("The game is already over, you cannot resign.");
+            }
+            ChessGame tempGame = gameData.getGame();
+            tempGame.setGameOver(true);
+            gameData.setGameObject(tempGame);
+            gameDAO.updateGame(gameData);
+        } else {
+            throw new BadRequestException("You are an observer, you cannot resign.");
+        }
+
     }
 
 }
