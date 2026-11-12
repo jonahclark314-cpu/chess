@@ -35,7 +35,7 @@ public class Server {
         this.authService = new AuthService();
         this.gameService = new GameService();
         this.userService = new UserService();
-        this.webSocketHandler = new WebSocketHandler();
+        this.webSocketHandler = new WebSocketHandler(authService, gameService);
 
         //Create the "listeners" for the endpoints.
         javalin = Javalin.create(config -> config.staticFiles.add("web"))

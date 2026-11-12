@@ -8,10 +8,19 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-    public final ConcurrentHashMap<Session, Session> connections = new ConcurrentHashMap<>();
+    private record Connection(Session session, int gameID, String username) {
+    }
 
-    public void add(Session session) {
-        connections.put(session, session);
+    public final ConcurrentHashMap<Session, Connection> connections = new ConcurrentHashMap<>();
+
+    public void add(Session session, int gameID, String username) {
+        connections.put(session, new Connection(session, gameID, username));
+    }
+
+    public void send(Session session, ServerMessage message) throws IOException {
+        if (session.isOpen()) {
+            session.getRemote().sendString(new Gson().toJson(message));
+        }
     }
 
     public void remove(Session session) {
@@ -20,10 +29,10 @@ public class ConnectionManager {
 
     public void broadcast(Session excludeSession, ServerMessage notification) throws IOException {
         String msg = new Gson().toJson(notification);
-        for (Session c : connections.values()) {
-            if (c.isOpen()) {
-                if (!c.equals(excludeSession)) {
-                    c.getRemote().sendString(msg);
+        for (Connection c : connections.values()) {
+            if (c.session.isOpen()) {
+                if (!c.session.equals(excludeSession)) {
+                    c.session.getRemote().sendString(msg);
                 }
             }
         }
