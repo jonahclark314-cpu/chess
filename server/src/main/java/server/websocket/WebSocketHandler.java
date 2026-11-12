@@ -1,5 +1,6 @@
 package server.websocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import io.javalin.websocket.WsCloseContext;
@@ -9,6 +10,7 @@ import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
 import org.eclipse.jetty.websocket.api.Session;
+import server.Server;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -48,30 +50,28 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void enter(String authToken, Session session) throws IOException {
         connections.add(session);
         var message = String.format("%s entered the game", authToken);
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        var notification = ServerMessage.notification(message);
         connections.broadcast(session, notification);
     }
 
     private void leave(String authToken, Session session) throws IOException {
         var message = String.format("%s left the game", authToken);
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        var notification = ServerMessage.notification(message);
         connections.broadcast(session, notification);
         connections.remove(session);
     }
 
     private void resign(String authToken, Session session) throws IOException {
         var message = String.format("%s resigned the game", authToken);
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        var notification = ServerMessage.notification(message);
         connections.broadcast(session, notification);
         connections.remove(session);
     }
 
     private void makeMove(String authToken, Session session) throws IOException {
         var message = String.format("%s moved a piece", authToken);
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, message);
+        var notification = ServerMessage.notification(message);
         connections.broadcast(session, notification);
-        var notification2 = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.broadcast(session, notification2);
         connections.remove(session);
     }
 
