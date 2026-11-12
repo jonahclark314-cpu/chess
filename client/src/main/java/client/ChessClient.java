@@ -14,6 +14,7 @@ public class ChessClient {
     private State state = State.SIGNEDOUT;
     private final ServerFacade server;
     private String playerColor = "";
+    private final ArrayList<Integer> listGames = new ArrayList<>();
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -65,6 +66,7 @@ public class ChessClient {
                 return switch (cmd) {
                     case "login" -> signIn(params);
                     case "register" -> register(params);
+                    case "quit" -> "quit";
                     default -> help();
                 };
             } else if (state == State.SIGNEDIN) {
@@ -74,6 +76,7 @@ public class ChessClient {
                     case "join" -> joinGame(params);
                     case "observe" -> observeGame(params);
                     case "logout" -> logout();
+                    case "quit" -> "quit";
                     default -> help();
                 };
             } else { // the state is INGAME.
@@ -120,10 +123,12 @@ public class ChessClient {
             StringBuilder toScreen = new StringBuilder();
             toScreen.append("Here are all of the games being played right now:\n");
             int count = 1;
+            listGames.clear();
             for (GameData game : games) {
                 String name = game.getGameName();
-                String nextLine = "   - " + game.getGameID() + ": " + name + "   White Player: "
+                String nextLine = "   - " + count + ": " + name + "   White Player: "
                         + game.getWhiteUsername() + "   Black Player: " + game.getBlackUsername() + "\n";
+                listGames.add(game.getGameID());
                 toScreen.append(nextLine);
                 count += 1;
             }
@@ -150,7 +155,8 @@ public class ChessClient {
         if (params.length == 2) {
             try {
                 assertSignedIn();
-                var output = server.joinGame(Integer.parseInt(params[0]), params[1]);
+                int gameToJoin = listGames.get((Integer.parseInt(params[0])) - 1);
+                var output = server.joinGame(gameToJoin, params[1]);
                 state = State.INGAME;
                 playerColor = params[1];
                 var board = server.getBoard();
@@ -169,6 +175,10 @@ public class ChessClient {
                     return "That was a bad request. Use the help menu.";
                 }
                 return "Cannot join game. We are not sure why.";
+            } catch (NumberFormatException e) {
+                return "Please enter the game ID you want to join!";
+            } catch (IndexOutOfBoundsException e) {
+                return "Please choose a game listed when you run list";
             }
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected: <ID> [WHITE/BLACK]");
@@ -178,7 +188,8 @@ public class ChessClient {
     public String observeGame(String... params) throws ResponseException {
         try {
             assertSignedIn();
-            server.setUserInGame(Integer.parseInt(params[0]));
+            int gameToJoin = listGames.get((Integer.parseInt(params[0])) - 1);
+            server.setUserInGame(gameToJoin);
             state = State.INGAME;
             var board = server.getBoard();
             return board.show("WHITE");
@@ -193,6 +204,8 @@ public class ChessClient {
                 return "That was a bad request. Use the help menu. You should use observe with the integer game ID";
             }
             return "Cannot observe game. We are not sure why.";
+        } catch (IndexOutOfBoundsException e) {
+            return "Please choose a game listed when you run list";
         }
 
     }
