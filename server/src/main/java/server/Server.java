@@ -2,6 +2,7 @@ package server;
 
 import dataaccess.*;
 import model.GameData;
+import server.websocket.WebSocketHandler;
 import service.*;
 import io.javalin.*;
 import com.google.gson.Gson;
@@ -21,6 +22,7 @@ public class Server {
     private final AuthService authService;
     private final GameService gameService;
     private final UserService userService;
+    private final WebSocketHandler webSocketHandler;
     Gson serializer = new Gson();
 
     /**
@@ -33,7 +35,7 @@ public class Server {
         this.authService = new AuthService();
         this.gameService = new GameService();
         this.userService = new UserService();
-
+        this.webSocketHandler = new WebSocketHandler();
 
         //Create the "listeners" for the endpoints.
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
@@ -43,7 +45,13 @@ public class Server {
                 .delete("/session", this::logOut)
                 .get("/game", this::getGames)
                 .post("/game", this::createGame)
-                .put("/game", this::joinGame);
+                .put("/game", this::joinGame)
+                .ws("/ws", ws -> {
+                    ws.onConnect(webSocketHandler);
+                    ws.onMessage(webSocketHandler);
+                    ws.onClose(webSocketHandler);
+                });
+
 
         // Below is where we set up what status and result to add to context with each specific type of exception.
         javalin.exception(BadRequestException.class, (e, ctx) -> {
