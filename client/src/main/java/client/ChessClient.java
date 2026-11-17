@@ -6,19 +6,21 @@ import java.util.Objects;
 import java.util.Scanner;
 
 import chess.InvalidMoveException;
+import client.websocket.NotificationHandler;
 import exception.ResponseException;
 import server.ServerFacade;
 import model.*;
 import chess.EscapeSequences;
+import websocket.messages.ServerMessage;
 
-public class ChessClient {
+public class ChessClient implements NotificationHandler {
     private State state = State.SIGNEDOUT;
     private final ServerFacade server;
     private String playerColor = "";
     private final ArrayList<Integer> listGames = new ArrayList<>();
 
     public ChessClient(String serverUrl) {
-        server = new ServerFacade(serverUrl);
+        server = new ServerFacade(serverUrl, this);
     }
 
     public void run() {
@@ -235,10 +237,10 @@ public class ChessClient {
     public String move(String... params) throws ResponseException {
         try {
             assertSignedIn();
-            if (params.length == 1) {
-                server.move(params[0], null);
+            if (params.length == 2) {
+                server.move(params[0], params[1], null);
             } else {
-                server.move(params[0], params[1]);
+                server.move(params[0], params[1], params[2]);
             }
         } catch (InvalidMoveException e) {
             return e.getMessage();
@@ -362,4 +364,22 @@ public class ChessClient {
     }
 
 
+    @Override
+    public void notify(ServerMessage notification) {
+        switch (notification.getServerMessageType()) {
+            case LOAD_GAME -> {
+                String color = "";
+                if (playerColor.isEmpty()) {
+                    color = "WHITE";
+                } else {
+                    color = playerColor;
+                }
+                System.out.println(notification.getGame().getBoard().show(color));
+            }
+            case NOTIFICATION -> System.out.println(notification.getMessage());
+            case ERROR -> System.out.println(notification.getErrorMessage());
+        }
+        printPrompt();
+
+    }
 }

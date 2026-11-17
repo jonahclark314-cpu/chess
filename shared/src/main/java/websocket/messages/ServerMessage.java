@@ -49,6 +49,19 @@ public class ServerMessage {
         return this.serverMessageType;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public ChessGame getGame() {
+        return game;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

@@ -1,6 +1,7 @@
 package server;
 
 import chess.*;
+import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
 import com.google.gson.Gson;
 import exception.ResponseException;
@@ -12,6 +13,7 @@ import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Objects;
 
 public class ServerFacade {
@@ -21,14 +23,15 @@ public class ServerFacade {
     private String personalUsername = "";
     private int currentGameID = 0;
     private WebSocketFacade ws;
+    private final NotificationHandler handler;
 
-
-    public ServerFacade(String url) {
+    public ServerFacade(String url, NotificationHandler handler) {
         serverUrl = url;
+        this.handler = handler;
     }
 
-    public ServerFacade(int port) {
-        this("http://localhost:" + port);
+    public ServerFacade(int port, NotificationHandler handler) {
+        this("http://localhost:" + port, handler);
     }
 
     public String signIn(String username, String password) throws ResponseException {
@@ -163,24 +166,27 @@ public class ServerFacade {
         currentGameID = gameID;
     }
 
-    public void move(String moveString, String promotionString) throws InvalidMoveException {
-        ChessPiece.PieceType promotionPeice;
-        if (promotionString != null) {
-            if (promotionString.equals("KNIGHT")) {
-                promotionPeice = ChessPiece.PieceType.KNIGHT;
-            } else if (promotionString.equals("QUEEN")) {
-                promotionPeice = ChessPiece.PieceType.QUEEN;
-            } else if (promotionString.equals("ROOK")) {
-                promotionPeice = ChessPiece.PieceType.ROOK;
-            } else if (promotionString.equals("BISHOP")) {
-                promotionPeice = ChessPiece.PieceType.BISHOP;
-            } else {
-                throw new InvalidMoveException("Please state if you want to promote the Pawn to a QUEEN, ROOK, KNIGHT, or BISHOP!");
-            }
-        } else {
-            promotionPeice = null;
+    public void move(String moveString1, String moveString2, String pString) throws InvalidMoveException {
+        ChessPiece.PieceType promotionPeice = null;
+        if (pString != null) {
+            String promotionString = pString.toUpperCase();
+            promotionPeice = switch (promotionString) {
+                case "KNIGHT" -> ChessPiece.PieceType.KNIGHT;
+                case "QUEEN" -> ChessPiece.PieceType.QUEEN;
+                case "ROOK" -> ChessPiece.PieceType.ROOK;
+                case "BISHOP" -> ChessPiece.PieceType.BISHOP;
+                default -> throw new InvalidMoveException("Please state if you want to promote " +
+                        "the Pawn to a QUEEN, ROOK, KNIGHT, or BISHOP!");
+            };
         }
-        ChessMove move = new ChessMove(moveString, promotionPeice);
+        ChessPosition position1 = new ChessPosition(moveString1);
+        ChessPosition position2 = new ChessPosition(moveString2);
 
+        ChessMove move = new ChessMove(position1, position2, promotionPeice);
+        try {
+            ws.makeMove(authentication, currentGameID, move);
+        } catch (ResponseException e) {
+            throw new InvalidMoveException(e.getMessage());
+        }
     }
 }

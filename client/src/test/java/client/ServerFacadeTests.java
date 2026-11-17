@@ -36,7 +36,7 @@ public class ServerFacadeTests {
                 .DELETE()
                 .build();
         HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-        facade = new ServerFacade(port);
+        facade = new ServerFacade(port, );
     }
 
     @Test

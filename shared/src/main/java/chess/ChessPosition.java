@@ -72,14 +72,14 @@ public class ChessPosition {
     @Override
     public String toString() {
         ArrayList<String> list = new ArrayList<>();
-        list.add("h");
-        list.add("g");
-        list.add("f");
-        list.add("e");
-        list.add("d");
-        list.add("c");
-        list.add("b");
         list.add("a");
+        list.add("b");
+        list.add("c");
+        list.add("d");
+        list.add("e");
+        list.add("f");
+        list.add("g");
+        list.add("h");
         String column = list.get(col - 1);
         return column + row;
     }
