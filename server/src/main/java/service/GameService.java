@@ -1,6 +1,8 @@
 package service;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import dataaccess.*;
 import dataaccess.sql.SQLGameDAO;
 import model.GameData;
@@ -152,14 +154,39 @@ public class GameService {
             if (gameData.getGame().isGameOver()) {
                 throw new BadRequestException("The game is already over, you cannot resign.");
             }
-            ChessGame tempGame = gameData.getGame();
-            tempGame.setGameOver(true);
-            gameData.setGameObject(tempGame);
-            gameDAO.updateGame(gameData);
+            setGameOver(gameID);
         } else {
             throw new BadRequestException("You are an observer, you cannot resign.");
         }
 
     }
 
+    public ChessGame makeMove(int gameID, String username, ChessMove move) {
+        try {
+            GameData gameData = getGame(gameID);
+            ChessGame game = gameData.getGame();
+            if (game.isGameOver()) {
+                throw new BadRequestException(("This game is already over!"));
+            }
+            ChessGame.TeamColor currentTurn = game.getTeamTurn();
+            if ((currentTurn == ChessGame.TeamColor.WHITE && username.equals(gameData.getWhiteUsername())) || (currentTurn == ChessGame.TeamColor.BLACK && username.equals(gameData.getBlackUsername()))) {
+                game.makeMove(move);
+                gameData.setGameObject(game);
+                gameDAO.updateGame(gameData);
+                return game;
+            } else {
+                throw new BadRequestException("It is not your turn!");
+            }
+        } catch (InvalidMoveException e) {
+            throw new BadRequestException(("This is not a valid move!"));
+        }
+    }
+
+    public void setGameOver(int gameID) {
+        GameData gameData = getGame(gameID);
+        ChessGame game = gameData.getGame();
+        game.setGameOver(true);
+        gameData.setGameObject(game);
+        gameDAO.updateGame(gameData);
+    }
 }

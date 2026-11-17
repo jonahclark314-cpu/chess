@@ -1,6 +1,7 @@
 package server;
 
 import chess.*;
+import client.websocket.WebSocketFacade;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
@@ -19,6 +20,8 @@ public class ServerFacade {
     private String authentication = "";
     private String personalUsername = "";
     private int currentGameID = 0;
+    private WebSocketFacade ws;
+
 
     public ServerFacade(String url) {
         serverUrl = url;
@@ -94,6 +97,8 @@ public class ServerFacade {
         var response = sendRequest(request);
         handleResponse(response, Object.class);
         currentGameID = gameID;
+        ws = new WebSocketFacade(serverUrl, handler);
+        ws.makeConnection(authentication, currentGameID);
         return "Joined the game numbered:" + gameID + " as " + colorPlayer;
     }
 
@@ -156,5 +161,26 @@ public class ServerFacade {
 
     public void setUserInGame(int gameID) {
         currentGameID = gameID;
+    }
+
+    public void move(String moveString, String promotionString) throws InvalidMoveException {
+        ChessPiece.PieceType promotionPeice;
+        if (promotionString != null) {
+            if (promotionString.equals("KNIGHT")) {
+                promotionPeice = ChessPiece.PieceType.KNIGHT;
+            } else if (promotionString.equals("QUEEN")) {
+                promotionPeice = ChessPiece.PieceType.QUEEN;
+            } else if (promotionString.equals("ROOK")) {
+                promotionPeice = ChessPiece.PieceType.ROOK;
+            } else if (promotionString.equals("BISHOP")) {
+                promotionPeice = ChessPiece.PieceType.BISHOP;
+            } else {
+                throw new InvalidMoveException("Please state if you want to promote the Pawn to a QUEEN, ROOK, KNIGHT, or BISHOP!");
+            }
+        } else {
+            promotionPeice = null;
+        }
+        ChessMove move = new ChessMove(moveString, promotionPeice);
+
     }
 }

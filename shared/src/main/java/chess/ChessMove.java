@@ -32,6 +32,15 @@ public class ChessMove {
         this.pieceType = promotionPiece;
     }
 
+    public ChessMove(String moveString, ChessPiece.PieceType promotionPiece) {
+        ChessPosition firstPosition = new ChessPosition(moveString.substring(0, 2));
+        ChessPosition secondPosition = new ChessPosition(moveString.substring(2, 4));
+
+        this.startPosition = firstPosition;
+        this.endPosition = secondPosition;
+        this.pieceType = promotionPiece;
+    }
+
 
     /**
      * This checks if the proposed move is a castle move. It does so by seeing if the King moves 2 spaces.
@@ -182,9 +191,8 @@ public class ChessMove {
      */
     @Override
     public String toString() {
-        return "{" + startPosition +
-                " to " + endPosition +
-                '}';
+        return startPosition +
+                " to " + endPosition;
     }
 
     /**

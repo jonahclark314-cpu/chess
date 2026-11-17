@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -27,6 +28,26 @@ public class ChessPosition {
         this.col = col;
     }
 
+    public ChessPosition(String substring) {
+        ArrayList<String> list = new ArrayList<>();
+        list.add("a");
+        list.add("b");
+        list.add("c");
+        list.add("d");
+        list.add("e");
+        list.add("f");
+        list.add("g");
+        list.add("h");
+        int col = 0;
+        for (int i = 1; i <= 8; i += 1) {
+            if (Objects.equals(list.get(i - 1), String.valueOf(substring.charAt(0)))) {
+                col = i;
+            }
+        }
+        this.row = Integer.parseInt(String.valueOf(substring.charAt(1)));
+        this.col = col;
+    }
+
     /**
      * @return which row this position is in
      * 1 codes for the bottom row
@@ -50,9 +71,17 @@ public class ChessPosition {
      */
     @Override
     public String toString() {
-        return "{" + row +
-                ", " + col +
-                '}';
+        ArrayList<String> list = new ArrayList<>();
+        list.add("h");
+        list.add("g");
+        list.add("f");
+        list.add("e");
+        list.add("d");
+        list.add("c");
+        list.add("b");
+        list.add("a");
+        String column = list.get(col - 1);
+        return column + row;
     }
 
     /**

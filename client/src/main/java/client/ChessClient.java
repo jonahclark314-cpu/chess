@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 
+import chess.InvalidMoveException;
 import exception.ResponseException;
 import server.ServerFacade;
 import model.*;
@@ -232,8 +233,17 @@ public class ChessClient {
     }
 
     public String move(String... params) throws ResponseException {
-        assertSignedIn();
-        return "We have not implemented moves yet. Thanks for the patience";
+        try {
+            assertSignedIn();
+            if (params.length == 1) {
+                server.move(params[0], null);
+            } else {
+                server.move(params[0], params[1]);
+            }
+        } catch (InvalidMoveException e) {
+            return e.getMessage();
+        }
+        return null;
     }
 
     public String leave() throws ResponseException {
