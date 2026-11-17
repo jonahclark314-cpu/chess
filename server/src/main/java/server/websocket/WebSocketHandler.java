@@ -11,6 +11,7 @@ import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
+import org.jetbrains.annotations.NotNull;
 import server.Server;
 import service.AuthService;
 import service.GameService;
@@ -63,16 +64,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try {
             String username = authService.getUserUsername(action.getAuthToken());
             GameData gameData = gameService.getGame(action.getGameID());
-            String whiteUser = gameData.getWhiteUsername();
-            String blackUser = gameData.getBlackUsername();
-            String message;
-            if (username.equals(whiteUser)) {
-                message = String.format("%s entered the game as White!", username);
-            } else if (username.equals(blackUser)) {
-                message = String.format("%s entered the game as Black!", username);
-            } else {
-                message = String.format("%s entered the game as an Observer!", username);
-            }
+            String message = getMessage(gameData, username);
 
             connections.add(session, gameData.getGameID(), username);
             var notification = ServerMessage.notification(message);
@@ -81,6 +73,21 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         } catch (Exception e) {
             connections.send(session, ServerMessage.error("ERROR: something is wrong. You cant enter the websocket."));
         }
+    }
+
+    @NotNull
+    private static String getMessage(GameData gameData, String username) {
+        String whiteUser = gameData.getWhiteUsername();
+        String blackUser = gameData.getBlackUsername();
+        String message;
+        if (username.equals(whiteUser)) {
+            message = String.format("%s entered the game as White!", username);
+        } else if (username.equals(blackUser)) {
+            message = String.format("%s entered the game as Black!", username);
+        } else {
+            message = String.format("%s entered the game as an Observer!", username);
+        }
+        return message;
     }
 
     private void leave(UserGameCommand action, Session session) throws IOException {
