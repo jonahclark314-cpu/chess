@@ -138,18 +138,16 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             connections.broadcast(session, notification);
 
             ChessGame.TeamColor oponentColor = game.getTeamTurn();
-            if (game.isInCheck(oponentColor)) {
-                var state = ServerMessage.notification(oponentColor + " Is in check!");
-                connections.broadcast(session, state);
-                connections.send(session, state);
-            }
             if (game.isInCheckmate(oponentColor)) {
                 var state = ServerMessage.notification(oponentColor + " Is in checkmate! The Game is over!");
                 gameService.setGameOver(gameID);
                 connections.broadcast(session, state);
                 connections.send(session, state);
-            }
-            if (game.isInStalemate(oponentColor)) {
+            } else if (game.isInCheck(oponentColor)) {
+                var state = ServerMessage.notification(oponentColor + " Is in check!");
+                connections.broadcast(session, state);
+                connections.send(session, state);
+            } else if (game.isInStalemate(oponentColor)) {
                 var state = ServerMessage.notification(oponentColor + " Is in stalemate! The Game is over!");
                 gameService.setGameOver(gameID);
                 connections.broadcast(session, state);

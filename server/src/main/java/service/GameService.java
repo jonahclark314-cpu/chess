@@ -145,6 +145,7 @@ public class GameService {
         } else if (username.equals(blackPlayer)) {
             game.setBlackUsername(null);
         }
+
         gameDAO.updateGame(game);
     }
 

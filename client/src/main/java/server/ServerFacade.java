@@ -100,14 +100,23 @@ public class ServerFacade {
         var response = sendRequest(request);
         handleResponse(response, Object.class);
         currentGameID = gameID;
-        ws = new WebSocketFacade(serverUrl, handler);
-        ws.makeConnection(authentication, currentGameID);
+        connect();
         return "Joined the game numbered:" + gameID + " as " + colorPlayer;
     }
 
+    public void connect() throws ResponseException {
+        ws = new WebSocketFacade(serverUrl, handler);
+        ws.makeConnection(authentication, currentGameID);
 
-    public void leaveGame() {
+    }
+
+    public void leaveGame() throws ResponseException {
+        if (ws != null) {
+            ws.leaveGame(authentication, currentGameID);
+            ws = null;
+        }
         currentGameID = 0;
+
     }
 
 

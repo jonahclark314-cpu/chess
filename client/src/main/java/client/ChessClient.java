@@ -35,6 +35,9 @@ public class ChessClient implements NotificationHandler {
 
             try {
                 result = eval(line);
+                if (result == null) {
+                    result = "";
+                }
                 System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result + EscapeSequences.SET_TEXT_COLOR_BLACK);
             } catch (Throwable e) {
                 var msg = e.toString();
@@ -193,6 +196,7 @@ public class ChessClient implements NotificationHandler {
             assertSignedIn();
             int gameToJoin = listGames.get((Integer.parseInt(params[0])) - 1);
             server.setUserInGame(gameToJoin);
+            server.connect();
             state = State.INGAME;
             var board = server.getBoard();
             return board.show("WHITE");
@@ -245,7 +249,7 @@ public class ChessClient implements NotificationHandler {
         } catch (InvalidMoveException e) {
             return e.getMessage();
         }
-        return null;
+        return "";
     }
 
     public String leave() throws ResponseException {
@@ -253,7 +257,7 @@ public class ChessClient implements NotificationHandler {
         state = State.SIGNEDIN;
         playerColor = "";
         server.leaveGame();
-        return "leave()";
+        return "You left the game.";
     }
 
 
