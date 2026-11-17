@@ -87,6 +87,7 @@ public class ChessClient implements NotificationHandler {
                     case "move" -> move(params);
                     case "highlight" -> highlight(params);
                     case "leave" -> leave();
+                    case "redraw" -> redraw();
                     case "quit" -> "quit";
                     default -> help();
                 };
@@ -179,14 +180,23 @@ public class ChessClient implements NotificationHandler {
         }
     }
 
+    private String redraw() {
+        if (game == null) {
+            return "The board has not loaded yet.";
+        }
+        String color = playerColor.isEmpty() ? "WHITE" : playerColor;
+        return game.getBoard().show(color, null, null);
+    }
+
+
     public String joinGame(String... params) throws ResponseException {
         if (params.length == 2) {
             try {
                 assertSignedIn();
                 int gameToJoin = listGames.get((Integer.parseInt(params[0])) - 1);
-                var output = server.joinGame(gameToJoin, params[1]);
+                var output = server.joinGame(gameToJoin, params[1].toUpperCase());
                 state = State.INGAME;
-                playerColor = params[1];
+                playerColor = params[1].toUpperCase();
                 var board = server.getBoard();
                 return output + board.show(playerColor, null, null);
             } catch (ResponseException e) {

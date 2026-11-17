@@ -190,6 +190,9 @@ public class ChessBoard {
 
 
     public String show(String color, ChessPosition start, Set<ChessPosition> ends) {
+        if (ends == null) {
+            ends = Set.of();
+        }
         if (Objects.equals(color, "WHITE")) {
             return toString(start, ends);
         } else if (Objects.equals(color, "BLACK")) {
