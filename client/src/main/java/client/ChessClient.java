@@ -1,16 +1,12 @@
 package client;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
-import chess.InvalidMoveException;
+import chess.*;
 import client.websocket.NotificationHandler;
 import exception.ResponseException;
 import server.ServerFacade;
 import model.*;
-import chess.EscapeSequences;
 import websocket.messages.ServerMessage;
 
 public class ChessClient implements NotificationHandler {
@@ -18,6 +14,7 @@ public class ChessClient implements NotificationHandler {
     private final ServerFacade server;
     private String playerColor = "";
     private final ArrayList<Integer> listGames = new ArrayList<>();
+    private ChessGame game;
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl, this);
@@ -88,6 +85,7 @@ public class ChessClient implements NotificationHandler {
             } else { // the state is INGAME.
                 return switch (cmd) {
                     case "move" -> move(params);
+                    case "highlight" -> highlight(params);
                     case "leave" -> leave();
                     case "quit" -> "quit";
                     default -> help();
@@ -97,6 +95,30 @@ public class ChessClient implements NotificationHandler {
         } catch (ResponseException ex) {
             return ex.getMessage();
         }
+    }
+
+    private String highlight(String[] params) {
+        if (params.length != 1) {
+            return "Please input the square you want to inquire about";
+        }
+        if (game == null) {
+            return "The board has not loaded yet. Try again soon.";
+        }
+        ChessPosition start = new ChessPosition(params[0]); // "e2" -> row 2, col 5
+        ChessPiece piece = game.getBoard().getPiece(start);
+        if (piece == null) {
+            return "There is no piece on " + params[0];
+        }
+        Collection<ChessMove> moves = game.validMoves(start);
+        // One square can appear several times when a pawn promotes
+        // (queen, rook, bishop, knight). A set keeps each square once.
+        Set<ChessPosition> ends = new HashSet<>();
+        for (ChessMove move : moves) {
+            ends.add(move.getEndPosition());
+        }
+        String color = playerColor.isEmpty() ? "WHITE" : playerColor;
+        return game.getBoard().show(color, start, ends);
+
     }
 
     public String createGame(String... params) throws ResponseException {
@@ -166,7 +188,7 @@ public class ChessClient implements NotificationHandler {
                 state = State.INGAME;
                 playerColor = params[1];
                 var board = server.getBoard();
-                return output + board.show(playerColor);
+                return output + board.show(playerColor, null, null);
             } catch (ResponseException e) {
                 if (e.code() == ResponseException.Code.Unauthorized) {
                     return "You are not logged in! Log in to join games";
@@ -199,7 +221,7 @@ public class ChessClient implements NotificationHandler {
             server.connect();
             state = State.INGAME;
             var board = server.getBoard();
-            return board.show("WHITE");
+            return board.show("WHITE", null, null);
         } catch (ResponseException e) {
             if (e.code() == ResponseException.Code.Unauthorized) {
                 return "You are not logged in! Please log in to observe games.";
@@ -339,13 +361,13 @@ public class ChessClient implements NotificationHandler {
                             - move
                             - leave
                             - quit
-                            """ + board.show("BLACK");
+                            """ + board.show("BLACK", null, null);
                 } else {
                     return """
                             - move
                             - leave
                             - quit
-                            """ + board.show("WHITE");
+                            """ + board.show("WHITE", null, null);
                 }
 
             } catch (Exception e) {
@@ -372,13 +394,14 @@ public class ChessClient implements NotificationHandler {
     public void notify(ServerMessage notification) {
         switch (notification.getServerMessageType()) {
             case LOAD_GAME -> {
+                game = notification.getGame();
                 String color = "";
                 if (playerColor.isEmpty()) {
                     color = "WHITE";
                 } else {
                     color = playerColor;
                 }
-                System.out.println(notification.getGame().getBoard().show(color));
+                System.out.println(notification.getGame().getBoard().show(color, null, null));
             }
             case NOTIFICATION -> System.out.println(notification.getMessage());
             case ERROR -> System.out.println(notification.getErrorMessage());

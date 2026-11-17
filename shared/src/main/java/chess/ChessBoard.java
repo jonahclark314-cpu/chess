@@ -1,9 +1,6 @@
 package chess;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -134,8 +131,7 @@ public class ChessBoard {
      *
      * @return returns string to print
      */
-    @Override
-    public String toString() {
+    public String toString(ChessPosition start, Set<ChessPosition> ends) {
         StringBuilder totalString = new StringBuilder("\n");
         ArrayList<String> colHeader = new ArrayList<>(List.of(" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "));
 
@@ -153,7 +149,7 @@ public class ChessBoard {
                 totalString.append(EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
             } else {
                 for (int j = 0; j <= 9; j++) {
-                    drawBoardHelper(j, i, totalString);
+                    drawBoardHelper(j, i, totalString, start, ends);
                 }
             }
             totalString.append("\n");
@@ -161,15 +157,27 @@ public class ChessBoard {
         return totalString.toString();
     }
 
-    private void drawBoardHelper(int j, int i, StringBuilder totalString) {
+    private void drawBoardHelper(int j, int i, StringBuilder totalString, ChessPosition start, Set<ChessPosition> ends) {
         ArrayList<String> rowHeader = new ArrayList<>(List.of(" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 "));
 
         if (j != 0 && j != 9) {
-            if ((j + i) % 2 == 0) {
-                totalString.append(EscapeSequences.SET_BG_COLOR_BLACK);
+            ChessPosition ourPosition = new ChessPosition(i, j);
+            if (ourPosition.equals(start)) {
+                totalString.append(EscapeSequences.SET_BG_COLOR_YELLOW);
+            } else if (ends.contains(ourPosition)) {
+                if ((j + i) % 2 == 0) {
+                    totalString.append(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
+                } else {
+                    totalString.append(EscapeSequences.SET_BG_COLOR_GREEN);
+                }
             } else {
-                totalString.append(EscapeSequences.SET_BG_COLOR_WHITE);
+                if ((j + i) % 2 == 0) {
+                    totalString.append(EscapeSequences.SET_BG_COLOR_BLACK);
+                } else {
+                    totalString.append(EscapeSequences.SET_BG_COLOR_WHITE);
+                }
             }
+
             totalString.append(format(squares[i - 1][j - 1]));
             totalString.append(EscapeSequences.RESET_BG_COLOR);
         } else {
@@ -181,11 +189,11 @@ public class ChessBoard {
     }
 
 
-    public String show(String color) {
+    public String show(String color, ChessPosition start, Set<ChessPosition> ends) {
         if (Objects.equals(color, "WHITE")) {
-            return toString();
+            return toString(start, ends);
         } else if (Objects.equals(color, "BLACK")) {
-            return blackToString();
+            return blackToString(start, ends);
         } else {
             return "Please enter in the color you are observing from!";
         }
@@ -193,7 +201,7 @@ public class ChessBoard {
     }
 
 
-    private String blackToString() {
+    private String blackToString(ChessPosition start, Set<ChessPosition> ends) {
         StringBuilder totalString = new StringBuilder("\n");
         ArrayList<String> colHeader = new ArrayList<>(List.of(" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "));
 
@@ -210,7 +218,7 @@ public class ChessBoard {
                 totalString.append(EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
             } else {
                 for (int j = 9; j >= 0; j--) {
-                    drawBoardHelper(j, i, totalString);
+                    drawBoardHelper(j, i, totalString, start, ends);
                 }
             }
             totalString.append("\n");
