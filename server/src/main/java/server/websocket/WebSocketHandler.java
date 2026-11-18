@@ -117,7 +117,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             gameService.resign(gameID, username);
             var message = String.format("%s resigned the game", username);
             var notification = ServerMessage.notification(message);
-            connections.send(session, ServerMessage.notification("You resigned the game"));
             connections.broadcast(session, notification);
         } catch (Exception e) {
             connections.send(session, ServerMessage.error(e.getMessage()));
@@ -136,19 +135,24 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             var message = String.format("%s played the move %s", username, move);
             var notification = ServerMessage.notification(message);
             connections.broadcast(session, notification);
-
+            String oponentUsername;
             ChessGame.TeamColor oponentColor = game.getTeamTurn();
+            if (oponentColor == ChessGame.TeamColor.WHITE) {
+                oponentUsername = gameService.getGame(gameID).getWhiteUsername();
+            } else {
+                oponentUsername = gameService.getGame(gameID).getBlackUsername();
+            }
             if (game.isInCheckmate(oponentColor)) {
-                var state = ServerMessage.notification(oponentColor + " Is in checkmate! The Game is over!");
+                var state = ServerMessage.notification(oponentUsername + " Is in checkmate! The Game is over!");
                 gameService.setGameOver(gameID);
                 connections.broadcast(session, state);
                 connections.send(session, state);
             } else if (game.isInCheck(oponentColor)) {
-                var state = ServerMessage.notification(oponentColor + " Is in check!");
+                var state = ServerMessage.notification(oponentUsername + " Is in check!");
                 connections.broadcast(session, state);
                 connections.send(session, state);
             } else if (game.isInStalemate(oponentColor)) {
-                var state = ServerMessage.notification(oponentColor + " Is in stalemate! The Game is over!");
+                var state = ServerMessage.notification(oponentUsername + " Is in stalemate! The Game is over!");
                 gameService.setGameOver(gameID);
                 connections.broadcast(session, state);
                 connections.send(session, state);

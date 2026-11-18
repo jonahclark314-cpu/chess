@@ -98,14 +98,14 @@ public class ServerFacade {
         }
     }
 
-    public String joinGame(int gameID, String colorPlayer) throws ResponseException {
+    public String joinGame(int gameID, String colorPlayer, String gameNumber) throws ResponseException {
         SetColorGameRequest gameRequest = new SetColorGameRequest(gameID, colorPlayer, personalUsername);
         var request = buildRequest("PUT", "/game", gameRequest);
         var response = sendRequest(request);
         handleResponse(response, Object.class);
         currentGameID = gameID;
         connect();
-        return "Joined the game numbered:" + gameID + " as " + colorPlayer;
+        return "Joined the game numbered: " + gameNumber + " as " + colorPlayer;
     }
 
     public void connect() throws ResponseException {
@@ -202,4 +202,5 @@ public class ServerFacade {
             throw new InvalidMoveException(e.getMessage());
         }
     }
+
 }

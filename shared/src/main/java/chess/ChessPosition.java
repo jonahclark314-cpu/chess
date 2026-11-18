@@ -1,9 +1,6 @@
 package chess;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Represents a single square position on a chess board
@@ -40,7 +37,7 @@ public class ChessPosition {
         list.add("h");
         int col = 0;
         for (int i = 1; i <= 8; i += 1) {
-            if (Objects.equals(list.get(i - 1), String.valueOf(substring.charAt(0)))) {
+            if (Objects.equals(list.get(i - 1), String.valueOf(substring.charAt(0)).toLowerCase())) {
                 col = i;
             }
         }

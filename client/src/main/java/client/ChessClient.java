@@ -39,7 +39,7 @@ public class ChessClient implements NotificationHandler {
                 System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result + EscapeSequences.SET_TEXT_COLOR_BLACK);
             } catch (Throwable e) {
                 var msg = e.toString();
-                System.out.print(msg);
+                System.out.print("Something went wrong. Type help to see the commands.");
             }
         }
         System.out.println();
@@ -115,27 +115,37 @@ public class ChessClient implements NotificationHandler {
     }
 
     private String highlight(String[] params) {
-        if (params.length != 1) {
-            return "Please input the square you want to inquire about";
+        try {
+            if (params.length != 1) {
+                return "Please input the square you want to inquire about";
+            }
+            if (game == null) {
+                return "The board has not loaded yet. Try again soon.";
+            }
+            if (params[0].length() != 2) {
+                return "please use a valid square notation (ex: e2, a8, d5, etc.)";
+            } else {
+                if (Integer.parseInt(String.valueOf(params[0].charAt(1))) <= 0 || Integer.parseInt(String.valueOf(params[0].charAt(1))) >= 9) {
+                    return "Please stay in the bounds of the board.";
+                }
+            }
+            ChessPosition start = new ChessPosition(params[0]); // "e2" -> row 2, col 5
+            ChessPiece piece = game.getBoard().getPiece(start);
+            if (piece == null) {
+                return "There is no piece on " + params[0];
+            }
+            Collection<ChessMove> moves = game.validMoves(start);
+            // One square can appear several times when a pawn promotes
+            // (queen, rook, bishop, knight). A set keeps each square once.
+            Set<ChessPosition> ends = new HashSet<>();
+            for (ChessMove move : moves) {
+                ends.add(move.getEndPosition());
+            }
+            String color = playerColor.isEmpty() ? "WHITE" : playerColor;
+            return game.getBoard().show(color, start, ends);
+        } catch (Exception e) {
+            return "Please format the request correctly. Use the help menu";
         }
-        if (game == null) {
-            return "The board has not loaded yet. Try again soon.";
-        }
-        ChessPosition start = new ChessPosition(params[0]); // "e2" -> row 2, col 5
-        ChessPiece piece = game.getBoard().getPiece(start);
-        if (piece == null) {
-            return "There is no piece on " + params[0];
-        }
-        Collection<ChessMove> moves = game.validMoves(start);
-        // One square can appear several times when a pawn promotes
-        // (queen, rook, bishop, knight). A set keeps each square once.
-        Set<ChessPosition> ends = new HashSet<>();
-        for (ChessMove move : moves) {
-            ends.add(move.getEndPosition());
-        }
-        String color = playerColor.isEmpty() ? "WHITE" : playerColor;
-        return game.getBoard().show(color, start, ends);
-
     }
 
     public String createGame(String... params) throws ResponseException {
@@ -156,7 +166,7 @@ public class ChessClient implements NotificationHandler {
                 return "Cannot create game. We are not sure why.";
             }
         }
-        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <userName> <password>");
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected: create <gameName>");
 
     }
 
@@ -170,9 +180,7 @@ public class ChessClient implements NotificationHandler {
             int count = 1;
             listGames.clear();
             for (GameData game : games) {
-                String name = game.getGameName();
-                String nextLine = "   - " + count + ": " + name + "   White Player: "
-                        + game.getWhiteUsername() + "   Black Player: " + game.getBlackUsername() + "\n";
+                String nextLine = getNextLine(game, count);
                 listGames.add(game.getGameID());
                 toScreen.append(nextLine);
                 count += 1;
@@ -196,6 +204,25 @@ public class ChessClient implements NotificationHandler {
         }
     }
 
+    private static String getNextLine(GameData game, int count) {
+        String name = game.getGameName();
+        String blackUser;
+        String whiteUser;
+        if (game.getBlackUsername() == null) {
+            blackUser = "NOT TAKEN";
+        } else {
+            blackUser = game.getBlackUsername();
+        }
+        if (game.getWhiteUsername() == null) {
+            whiteUser = "NOT TAKEN";
+        } else {
+            whiteUser = game.getWhiteUsername();
+        }
+        String nextLine = "   - " + count + ": " + name + "   White Player: "
+                + whiteUser + "   Black Player: " + blackUser + "\n";
+        return nextLine;
+    }
+
     private String redraw() {
         if (game == null) {
             return "The board has not loaded yet.";
@@ -210,7 +237,7 @@ public class ChessClient implements NotificationHandler {
             try {
                 assertSignedIn();
                 int gameToJoin = listGames.get((Integer.parseInt(params[0])) - 1);
-                var output = server.joinGame(gameToJoin, params[1].toUpperCase());
+                var output = server.joinGame(gameToJoin, params[1].toUpperCase(), params[0]);
                 state = State.INGAME;
                 playerColor = params[1].toUpperCase();
                 var board = server.getBoard();
@@ -241,13 +268,20 @@ public class ChessClient implements NotificationHandler {
 
     public String observeGame(String... params) throws ResponseException {
         try {
-            assertSignedIn();
-            int gameToJoin = listGames.get((Integer.parseInt(params[0])) - 1);
-            server.setUserInGame(gameToJoin);
-            server.connect();
-            state = State.INGAME;
-            var board = server.getBoard();
-            return board.show("WHITE", null, null);
+            if (params.length == 1) {
+                assertSignedIn();
+                int gameToJoin = listGames.get((Integer.parseInt(params[0])) - 1);
+                server.setUserInGame(gameToJoin);
+                server.connect();
+                state = State.INGAME;
+                var board = server.getBoard();
+                return board.show("WHITE", null, null);
+            } else {
+                return "Please use this format: \n" +
+                        "\tobserve <game number> " +
+                        "\tEx: observe 3 ";
+
+            }
         } catch (ResponseException e) {
             if (e.code() == ResponseException.Code.Unauthorized) {
                 return "You are not logged in! Please log in to observe games.";
@@ -261,6 +295,8 @@ public class ChessClient implements NotificationHandler {
             return "Cannot observe game. We are not sure why.";
         } catch (IndexOutOfBoundsException e) {
             return "Please choose a game listed when you run list";
+        } catch (NumberFormatException e) {
+            return "Please format the request correctly. Use the help menu.";
         }
 
     }
@@ -291,11 +327,19 @@ public class ChessClient implements NotificationHandler {
             assertSignedIn();
             if (params.length == 2) {
                 server.move(params[0], params[1], null);
-            } else {
+
+            } else if (params.length == 3) {
                 server.move(params[0], params[1], params[2]);
+            } else {
+                return "Please use this format: \n" +
+                        "\tmove <square1> <square2> <promotionPiece> " +
+                        "\tEx: move e7 e8 queen (promoting a pawn to a queen)";
+
             }
         } catch (InvalidMoveException e) {
             return e.getMessage();
+        } catch (Exception e) {
+            return "Please format the request correctly. Use the help menu";
         }
         return "";
     }
@@ -370,10 +414,10 @@ public class ChessClient implements NotificationHandler {
         }
         if (state == State.SIGNEDIN) {
             return """
-                    - create
+                    - create <GameName>
                     - list
-                    - join
-                    - observe
+                    - join <number beside Game> <Color you will join as>
+                    - observe <number beside Game>
                     - logout
                     - help
                     - quit
@@ -381,11 +425,12 @@ public class ChessClient implements NotificationHandler {
         }
         if (state == State.INGAME) {
             return """
-                    - move
+                    - move <square1> <square2> <promotionPiece> Ex: move e7 e8 queen (promoting a pawn to a queen)
                     - leave
                     - redraw
                     - resign
                     - highlight <square>
+                    - help
                     - quit
                     """;
         }
