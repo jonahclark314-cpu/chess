@@ -27,9 +27,6 @@ public class UserGameCommand {
         this.move = move;
     }
 
-    public CommandType GetCommandType() {
-        return commandType;
-    }
 
     public enum CommandType {
         CONNECT,

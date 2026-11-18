@@ -44,7 +44,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     public void handleMessage(WsMessageContext ctx) {
         try {
             UserGameCommand action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
-            switch (action.GetCommandType()) {
+            switch (action.getCommandType()) {
                 case UserGameCommand.CommandType.CONNECT -> enter(action, ctx.session);
                 case UserGameCommand.CommandType.LEAVE -> leave(action, ctx.session);
                 case UserGameCommand.CommandType.RESIGN -> resign(action, ctx.session);

@@ -170,7 +170,8 @@ public class GameService {
                 throw new BadRequestException(("This game is already over!"));
             }
             ChessGame.TeamColor currentTurn = game.getTeamTurn();
-            if ((currentTurn == ChessGame.TeamColor.WHITE && username.equals(gameData.getWhiteUsername())) || (currentTurn == ChessGame.TeamColor.BLACK && username.equals(gameData.getBlackUsername()))) {
+            if ((currentTurn == ChessGame.TeamColor.WHITE && username.equals(gameData.getWhiteUsername())) ||
+                    (currentTurn == ChessGame.TeamColor.BLACK && username.equals(gameData.getBlackUsername()))) {
                 game.makeMove(move);
                 gameData.setGameObject(game);
                 gameDAO.updateGame(gameData);
