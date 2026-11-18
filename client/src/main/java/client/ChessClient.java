@@ -15,6 +15,7 @@ public class ChessClient implements NotificationHandler {
     private String playerColor = "";
     private final ArrayList<Integer> listGames = new ArrayList<>();
     private ChessGame game;
+    boolean confirmResign = false;
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl, this);
@@ -65,6 +66,9 @@ public class ChessClient implements NotificationHandler {
             String upperCmd = (tokens.length > 0) ? tokens[0] : "help";
             String cmd = upperCmd.toLowerCase();
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            if (!cmd.equals("resign")) {
+                confirmResign = false;
+            }
             if (state == State.SIGNEDOUT) {
                 return switch (cmd) {
                     case "login" -> signIn(params);
@@ -87,6 +91,7 @@ public class ChessClient implements NotificationHandler {
                     case "move" -> move(params);
                     case "highlight" -> highlight(params);
                     case "leave" -> leave();
+                    case "resign" -> resign();
                     case "redraw" -> redraw();
                     case "quit" -> "quit";
                     default -> help();
@@ -96,6 +101,17 @@ public class ChessClient implements NotificationHandler {
         } catch (ResponseException ex) {
             return ex.getMessage();
         }
+    }
+
+    private String resign() throws ResponseException {
+        if (!confirmResign) {
+            confirmResign = true;
+            return "Type resign again to forfeit, or any other command to cancel.";
+        }
+        confirmResign = false;
+        server.resign();
+        return "You resigned. The game is over.";
+
     }
 
     private String highlight(String[] params) {
@@ -198,7 +214,7 @@ public class ChessClient implements NotificationHandler {
                 state = State.INGAME;
                 playerColor = params[1].toUpperCase();
                 var board = server.getBoard();
-                return output + board.show(playerColor, null, null);
+                return output; // + board.show(playerColor, null, null);
             } catch (ResponseException e) {
                 if (e.code() == ResponseException.Code.Unauthorized) {
                     return "You are not logged in! Log in to join games";
@@ -364,29 +380,14 @@ public class ChessClient implements NotificationHandler {
                     """;
         }
         if (state == State.INGAME) {
-            try {
-                var board = server.getBoard();
-                if (Objects.equals(playerColor, "BLACK")) {
-                    return """
-                            - move
-                            - leave
-                            - quit
-                            """ + board.show("BLACK", null, null);
-                } else {
-                    return """
-                            - move
-                            - leave
-                            - quit
-                            """ + board.show("WHITE", null, null);
-                }
-
-            } catch (Exception e) {
-                return """
-                        - move
-                        - leave
-                        - quit
-                        """;
-            }
+            return """
+                    - move
+                    - leave
+                    - redraw
+                    - resign
+                    - highlight <square>
+                    - quit
+                    """;
         }
         return """
                 dawg something is wrong. you should check it out!

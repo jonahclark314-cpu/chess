@@ -63,6 +63,10 @@ public class ServerFacade {
         handleResponse(response, Object.class);
     }
 
+    public void resign() throws ResponseException {
+        ws.resignGame(authentication, currentGameID);
+    }
+
     public ListGamesResult listGames() throws ResponseException {
         var request = buildRequest("GET", "/game", null);
         var response = sendRequest(request);

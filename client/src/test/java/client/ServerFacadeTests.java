@@ -36,7 +36,7 @@ public class ServerFacadeTests {
                 .DELETE()
                 .build();
         HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-        facade = new ServerFacade(port, );
+        facade = new ServerFacade(port, null);
     }
 
     @Test
@@ -58,7 +58,7 @@ public class ServerFacadeTests {
     @Test
     void signInSuccess() throws Exception {
         facade.register("playerSignin", "password", "pS@email.com");
-        ServerFacade again = new ServerFacade(port);
+        ServerFacade again = new ServerFacade(port, null);
         Assertions.assertEquals("playerSignin", again.signIn("playerSignin", "password"));
         Assertions.assertNotNull(again.listGames());
     }
@@ -66,7 +66,7 @@ public class ServerFacadeTests {
     @Test
     void signInWrongPassword() throws Exception {
         facade.register("user", "password", "u@email.com");
-        ServerFacade again = new ServerFacade(port);
+        ServerFacade again = new ServerFacade(port, null);
         ResponseException ex = Assertions.assertThrows(ResponseException.class,
                 () -> again.signIn("user", "wrongPasswordddddd"));
         Assertions.assertEquals(ResponseException.Code.Unauthorized, ex.code());
